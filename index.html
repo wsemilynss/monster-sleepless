@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0a0b0e">
 <meta name="color-scheme" content="dark">
-<meta name="description" content="MAD MEDICINE · 怪物诊所：山海志异交互剧场——身体即山河，证型即精怪。以望闻问切四术寻妖收录图鉴，含身体状态侧写、十精怪图鉴、跨学科循证交叉验证与可下载的推理路径图。">
+<meta name="description" content="怪物夜未眠 · Monster Sleepless：午夜 0:00，一只睡不着的怪物敲门。陪它熬过子夜、深夜、凌晨，等到黎明，看看今晚是谁来过。这是故事，不是诊断。">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -48,7 +48,7 @@ body{
 #figLayer{position:fixed;top:0;left:0;right:0;bottom:0;inset:0;z-index:1;pointer-events:none;display:none;
   align-items:center;justify-content:center;overflow:hidden;--dot:3.6px}
 body.stage-live #figLayer{display:flex}
-.figGrain{position:absolute;width:46vh;width:min(46vh,72vw);aspect-ratio:9/20;max-height:94vh;object-fit:cover;opacity:.5;
+.figGrain{position:absolute;width:46vh;width:min(46vh,72vw);aspect-ratio:9/20;max-height:94vh;object-fit:cover;
   filter:contrast(1.06) saturate(.94);will-change:transform,opacity;
   -webkit-mask-image:radial-gradient(ellipse 60% 72% at 50% 47%,#000 42%,rgba(0,0,0,.5) 64%,transparent 86%),radial-gradient(circle,#000 0 34%,transparent 38%);
   -webkit-mask-size:100% 100%,var(--dot) var(--dot);-webkit-mask-composite:source-in;
@@ -1031,10 +1031,6 @@ body.stage-live #aurora{opacity:.5}
 /* 辨证屏 · 蛇身翠翠：群妖现形时的暗处见证者 */
 .deduceSpirit{position:fixed;right:-3%;bottom:0;width:min(30vw,330px);pointer-events:none;user-select:none;z-index:0;opacity:.3}
 .deduceSpirit img{width:100%;display:block}
-/* 辨证屏底纹：故障骷髅拓影（Reference/Background-02）——现形前的病灶深渊 */
-#screen-deduce.active::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:url("assets/img/bg-skull.jpg") center 26%/min(54vh,82vw) no-repeat;
-  opacity:.11;mix-blend-mode:screen}
 /* ---------- 坐堂引导签：始终告诉玩家下一步 ---------- */
 #guideTip{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);
   z-index:9;display:none;align-items:center;gap:10px;max-width:min(580px,88vw);
@@ -1249,6 +1245,105 @@ body.stage-answering .dockEdge{opacity:0!important;pointer-events:none}
   #clueDock.edge~.dockEdge{transform:translate(-50%,0);animation:edgeNudgeM 3s ease-in-out 1s infinite}
   @keyframes edgeNudgeM{0%,100%{margin-bottom:0}50%{margin-bottom:4px}}
 }
+/* ============================================================
+   S3 · 深夜叙事层：时段色温 / 时钟 / 怪物台词 / 睁眼的怪物 / 日出
+   ============================================================ */
+#phaseBg{position:fixed;inset:0;z-index:1;pointer-events:none}
+#phaseBg i{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;
+  transition:opacity 2.4s ease;mix-blend-mode:screen;filter:grayscale(1) contrast(1.1) brightness(.9)}
+#phaseBg i.on{opacity:var(--bgop,.13)}
+#phaseTint{position:fixed;inset:0;z-index:1;pointer-events:none;background-color:var(--phase-tone,#0b1020);
+  opacity:.5;mix-blend-mode:soft-light;transition:background-color 2.4s ease}
+.figGrain{opacity:var(--grain,.5);transition:opacity 2.4s ease}
+/* 时钟：当前是夜里的哪个钟头 */
+#nightClock{position:fixed;top:calc(56px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:11;
+  display:none;align-items:center;gap:8px;padding:5px 14px 5px 6px;border:1px solid var(--line);border-radius:999px;
+  background:rgba(10,12,20,.72);backdrop-filter:blur(6px);pointer-events:none;white-space:nowrap}
+body.clock-on #nightClock{display:flex}
+body.stage-answering #nightClock{opacity:.35}
+#nightClock img{width:20px;height:20px;border-radius:50%;object-fit:cover}
+#nightClock .ncT{font:15px/1 monospace;letter-spacing:.14em;color:var(--gold-bright)}
+#nightClock .ncN{font:12px/1 var(--serif);letter-spacing:.3em;color:var(--ink-dim)}
+#nightClock.tick .ncT{animation:clockTick .9s ease}
+@keyframes clockTick{0%{transform:scale(1.35);color:#fff}100%{transform:none}}
+/* 怪物台词气泡 */
+#monsterSay{position:fixed;top:calc(96px + env(safe-area-inset-top));left:50%;transform:translate(-50%,-8px);z-index:12;
+  display:flex;align-items:center;gap:10px;max-width:min(440px,88vw);padding:7px 16px 7px 7px;
+  background:rgba(14,16,26,.92);border:1px solid rgba(201,154,82,.45);border-radius:22px;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .35s,transform .35s}
+#monsterSay.show{opacity:1;transform:translate(-50%,0)}
+#monsterSay img{flex:0 0 36px;width:36px;height:36px;border-radius:50%;object-fit:cover;object-position:50% 18%;
+  box-shadow:0 0 0 1px rgba(238,202,134,.55),0 0 14px rgba(238,202,134,.35)}
+#monsterSay p{font:14px/1.6 var(--serif);letter-spacing:.05em;color:var(--ink)}
+body.stage-answering #monsterSay{display:none}
+/* 午夜敲门：睁着眼的怪物蹲在门口 */
+.monsterDoor{position:relative;display:flex;justify-content:center;margin:2px 0 6px}
+.doorLight{position:absolute;left:50%;bottom:0;width:min(420px,92vw);height:100%;transform:translateX(-50%);pointer-events:none;
+  background:radial-gradient(ellipse at 50% 100%,rgba(240,200,130,.26),transparent 64%);filter:blur(5px)}
+.monsterFig{position:relative;width:150px;animation:heroFloat 7s ease-in-out infinite}
+.monsterFig img{display:block;width:100%;height:auto;
+  -webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 48%,#000 62%,transparent 100%);
+  mask-image:radial-gradient(ellipse 80% 70% at 50% 48%,#000 62%,transparent 100%)}
+.mEye{position:absolute;top:17.1%;width:5%;height:2.9%;border-radius:50%;background:#ffe7a6;mix-blend-mode:screen;
+  box-shadow:0 0 9px 3px rgba(255,214,120,.9);animation:eyeBlink 5s infinite}
+.mEye.l{left:33.6%}.mEye.r{left:41.4%;animation-delay:.06s}
+@keyframes eyeBlink{0%,92%,100%{transform:scaleY(1);opacity:.95}95%{transform:scaleY(.08);opacity:.5}97%{transform:scaleY(1);opacity:.95}}
+.monsterQuote{font:italic 17px/1.7 var(--serif);letter-spacing:.1em;color:var(--gold-bright);margin:2px 0 12px;
+  text-shadow:0 0 14px rgba(238,202,134,.35);animation:quoteIn 1.4s .8s both}
+.monsterQuote::before{content:"“";margin-right:2px;opacity:.6}.monsterQuote::after{content:"”";margin-left:2px;opacity:.6}
+@keyframes quoteIn{from{opacity:0;transform:translateY(6px)}}
+@media(max-width:700px){.monsterFig{width:112px}.monsterQuote{font-size:15px}#monsterSay{top:calc(92px + env(safe-area-inset-top))}}
+/* 日出 */
+#sunrise{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0;overflow:hidden;transition:opacity 1.2s}
+body.sunrise #sunrise{opacity:1}
+#sunrise i{position:absolute;display:block}
+.sunSky{inset:0;background:linear-gradient(0deg,rgba(255,176,110,.55) 0%,rgba(150,110,150,.28) 38%,transparent 78%);opacity:0}
+.sunGlow{left:50%;bottom:-30vmax;width:110vmax;height:78vmax;transform:translateX(-50%);opacity:0;
+  background:radial-gradient(circle,rgba(255,204,140,.5),transparent 62%)}
+.sunDisc{left:50%;bottom:-16vmin;width:24vmin;height:24vmin;border-radius:50%;transform:translateX(-50%);
+  background:radial-gradient(circle,#fff6d8,#ffd98a 55%,#f3a35e);box-shadow:0 0 70px 26px rgba(255,200,120,.55)}
+body.sunrise.sunrise-play .sunSky{animation:skyUp 7s ease-out forwards}
+body.sunrise.sunrise-play .sunGlow{animation:skyUp 7s ease-out forwards}
+body.sunrise.sunrise-play .sunDisc{animation:sunUp 7s cubic-bezier(.2,.6,.3,1) forwards}
+body.sunrise:not(.sunrise-play) .sunSky{opacity:.75}
+body.sunrise:not(.sunrise-play) .sunGlow{opacity:.8}
+body.sunrise:not(.sunrise-play) .sunDisc{transform:translate(-50%,-44vmin)}
+@keyframes skyUp{to{opacity:.8}}
+@keyframes sunUp{to{transform:translate(-50%,-44vmin)}}
+/* 推理 → 日出：夜访客的影子渐渐清晰 */
+#visitorReveal{display:flex;flex-direction:column;align-items:center;gap:8px;margin:4px 0 10px;min-height:230px}
+.vrFrame{width:min(190px,46vw);aspect-ratio:3/4;display:flex}
+#vrImg{width:100%;height:100%;object-fit:contain;filter:invert(.94) sepia(.18) brightness(.12) blur(12px);
+  transition:filter 1.3s ease;opacity:.9}
+#vrImg.s1{filter:invert(.94) sepia(.18) brightness(.3) blur(8px)}
+#vrImg.s2{filter:invert(.94) sepia(.18) brightness(.62) blur(3.5px)}
+#vrImg.s3{filter:invert(.94) sepia(.18) brightness(1.04) blur(0)}
+.vrName{font:20px/1.4 var(--serif);letter-spacing:.24em;color:var(--gold-bright);opacity:0;transition:opacity 1s}
+.vrLine{font:italic 15px/1.7 var(--serif);letter-spacing:.08em;color:var(--ink);opacity:0;transition:opacity 1s}
+#visitorReveal.named .vrName,#visitorReveal.named .vrLine{opacity:1}
+#deduceLog{min-height:0}
+.deduceSpirit{transition:opacity 3s;opacity:0}
+body.sunrise .deduceSpirit{opacity:.5}
+/* 日记 */
+.diaryQuote{font:italic 16px/1.8 var(--serif);letter-spacing:.08em;color:var(--gold-bright);margin:0 0 8px}
+.diaryTemper,.diaryLore{font-size:13.5px;line-height:2;color:var(--ink);max-width:520px;margin:0 auto 6px}
+.diaryLore{color:var(--ink-dim);font-size:12.5px}
+.actCards{display:grid;gap:10px;max-width:520px;margin:0 auto 18px}
+.actCard{min-height:48px;padding:10px 16px;text-align:left;cursor:pointer;color:var(--ink);font:14px/1.6 var(--serif);letter-spacing:.06em;
+  background:rgba(13,15,19,.6);border:1px solid rgba(233,228,214,.2);border-radius:10px;transition:border-color .2s,background .2s}
+.actCard:hover{border-color:var(--gold)}
+.actCard.on{border-color:var(--gold);background:rgba(212,175,106,.16);color:var(--gold-bright)}
+.actCard.on::before{content:"✓ ";color:var(--teal)}
+.diaryFable{max-width:520px;margin:6px auto 14px;padding:12px 16px;border-left:2px solid var(--cinnabar);text-align:left;
+  font:13px/1.9 var(--serif);color:var(--ink);background:rgba(214,86,58,.05)}
+.diaryFable small{display:block;font:10.5px/1.5 monospace;letter-spacing:.2em;color:var(--ink-dim);margin-bottom:4px}
+.diaryFable b{color:var(--gold-bright);font-weight:400;letter-spacing:.14em}
+.diaryOutro{font:italic 15px/1.8 var(--serif);letter-spacing:.1em;color:var(--gold-bright);margin-top:14px}
+.diaryBeast.silhouette img{filter:brightness(0)}
+/* 章节弹窗里的夜访客影子 */
+.msBeast .ring img.sil1{filter:invert(.94) sepia(.18) brightness(.5) blur(8px)}
+.msBeast .ring img.sil2{filter:invert(.94) sepia(.18) brightness(.75) blur(4.5px)}
+.msBeast .ring img.sil3{filter:invert(.94) sepia(.18) brightness(1) blur(1.6px)}
 </style>
 </head>
 <body>
@@ -1259,97 +1354,98 @@ body.stage-answering .dockEdge{opacity:0!important;pointer-events:none}
   <video class="figGrain" muted loop playsinline webkit-playsinline preload="none"><source src="reference-figures.mp4" type="video/mp4"></video>
   <video class="figGrain" muted loop playsinline webkit-playsinline preload="none"><source src="reference-figures.mp4" type="video/mp4"></video>
 </div>
+<div id="phaseBg" aria-hidden="true"><i></i><i></i></div>
+<div id="phaseTint" aria-hidden="true"></div>
 <div id="vignette"></div>
 <div id="paper"></div>
 <div id="cloudSea"></div>
 <div id="aurora"></div>
 <div id="scanlines"></div>
 <div id="grain"></div>
-<div class="scrollTag l" aria-hidden="true">身 即 山 河 <b>·</b> 怪 即 未 病</div>
-<div class="scrollTag r" aria-hidden="true">山 海 有 怪 <b>·</b> 诊 所 收 之</div>
+<div class="scrollTag l" aria-hidden="true">夜 深 了 <b>·</b> 它 还 醒 着</div>
+<div class="scrollTag r" aria-hidden="true">天 亮 之 前 <b>·</b> 陪 它 一 程</div>
 
 <div id="topbar">
-  <div id="brand"><img class="brandArt inkArt" src="assets/img/keyao.jpg" alt="嗑药科斯基 · 诊所吉祥物"><b>MAD MEDICINE</b> · <span data-zh="怪物诊所" data-en="Monster Clinic">怪物诊所</span></div>
+  <div id="brand"><img class="brandArt inkArt" src="assets/img/keyao.jpg" alt="睡不着的怪物"><b data-zh="怪物夜未眠" data-en="MONSTER SLEEPLESS">怪物夜未眠</b></div>
   <div>
     <button id="btnSound" aria-label="音效开关" title="音效开关">♪ ON</button>
     <button id="btnLang">EN</button>
-    <button id="clueToggle" data-zh="医 案 册" data-en="CASE BOOK">医 案 册</button>
+    <button id="clueToggle" data-zh="夜 记" data-en="NIGHT LOG">夜 记</button>
   </div>
 </div>
 
 <aside id="clueBook">
-  <h3 data-zh="医 案 · 线 索 簿" data-en="C A S E · B O O K">医 案 · 线 索 簿</h3>
-  <div class="sub" data-zh="望闻问切收来的异象，皆入此册，以待辨证" data-en="Every omen gathered by the four examinations is filed here, awaiting diagnosis">望闻问切收来的异象，皆入此册，以待辨证</div>
-  <div id="clueList"><div class="clueEmpty" data-zh="尚未收录异象 —— 入山之后，异象将在此归档。" data-en="No omens yet — they will be filed here once you enter the mountains.">尚未收录异象 —— 入山之后，异象将在此归档。</div></div>
+  <h3 data-zh="夜 记 · 线 索 簿" data-en="N I G H T · L O G">夜 记 · 线 索 簿</h3>
+  <div class="sub" data-zh="它说过的话、露出的异象，都记在这一页" data-en="Everything it says and shows tonight is written on this page">它说过的话、露出的异象，都记在这一页</div>
+  <div id="clueList"><div class="clueEmpty" data-zh="还没记下什么 —— 夜才刚开始。" data-en="Nothing yet — the night has only begun.">还没记下什么 —— 夜才刚开始。</div></div>
 </aside>
-<button class="bookEdge" id="bookEdge" data-zh="医 案 册" data-en="C A S E" title="展开 / 收起医案册 · Toggle case book">医 案 册</button>
+<button class="bookEdge" id="bookEdge" data-zh="夜 记" data-en="L O G" title="展开 / 收起夜记 · Toggle night log">夜 记</button>
 
+<div id="nightClock" aria-live="off"><img class="inkArt" id="ncIcon" alt=""><span class="ncT" id="ncT">00:00</span><span class="ncN" id="ncN">子夜</span></div>
+<div id="monsterSay" role="status" aria-live="polite"><img class="inkArt" src="assets/img/keyao.jpg" alt=""><p id="monsterSayTxt"></p></div>
+<div id="sunrise" aria-hidden="true"><i class="sunSky"></i><i class="sunGlow"></i><i class="sunDisc"></i></div>
 <div id="app">
 
-  <!-- 0 · 开场 -->
+  <!-- 0 · 午夜敲门 -->
   <section class="screen" id="screen-intro">
     <div class="heroWrap">
       <div class="heroMain">
-        <img class="heroTotem inkArt" src="assets/img/lubu.jpg" alt="诊所堂徽 · 卢布喏喏花">
-        <div class="kicker"><span data-zh="山 海 志 异 · 交 互 剧 场" data-en="A SHAN-HAI MONSTER THEATRE">山 海 志 异 · 交 互 剧 场</span></div>
-        <h1 class="title"><span data-zh="怪 物 诊 所" data-en="MONSTER CLINIC">怪 物 诊 所</span>
-          <span class="en">MAD MEDICINE · 山河志怪 · 四诊寻妖</span>
+        <div class="monsterDoor" id="monsterDoor">
+          <div class="doorLight" aria-hidden="true"></div>
+          <div class="monsterFig"><img class="inkArt" id="heroImg" src="assets/img/keyao.jpg" alt="睡不着的怪物，睁着眼蹲在门口" width="168" height="240"><span class="mEye l"></span><span class="mEye r"></span></div>
+        </div>
+        <div class="kicker"><span data-zh="午 夜 · 0 : 0 0" data-en="MIDNIGHT · 0:00">午 夜 · 0 : 0 0</span></div>
+        <h1 class="title"><span data-zh="怪 物 夜 未 眠" data-en="MONSTER SLEEPLESS">怪 物 夜 未 眠</span>
+          <span class="en" data-zh="午夜 0:00，一只睡不着的怪物敲门" data-en="Midnight, 0:00 — a sleepless monster knocks">午夜 0:00，一只睡不着的怪物敲门</span>
         </h1>
         <div class="vitalLine" data-vital></div>
+        <p class="monsterQuote" id="introQuote" data-zh="……还醒着吗？我睡不着。" data-en="…Still awake? I can't sleep.">……还醒着吗？我睡不着。</p>
         <p class="lede"
-          data-zh="每个人的身体，都是一座山河——山河里住着怪物：气虚的是背着风囊的瘦雀，血虚的是驮着河灯的浅鲤，肝郁的是满身打结的老树。你是山海边境「怪物诊所」的坐堂医，以望、闻、问、切四术捕捉线索光点，<b>把雾里现形的精怪一只只收录进《怪物图鉴》</b>。"
-          data-en="Every body is a mountain-range of its own — and monsters dwell in those mountains: a sparrow lugging a wind-sack for weak qi, a pale carp towing river-lanterns for thin blood, an old walking tree knotted with unsaid words. You are the resident physician of the frontier Monster Clinic. <b>File every spirit you unmask into the Bestiary</b> — by Looking, Listening, Asking, and Pulse-taking.">
-          每个人的身体，都是一座山河——山河里住着怪物：气虚的是背着风囊的瘦雀，血虚的是驮着河灯的浅鲤，肝郁的是满身打结的老树。你是山海边境「怪物诊所」的坐堂医，以望、闻、问、切四术捕捉线索光点，<b>把雾里现形的精怪一只只收录进《怪物图鉴》</b>。</p>
+          data-zh="它蹲在门口，睁着眼睛，怎么也睡不着。<b>陪它熬过子夜、深夜、凌晨，等到黎明</b>——看看今晚，是谁来过。"
+          data-en="It crouches at the door, wide awake, unable to sleep. <b>Keep it company through midnight, the deep night and the small hours, until dawn</b> — and see who visited tonight.">
+          它蹲在门口，睁着眼睛，怎么也睡不着。<b>陪它熬过子夜、深夜、凌晨，等到黎明</b>——看看今晚，是谁来过。</p>
         <div class="introSteps">
-          <div class="istep"><i data-glyph="file"></i><b data-zh="入 夜" data-en="NIGHTFALL">入 夜</b><span data-zh="给它起名 · 10 秒" data-en="name it · 10 s">给它起名 · 10 秒</span></div>
-          <div class="istep"><i data-glyph="orb"></i><b data-zh="寻 妖" data-en="CAPTURE">寻 妖</b><span data-zh="点按或撒网 · 照图作答" data-en="tap or cast the net">点按或撒网 · 照图作答</span></div>
-          <div class="istep"><i data-glyph="badge"></i><b data-zh="收 录" data-en="CLEAR">收 录</b><span data-zh="望闻问切 · 四章四图鉴" data-en="4 chapters · 4 plates">望闻问切 · 四章四图鉴</span></div>
-          <div class="istep"><i data-glyph="gift"></i><b data-zh="日 记" data-en="DIARY">日 记</b><span data-zh="怪物卡 · 今晚三件小事" data-en="monster card · three small things">怪物卡 · 今晚三件小事</span></div>
+          <div class="istep"><i data-glyph="file"></i><b data-zh="子 夜" data-en="MIDNIGHT">子 夜</b><span data-zh="00:00 · 看看它" data-en="00:00 · look at it">00:00 · 看看它</span></div>
+          <div class="istep"><i data-glyph="orb"></i><b data-zh="深 夜" data-en="DEEP NIGHT">深 夜</b><span data-zh="02:00 · 听听它" data-en="02:00 · listen">02:00 · 听听它</span></div>
+          <div class="istep"><i data-glyph="badge"></i><b data-zh="凌 晨" data-en="SMALL HOURS">凌 晨</b><span data-zh="04:00 · 听它说话" data-en="04:00 · let it talk">04:00 · 听它说话</span></div>
+          <div class="istep"><i data-glyph="gift"></i><b data-zh="黎 明" data-en="DAWN">黎 明</b><span data-zh="06:00 · 陪它入睡" data-en="06:00 · help it sleep">06:00 · 陪它入睡</span></div>
         </div>
         <div class="btnRow">
-          <button class="btn" id="btnStart" data-zh="入 夜 · 陪 它 一 晚" data-en="N I G H T F A L L · S T A Y · U P">入 夜 · 陪 它 一 晚</button>
-          <button class="btn ghost" id="btnHow" data-zh="坐 诊 手 册" data-en="M A N U A L">坐 诊 手 册</button>
+          <button class="btn" id="btnStart" data-zh="开 门 让 它 进 来" data-en="L E T · I T · I N">开 门 让 它 进 来</button>
+          <button class="btn ghost" id="btnHow" data-zh="手 册" data-en="M A N U A L">手 册</button>
         </div>
         <p class="disclaimer" data-zh="这是故事，不是诊断；不舒服请找医生。" data-en="This is a story, not a diagnosis. If you feel unwell, please see a doctor.">这是故事，不是诊断；不舒服请找医生。</p>
       </div>
-      <figure class="heroArt" aria-hidden="true">
-        <img class="inkArt" src="assets/img/pealk.jpg" alt="">
-        <figcaption>山 有 神 焉 <b>·</b> 名 曰 合 瑞</figcaption>
-      </figure>
-      <figure class="heroSpirit" aria-hidden="true">
-        <img class="inkArt" src="assets/img/yuling.jpg" alt="">
-        <figcaption>青 丘 有 狐 <b>·</b> 名 曰 欲 灵</figcaption>
-      </figure>
     </div>
   </section>
 
   <!-- 0.5 · 手册 -->
   <section class="screen" id="screen-how">
     <div class="panel">
-      <h3 data-zh="坐 诊 手 册" data-en="C L I N I C · M A N U A L">坐 诊 手 册</h3>
+      <h3 data-zh="手 册 · 怎 么 陪 它" data-en="M A N U A L · H O W · T O · S T A Y">手 册 · 怎 么 陪 它</h3>
       <div class="manualGrid">
-        <div class="mcard cat-observe"><img class="mThumb inkArt" src="assets/img/eye.jpg" alt=""><i data-emblem="observe"></i><b data-zh="望 · 观山气色" data-en="LOOK · read the hills">望 · 观山气色</b><span data-zh="对镜看舌、面、眼、形——山河的气色写在脸上，照图比对即可" data-en="Tongue, face, eyes, build — the mountains wear their color; match the pictures">对镜看舌、面、眼、形——山河的气色写在脸上，照图比对即可</span></div>
-        <div class="mcard cat-listen"><img class="mThumb inkArt" src="assets/img/bird.jpg" alt=""><i data-emblem="listen"></i><b data-zh="闻 · 听风辨水" data-en="LISTEN · wind & water">闻 · 听风辨水</b><span data-zh="声音、呼吸、咳痰、口气——风声水声皆是呼吸，选项配有波形图" data-en="Voice, breath, cough, mouth — wind and water are the body's breath, with waveforms">声音、呼吸、咳痰、口气——风声水声皆是呼吸，选项配有波形图</span></div>
-        <div class="mcard cat-inquire"><img class="mThumb inkArt" src="assets/img/world.jpg" alt=""><i data-emblem="inquire"></i><b data-zh="问 · 访民问俗" data-en="ASK · ask the folk">问 · 访民问俗</b><span data-zh="近一个月反复出现的异象，勾选即可，没有就留空" data-en="Omens that repeated this month — tick any, zero is fine">近一个月反复出现的异象，勾选即可，没有就留空</span></div>
-        <div class="mcard cat-pulse"><img class="mThumb inkArt" src="assets/img/img057.jpg" alt=""><i data-emblem="pulse"></i><b data-zh="切 · 听它心跳" data-en="PULSE · ITS HEARTBEAT">切 · 听它心跳</b><span data-zh="把手放在它胸口，光点落到心口时轻拍——跟上了，它的心跳就慢下来" data-en="Rest a hand on its chest and tap as each light reaches the heart — keep time and it slows down">把手放在它胸口，光点落到心口时轻拍——跟上了，它的心跳就慢下来</span></div>
-        <div class="mcard"><img class="mThumb inkArt" src="assets/img/keyao.jpg" alt="" style="object-position:50% 18%"><i data-glyph="combo3"></i><b data-zh="连击 · 徽章" data-en="COMBO · BADGES">连击 · 徽章</b><span data-zh="25 秒内连续捕捉叠加 COMBO；每收齐一章，收录一页图鉴、解锁徽章与侧写更新" data-en="Captures within 25 s stack COMBO; each chapter files one bestiary plate, a badge and a profile update">25 秒内连续捕捉叠加 COMBO；每收齐一章，收录一页图鉴、解锁徽章与侧写更新</span></div>
-        <div class="mcard"><img class="mThumb inkArt" src="assets/img/pealk.jpg" alt=""><i data-glyph="gift"></i><b data-zh="通关奖励" data-en="REWARD">通关奖励</b><span data-zh="怪物图鉴卡、天亮后的一页日记、今晚可以做的三件小事" data-en="A bestiary card, a diary page at dawn, three small things for tonight">怪物图鉴卡、天亮后的一页日记、今晚可以做的三件小事</span></div>
+        <div class="mcard cat-observe"><img class="mThumb inkArt" src="assets/img/eye.jpg" alt=""><i data-emblem="observe"></i><b data-zh="子夜 00:00 · 看看它" data-en="MIDNIGHT 00:00 · LOOK">子夜 00:00 · 看看它</b><span data-zh="它的舌头、脸色、眼睛、身形——月光底下，照图选最像的那个" data-en="Its tongue, face, eyes and shape — in the moonlight, pick the picture that fits best">它的舌头、脸色、眼睛、身形——月光底下，照图选最像的那个</span></div>
+        <div class="mcard cat-listen"><img class="mThumb inkArt" src="assets/img/bird.jpg" alt=""><i data-emblem="listen"></i><b data-zh="深夜 02:00 · 听听它" data-en="DEEP NIGHT 02:00 · LISTEN">深夜 02:00 · 听听它</b><span data-zh="声音、呼吸、咳嗽、嘴里的味道——夜里什么都听得见，选项配有波形图" data-en="Voice, breath, cough, taste — at night you hear everything; options come with waveforms">声音、呼吸、咳嗽、嘴里的味道——夜里什么都听得见，选项配有波形图</span></div>
+        <div class="mcard cat-inquire"><img class="mThumb inkArt" src="assets/img/world.jpg" alt=""><i data-emblem="inquire"></i><b data-zh="凌晨 04:00 · 听它说话" data-en="SMALL HOURS 04:00 · LET IT TALK">凌晨 04:00 · 听它说话</b><span data-zh="它终于肯开口了：近来反复出现的，都点亮；没有就留空" data-en="At last it talks: light up whatever kept happening lately — leave blank if none">它终于肯开口了：近来反复出现的，都点亮；没有就留空</span></div>
+        <div class="mcard cat-pulse"><img class="mThumb inkArt" src="assets/img/img057.jpg" alt=""><i data-emblem="pulse"></i><b data-zh="黎明 06:00 · 听它心跳" data-en="DAWN 06:00 · ITS HEARTBEAT">黎明 06:00 · 听它心跳</b><span data-zh="把手放在它胸口，光点落到心口时轻拍——连着拍对 8 下，它的眼皮就会往下坠" data-en="Rest a hand on its chest and tap as each light reaches the heart — 8 in a row and its eyelids start to sink">把手放在它胸口，光点落到心口时轻拍——连着拍对 8 下，它的眼皮就会往下坠</span></div>
+        <div class="mcard"><img class="mThumb inkArt" src="assets/img/keyao.jpg" alt="" style="object-position:50% 18%"><i data-glyph="combo3"></i><b data-zh="连击 · 徽章" data-en="COMBO · BADGES">连击 · 徽章</b><span data-zh="25 秒内连续捕捉叠加 COMBO；熬过一个时段，钟走到下一格，解锁一枚徽章" data-en="Captures within 25 s stack COMBO; get through one hour of the night and the clock moves on, with a badge">25 秒内连续捕捉叠加 COMBO；熬过一个时段，钟走到下一格，解锁一枚徽章</span></div>
+        <div class="mcard"><img class="mThumb inkArt" src="assets/img/pealk.jpg" alt=""><i data-glyph="gift"></i><b data-zh="日出 · 日记" data-en="SUNRISE · DIARY">日出 · 日记</b><span data-zh="天亮了，看看今晚是谁来过；留下一页日记和今晚可以做的一件小事" data-en="Morning comes — see who visited tonight; keep a diary page and one small thing to do">天亮了，看看今晚是谁来过；留下一页日记和今晚可以做的一件小事</span></div>
       </div>
-      <div class="manualNote" data-zh="每题<b>点一项</b>最像的就行；想多选、标轻重、写几句自己的话，点「<b>＋ 更多细节</b>」；不确定就选「不确定」。拖动画面环绕镜头，<b>按住画面</b>可撒出涟漪网——网住的微光会现形，松手收网；◎ 转向最近的光点，LIST 可直选。证词卡与选项都可随手拖开。" data-en="Each question: just <b>pick the closest one</b>; for multi-select, degree or your own note, tap “<b>+ MORE DETAIL</b>”; pick “not sure” when unsure. Drag to orbit; <b>press &amp; hold</b> to cast a ripple net — glints inside reveal themselves, release to reel in. ◎ turns to the nearest orb, LIST picks directly. Cards and options can be dragged aside.">每题<b>点一项</b>最像的就行；想多选、标轻重、写几句自己的话，点「<b>＋ 更多细节</b>」；不确定就选「不确定」。拖动画面环绕镜头，<b>按住画面</b>可撒出涟漪网——网住的微光会现形，松手收网；◎ 转向最近的光点，LIST 可直选。证词卡与选项都可随手拖开。</div>
+      <div class="manualNote" data-zh="每题<b>点一项</b>最像的就行；想多选、标轻重、写几句自己的话，点「<b>＋ 更多细节</b>」；不确定就选「不确定」。拖动画面环绕镜头，<b>按住画面</b>可撒出涟漪网——网住的微光会现形，松手收网；◎ 转向最近的光点，LIST 可直选。每个时段都有「跳过本章」，没做完也不要紧。" data-en="Each question: just <b>pick the closest one</b>; for multi-select, degree or your own note, tap “<b>+ MORE DETAIL</b>”; pick “not sure” when unsure. Drag to orbit; <b>press &amp; hold</b> to cast a ripple net — glints inside reveal themselves, release to reel in. ◎ turns to the nearest orb, LIST picks directly. Every hour has “Skip chapter” — leaving things undone is fine.">每题<b>点一项</b>最像的就行；想多选、标轻重、写几句自己的话，点「<b>＋ 更多细节</b>」；不确定就选「不确定」。拖动画面环绕镜头，<b>按住画面</b>可撒出涟漪网——网住的微光会现形，松手收网；◎ 转向最近的光点，LIST 可直选。每个时段都有「跳过本章」，没做完也不要紧。</div>
       <div style="text-align:center"><button class="btn" id="btnHowBack" data-zh="明 白 了" data-en="G O T · I T">明 白 了</button></div>
     </div>
   </section>
 
-  <!-- 1 · 入夜：给怪物起名 + 它怕什么 -->
+  <!-- 1 · 起名 + 它怕什么 -->
   <section class="screen" id="screen-intake">
-    <div class="kicker" data-zh="入 夜 · 床 底 下 有 动 静" data-en="NIGHTFALL · SOMETHING UNDER THE BED">入 夜 · 床 底 下 有 动 静</div>
-    <h2 data-zh="今 夜 的 怪 物" data-en="T O N I G H T ' S · M O N S T E R">今 夜 的 怪 物</h2>
+    <div class="kicker" data-zh="子 夜 · 门 开 了" data-en="MIDNIGHT · THE DOOR OPENS">子 夜 · 门 开 了</div>
+    <h2 data-zh="它 叫 什 么" data-en="W H A T ' S · I T S · N A M E">它 叫 什 么</h2>
     <div class="divider"></div>
     <div class="panel">
-      <div class="interview" data-zh="夜深了。床底下有只怪物翻来覆去，怎么也睡不着。先给它起个名字，再告诉我——它最怕什么？" data-en="It's late. Something under the bed keeps tossing and turning and cannot sleep. Give it a name first — then tell me what it fears most.">夜深了。床底下有只怪物翻来覆去，怎么也睡不着。先给它起个名字，再告诉我——它最怕什么？</div>
+      <div class="interview" data-zh="……还醒着吗？我睡不着。先给它起个名字吧，再告诉我，它最怕什么。" data-en="…Still awake? I can't sleep. Give it a name first — then tell me what it fears most.">……还醒着吗？我睡不着。先给它起个名字吧，再告诉我，它最怕什么。</div>
       <div class="formGrid">
-        <div class="field full"><label data-zh="它叫什么" data-en="Its name">它叫什么</label><input type="text" id="fName" maxlength="12" placeholder="团子 / Mochi"></div>
-        <div class="field full"><label data-zh="它最怕什么（选一个，也可以不选）" data-en="What it fears most (pick one, or none)">它最怕什么（选一个，也可以不选）</label>
+        <div class="field full"><label data-zh="它叫什么？" data-en="Its name?">它叫什么？</label><input type="text" id="fName" maxlength="12" placeholder="团子 / Mochi"></div>
+        <div class="field full"><label data-zh="它最怕什么？（选一个，也可以不选）" data-en="What does it fear most? (pick one, or none)">它最怕什么？（选一个，也可以不选）</label>
           <div class="optGroup fearRow" id="fearRow">
             <div class="opt" data-fear="bright" data-zh="太 亮" data-en="Too bright">太 亮</div>
             <div class="opt" data-fear="noisy" data-zh="太 吵" data-en="Too noisy">太 吵</div>
@@ -1359,7 +1455,7 @@ body.stage-answering .dockEdge{opacity:0!important;pointer-events:none}
           </div></div>
       </div>
       <div class="btnRow" style="margin-top:0">
-        <button class="btn" id="btnIntake" data-zh="陪 它 入 夜" data-en="I N T O · T H E · N I G H T">陪 它 入 夜</button>
+        <button class="btn" id="btnIntake" data-zh="陪 它 熬 夜" data-en="S T A Y · U P · W I T H · I T">陪 它 熬 夜</button>
         <button class="btn ghost" id="btnSkipIntake" data-zh="随 便 一 只 · 直 接 开 始" data-en="A N Y · M O N S T E R · G O">随 便 一 只 · 直 接 开 始</button>
       </div>
     </div>
@@ -1401,9 +1497,9 @@ body.stage-answering .dockEdge{opacity:0!important;pointer-events:none}
       <button id="turnRight" aria-label="向右环绕" title="向右环绕">↷</button>
     </div>
     <div id="deduceGate">
-      <button class="btn" id="btnDeduce" data-zh="开 坛 辨 证" data-en="B E G I N · D E D U C T I O N">开 坛 辨 证</button>
+      <button class="btn" id="btnDeduce" data-zh="天 快 亮 了" data-en="D A W N · I S · N E A R">天 快 亮 了</button>
     </div>
-    <div id="guideTip" role="status" aria-live="polite"><span class="gIcon"><img class="inkArt" src="assets/img/keyao.jpg" alt=""></span><span class="gTxt"></span><span class="gStep">坐堂提示</span><button class="gFold" aria-label="收起提示" title="收起提示">—</button></div>
+    <div id="guideTip" role="status" aria-live="polite"><span class="gIcon"><img class="inkArt" src="assets/img/keyao.jpg" alt=""></span><span class="gTxt"></span><span class="gStep">怪物耳语</span><button class="gFold" aria-label="收起提示" title="收起提示">—</button></div>
   </section>
 
   <!-- 切诊模块：心跳节拍小游戏（舞台浮层调用） -->
@@ -1425,23 +1521,28 @@ body.stage-answering .dockEdge{opacity:0!important;pointer-events:none}
     </div>
   </div></div>
 
-  <!-- 6 · 推理 -->
+  <!-- 6 · 日出（推理过场） -->
   <section class="screen" id="screen-deduce">
-    <figure class="deduceSpirit" aria-hidden="true"><img class="inkArt" src="assets/img/cuicui.jpg" alt=""></figure>
-    <div class="kicker" data-zh="终 卷 · 开 坛 辨 证" data-en="FINAL · DEDUCTION">终 卷 · 开 坛 辨 证</div>
-    <h2 data-zh="合 卷 · 群 妖 现 形" data-en="T H E · S P I R I T S · A P P E A R">合 卷 · 群 妖 现 形</h2>
+    <figure class="deduceSpirit" aria-hidden="true"><img class="inkArt" id="godImg" src="assets/img/pealk.jpg" alt=""></figure>
+    <div class="kicker" data-zh="天 快 亮 了" data-en="DAWN IS NEAR">天 快 亮 了</div>
+    <h2 id="sunriseLine" data-zh="来 拼 一 拼 ，今 晚 是 谁 来 过" data-en="W H O · V I S I T E D · T O N I G H T">来 拼 一 拼 ，今 晚 是 谁 来 过</h2>
     <div class="vitalLine" data-vital></div>
+    <div id="visitorReveal" aria-live="polite">
+      <div class="vrFrame"><img id="vrImg" class="inkArt" alt=""></div>
+      <div class="vrName" id="vrName"></div>
+      <div class="vrLine" id="vrLine"></div>
+    </div>
     <div id="deduceLog"></div>
     <div style="text-align:center"><button class="btn" id="btnReport" style="display:none" data-zh="天 亮 了 · 翻 开 日 记" data-en="D A W N · O P E N · T H E · D I A R Y">天 亮 了 · 翻 开 日 记</button></div>
   </section>
 
-  <!-- 7 · 日记（占位） -->
+  <!-- 7 · 怪物日记 -->
   <section class="screen" id="screen-report">
-    <div class="kicker" data-zh="天 亮 了 · 怪 物 日 记" data-en="DAWN · THE MONSTER'S DIARY">天 亮 了 · 怪 物 日 记</div>
-    <h2 data-zh="日 记" data-en="D I A R Y">日 记</h2>
+    <div class="kicker" data-zh="天 亮 了 · 怪 物 日 记" data-en="MORNING · THE MONSTER'S DIARY">天 亮 了 · 怪 物 日 记</div>
     <div class="reportWrap" id="reportWrap"></div>
-    <div class="btnRow" style="margin:26px 0 40px">
-      <button class="btn ghost" id="btnRestart" data-zh="再 陪 一 夜" data-en="A N O T H E R · N I G H T">再 陪 一 夜</button>
+    <div class="btnRow" style="margin:26px 0 20px">
+      <button class="btn" id="btnRestart" data-zh="明 晚 再 来" data-en="C O M E · B A C K · T O M O R R O W">明 晚 再 来</button>
+      <button class="btn ghost" id="btnSaveCard" data-zh="保 存 日 记 卡" data-en="S A V E · D I A R Y · C A R D">保 存 日 记 卡</button>
     </div>
     <p class="disclaimer" data-zh="这是故事，不是诊断；不舒服请找医生。" data-en="This is a story, not a diagnosis. If you feel unwell, please see a doctor.">这是故事，不是诊断；不舒服请找医生。</p>
   </section>
@@ -1623,6 +1724,8 @@ body.stage-answering .dockEdge{opacity:0!important;pointer-events:none}
   }
 
   let t0=performance.now(), lastFrame=t0, autoAng=0, lockedMx=0, lockedMy=0, vmx=0, vmy=0;
+  const STARS=[]; for(let i=0;i<150;i++) STARS.push([Math.random(),Math.random(),Math.random(),Math.random()]);
+  const nightCur={tone:[11,16,32],dust:[170,190,235],stars:1};
   function frame(now){
     const t=(now-t0)/1000;
     const dt=Math.min(.05,(now-lastFrame)/1000); lastFrame=now;
@@ -1632,9 +1735,13 @@ body.stage-answering .dockEdge{opacity:0!important;pointer-events:none}
     if(!window.__stageFocus){autoAng+=dt*0.06*slow;lockedMx=vmx;lockedMy=vmy;}
     if(Math.abs(focusDelta)>.001){const step=focusDelta*Math.min(1,dt*7);dragAng+=step;focusDelta-=step;}
     ctx.clearRect(0,0,W,H);
-    // 底色渐变
+    // 底色渐变：随夜里的时段（NIGHT.phases[].tone）缓缓换色温
+    const nt=window.__night||{tone:[11,16,32],dust:[196,176,140],stars:1};
+    for(let i=0;i<3;i++){nightCur.tone[i]+=(nt.tone[i]-nightCur.tone[i])*Math.min(1,dt*1.2);nightCur.dust[i]+=(nt.dust[i]-nightCur.dust[i])*Math.min(1,dt*1.2);}
+    nightCur.stars+=(nt.stars-nightCur.stars)*Math.min(1,dt*1.2);
+    const tn=nightCur.tone, mixc=(k)=>`rgb(${Math.min(255,Math.round(tn[0]*k))},${Math.min(255,Math.round(tn[1]*k))},${Math.min(255,Math.round(tn[2]*k))})`;
     const g=ctx.createRadialGradient(W/2,H*0.45,0,W/2,H*0.45,Math.max(W,H)*0.75);
-    g.addColorStop(0,'#1b1410'); g.addColorStop(1,'#0a0705');
+    g.addColorStop(0,mixc(1.7)); g.addColorStop(1,mixc(.45));
     ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
 
     const viewMx=window.__stageFocus?lockedMx:vmx, viewMy=window.__stageFocus?lockedMy:vmy;
@@ -1659,14 +1766,22 @@ body.stage-answering .dockEdge{opacity:0!important;pointer-events:none}
       fl.style.filter=`blur(${(3.2*(1-cc)*(1-cc)).toFixed(2)}px) saturate(${(0.25+1.05*cc).toFixed(2)}) contrast(${(0.9+0.22*cc).toFixed(2)}) brightness(${(0.82+0.28*cc).toFixed(2)})`;
     }
 
-    // 尘埃
+    // 尘埃（颜色随时段）+ 星点（数量、亮度随时段：子夜最密，黎明几乎散尽）
+    const dc=nightCur.dust;
     for(const d of DUST){
       const yy=d[1]+Math.sin(t*0.3+d[3])*0.12;
       const pr=project(d[0],yy,d[2],ca,sa,camY,cosP,sinP);
       const a=0.10*pr[2];
       if(a<=0.01) continue;
-      ctx.fillStyle=`rgba(196,176,140,${a})`;
+      ctx.fillStyle=`rgba(${dc[0]|0},${dc[1]|0},${dc[2]|0},${a})`;
       ctx.fillRect(pr[0],pr[1],1.4*DPR*pr[2],1.4*DPR*pr[2]);
+    }
+    const starN=Math.round(STARS.length*Math.max(0,Math.min(1,nightCur.stars)));
+    for(let si=0;si<starN;si++){
+      const s=STARS[si], tw=.55+.45*Math.sin(t*(.8+s[2]*1.6)+s[3]*6.28);
+      ctx.fillStyle=`rgba(${Math.min(255,dc[0]+40)|0},${Math.min(255,dc[1]+40)|0},${Math.min(255,dc[2]+30)|0},${(.12+.5*s[2])*tw*Math.min(1,nightCur.stars+.2)})`;
+      const sz=(s[2]>.8?2.2:1.3)*DPR;
+      ctx.fillRect(s[0]*W,s[1]*H*0.8,sz,sz);
     }
 
     // 彩色纸屑地面（拼贴地毯质感；显影越高越鲜艳、越密）
@@ -2254,14 +2369,6 @@ function awardXP(n,x,y){
 }
 function updateLive(){
   if(typeof updateLiveRadar==='function') updateLiveRadar();
-  const box=document.getElementById('liveWeights');if(!box)return;
-  const top=PATTERN_KEYS.map(k=>[k,state.weights[k]]).filter(a=>a[1]>0)
-    .sort((a,b)=>b[1]-a[1]).slice(0,3);
-  if(!top.length){box.classList.remove('on');return;}
-  box.classList.add('on');
-  const max=top[0][1]||1;
-  box.innerHTML=top.map(p=>`<div class="lwRow"><span class="lwN">${pName(p[0])}</span>`+
-      `<span class="lwB"><i style="width:${Math.round(p[1]/max*100)}%"></i></span><span>${p[1]}</span></div>`).join('');
 }
 </script>
 
@@ -2404,6 +2511,9 @@ const FX=(()=>{
     chapter(){if(!ensure())return;drum(118,{g:.55});gong(146,{dl:.06,g:.42});pluck(PENTA[5],{dl:.42,g:.24});pluck(PENTA[7],{dl:.58,g:.2});},
     reveal(){if(!ensure())return;[0,2,4,5,7].forEach((n,i)=>pluck(PENTA[n],{dl:i*.14,g:.3}));gong(196,{dl:.75,g:.28});drum(96,{dl:.9,g:.3});},
     swish(){if(!ensure())return;swoosh({d:.28,g:.1,from:1500,to:300});},
+    knock(){if(!ensure())return;[0,.17,.36].forEach(d=>woodfish(190,{dl:d,d:.13,g:.55}));drum(78,{dl:.58,g:.16,d:.4});},
+    clock(){if(!ensure())return;gong(104,{g:.2});woodfish(880,{dl:.06,d:.05,g:.16});},
+    sunrise(){if(!ensure())return;[0,2,4,5,7,9].forEach((n,i)=>pluck(PENTA[n],{dl:i*.5,g:.24}));swoosh({dl:.1,d:3,g:.05,from:220,to:2400});gong(196,{dl:3.2,g:.3});[0,.22,.5,.9,1.15].forEach((d,i)=>tone(2300+i*260,{type:'sine',dl:3.6+d,a:.01,d:.1,g:.04}));},
     heart(){if(!ensure())return;drum(64,{g:.42,d:.36});drum(56,{dl:.15,g:.2,d:.3});},
     beatHit(perfect){if(!ensure())return;pluck(PENTA[perfect?7:5],{g:perfect?.3:.2});},
     wind:{start(){windStart();},stop(){windStop();}},
@@ -2425,6 +2535,173 @@ const FX=(()=>{
   });
   return api;
 })();
+</script>
+
+<script>
+/* ============================================================
+   深夜叙事数据：所有叙事素材（图、时段、台词）只从这里取。
+   换背景图 / 换时段色调，只改 NIGHT；加台词，只改 NIGHT_LINES。
+   ============================================================ */
+const NIGHT = {
+  hero: {img:'keyao'},                 // 睡不着的怪物（主角，从头到尾在场）
+  god:  {img:'pealk'},                 // 日出时现身的山神
+  visitors:{                            // 夜访客 → 复用 BEASTS 的插画与寓言
+    heat:   {beast:'yin',  n:['灼热的影子','The Burning Shade']},
+    whisper:{beast:'yu',   n:['絮语者','The Whisperer']},
+    stone:  {beast:'pi',   n:['饱胀的石头','The Heavy Stone']},
+    cold:   {beast:'yang', n:['冰凉的手','The Cold Hand']},
+    glare:  {beast:'huo',  n:['刺眼的光','The Glare']},
+    weight: {beast:'yux',  n:['隐形的重量','The Unseen Weight']}
+  },
+  // 权重 → 访客：同一访客下各项权重相加，取最高者
+  visitorOfKey:{re:'heat',yin:'heat',yu:'whisper',pi:'stone',tan:'stone',yang:'cold',qi:'cold',huo:'glare',xue:'weight',yux:'weight'},
+  chapterPhase:{observe:'midnight',listen:'deep',inquire:'smallhrs',pulse:'dawn'},
+  // tone：背景底色 · grain：人影颗粒层透明度 · stars：星点密度 · dust：星点/尘埃颜色
+  phases:[
+    {id:'midnight', t:'00:00', zh:'子夜', en:'Midnight',   bg:'bg-skull',  icon:'eye',    tone:'#0b1020', grain:0.55, stars:1.0, dust:[170,190,235]},
+    {id:'deep',     t:'02:00', zh:'深夜', en:'Deep Night', bg:'bg-vortex', icon:'bird',   tone:'#10162b', grain:0.65, stars:0.85,dust:[160,180,230]},
+    {id:'smallhrs', t:'04:00', zh:'凌晨', en:'Small Hours',bg:'bg-vortex', icon:'world',  tone:'#1b2038', grain:0.45, stars:0.5, dust:[200,190,215]},
+    {id:'dawn',     t:'06:00', zh:'黎明', en:'Dawn',       bg:'bg-clouds', icon:'img057', tone:'#3a3550', grain:0.2,  stars:0.12,dust:[255,214,170]}
+  ]
+};
+const nightImg = k => `assets/img/${BEASTS[NIGHT.visitors[k].beast].img}.jpg`;
+const heroImg = `assets/img/${NIGHT.hero.img}.jpg`;
+(()=>{ // 开场预载：四张背景 + 主角 + 山神
+  [...new Set(NIGHT.phases.map(p=>p.bg))].forEach(b=>{new Image().src=`assets/img/${b}.jpg`;});
+  new Image().src=heroImg; new Image().src=`assets/img/${NIGHT.god.img}.jpg`;
+})();
+
+/* 台词：{name} 为玩家给怪物起的名字，{n} 为第几夜，{visitor} 为访客名。zh 每句 ≤ 20 字 */
+const NIGHT_LINES = {
+  intro: {
+    knock:{zh:'午夜 0:00，一只睡不着的怪物敲门', en:'Midnight, 0:00 — a sleepless monster knocks'},
+    zh:['……还醒着吗？我睡不着。','它叫什么？','好。以后就叫它 {name}。','它最怕什么？'],
+    en:['…Still awake? I can\'t sleep.','What is its name?','Alright. From now on, {name}.','What does it fear most?'],
+    fear:{
+      bright:['太亮了……我眯着眼呢。','Too bright… I\'m squinting.'],
+      noisy: ['太吵了，耳朵嗡嗡的。','Too noisy — my ears are buzzing.'],
+      cold:  ['太冷了，爪子都僵了。','Too cold — my paws are stiff.'],
+      hot:   ['太热了，毛都湿了。','Too hot — my fur is damp.'],
+      quiet: ['太静了，我怕听见自己。','Too quiet — I can hear myself.']
+    }
+  },
+  midnight: {
+    open:{zh:'{name}翻了个身。月亮好圆。', en:'{name} turns over. The moon is so round.'},
+    orb:{zh:['它的脸，今晚有点红？','舌头伸出来给你看。','它眼睛睁得好大。','它盯着天花板，一动不动。','月光落在它的肩上。'],
+         en:['Its face looks a little flushed tonight.','It sticks out its tongue for you.','Its eyes are wide open.','It stares at the ceiling, unmoving.','Moonlight rests on its shoulder.']},
+    byKey:{
+      tongue:['舌头伸出来给你看。','It sticks out its tongue for you.'],
+      coating:['舌头上，像盖了层霜？','Its tongue looks frosted over?'],
+      face:['它的脸，今晚有点红？','Its face looks a little flushed tonight.'],
+      body:['它缩成一团，肩膀好紧。','It curls up, shoulders tight.'],
+      eyes:['它眼睛睁得好大。','Its eyes are wide open.']
+    },
+    close:{zh:'第一个钟头，过去了。', en:'The first hour has passed.'}
+  },
+  deep: {
+    open:{zh:'夜里什么都听得见。', en:'At night you can hear everything.'},
+    orb:{zh:['你听，它在叹气。','呼吸一下一下，像潮水。','它咳了一声，又憋回去。','窗外有风，它缩了缩脖子。','它舔舔嘴唇，说有点涩。'],
+         en:['Listen — it is sighing.','Its breath rolls like a tide.','It coughs, then holds it back.','Wind outside; it hunches its neck.','It licks its lips — a bit bitter.']},
+    byKey:{
+      voice:['你听，它说话好轻。','Listen — it speaks so softly.'],
+      breath:['呼吸一下一下，像潮水。','Its breath rolls like a tide.'],
+      cough:['它咳了一声，又憋回去。','It coughs, then holds it back.'],
+      mouth:['它舔舔嘴唇，说有点涩。','It licks its lips — a bit bitter.']
+    },
+    close:{zh:'钟敲了两下。', en:'The clock strikes two.'}
+  },
+  smallhrs: {
+    open:{zh:'它终于肯说话了。', en:'At last it starts to talk.'},
+    orb:{zh:['冷……不，又有点热。','胃里沉沉的。','脑子停不下来。','困，可就是睡不着。','它又翻了个身。'],
+         en:['Cold… no, a bit hot.','Something heavy in its belly.','Its mind will not stop.','Tired, yet it cannot sleep.','It turns over again.']},
+    byKey:{
+      '寒热':['冷……不，又有点热。','Cold… no, a bit hot.'],
+      '饮食':['胃里沉沉的。','Something heavy in its belly.'],
+      '睡眠':['躺了好久，还是睁着眼。','Lying so long, eyes still open.'],
+      '精力':['累，可就是停不下来。','Tired, but it cannot stop.'],
+      '心神':['脑子停不下来。','Its mind will not stop.']
+    },
+    close:{zh:'天边有点灰了。', en:'The sky is turning grey.'}
+  },
+  dawn: {
+    open:{zh:'把手放在它胸口。听。', en:'Put a hand on its chest. Listen.'},
+    success:{zh:'咚、咚、咚……它的眼皮开始往下坠。', en:'Thump, thump, thump… its eyelids begin to sink.'},
+    soft:{zh:'它还没睡，可眼神软下来了。', en:'Not asleep yet, but its gaze has softened.'}
+  },
+  skip:{zh:'……它没出声。', en:'…It says nothing.'},
+  sunrise: {
+    zh:'天快亮了。来拼一拼，今晚是谁来过。',
+    en:'Dawn is near. Let us piece together who visited tonight.',
+    calm:{zh:'没有谁来过。山神坐在窗外，天亮了。', en:'No one came. The Mountain God sat outside the window, and morning broke.'}
+  },
+  diary: {
+    title:{zh:'{name}的日记 · 第 {n} 夜', en:'{name}\'s Diary · Night {n}'},
+    visitor:{zh:'今晚来的是：{visitor}。', en:'Tonight\'s visitor: {visitor}.'},
+    calm:{zh:'今晚没有谁来，{name}睡得很沉。', en:'No one came tonight; {name} slept deeply.'},
+    pick:{zh:'今晚，选一件小事', en:'Tonight, pick one small thing'},
+    fable:{zh:'志怪录里写着', en:'The old book says'},
+    outro:{zh:'明晚，它还会睡不着。你来吗？', en:'Tomorrow it may not sleep again. Will you come?'},
+    again:{zh:'明 晚 再 来', en:'C O M E · B A C K · T O M O R R O W'},
+    save:{zh:'保 存 日 记 卡', en:'S A V E · D I A R Y · C A R D'},
+    disclaimer:{zh:'这是故事，不是诊断；不舒服请找医生。', en:'This is a story, not a diagnosis. If you feel unwell, see a doctor.'},
+    acts:[['睡前十分钟，不看屏幕。','Ten minutes before bed, no screens.'],['喝点温的。','Have something warm.'],['把没说完的话写下来。','Write down what went unsaid.']]
+  },
+  visitors: {
+    heat:   {line:['被子……太热了。','The blanket… it\'s too warm.'],
+             lore:['夜里体温本该缓缓降下来，降不下去，人就翻来覆去。','Body heat should ease down at night; when it won\'t, we toss and turn.'],
+             temper:['北阙古井夜里见底，井里的灵蟾背着半轮凉月，辗转难眠。','The old well under the north gate runs dry at night; its toad spirit tosses beneath half a cool moon.'],
+             react:[['热得睡不着……','Too hot to sleep…'],['它把被子踢开了。','It kicks the blanket off.']]},
+    whisper:{line:['我脑子里有人一直在说话。','Someone keeps talking in my head.'],
+             lore:['白天没说完的话，夜里会排队来找你。','Words left unsaid by day queue up to find you at night.'],
+             temper:['东郊老林里有株会走路的树，没说出口的话，一句一个结。','In the east grove walks a tree; every unsaid word ties one more knot.'],
+             react:[['话在嘴边，说不出。','Words on its lips, none come out.'],['又多了一个结……','One more knot…']]},
+    stone:  {line:['肚子里压着一块石头。','A stone sits in my belly.'],
+             lore:['吃得太晚，胃还在加班，觉就睡不沉。','Eat late and the stomach works overtime; sleep stays shallow.'],
+             temper:['九座粮仓里有个圆滚滚的小官，贪凉嗜甜，打着哈欠拨算盘。','In the nine granaries a round little steward yawns over his abacus, fond of cold and sweet.'],
+             react:[['肚子沉沉的，好饱。','Heavy belly, so full.'],['它打了个长长的嗝。','It lets out a long burp.']]},
+    cold:   {line:['手脚冰冰的，暖不过来。','My hands and feet are cold and will not warm.'],
+             lore:['身子暖了，才肯放心睡去。','Only when the body is warm does it dare to sleep.'],
+             temper:['王城底下伏着一头灶兽，它一困，灶火就暗，手脚便凉。','Under the royal city lies a hearth beast; when it dozes the fire dims and hands go cold.'],
+             react:[['手脚凉凉的……','Hands and feet, so cold…'],['它往被子里缩了缩。','It burrows deeper in the blanket.']]},
+    glare:  {line:['灯一直亮着，我睁不开又闭不上。','The lamp stays lit; I can\'t open or close my eyes.'],
+             lore:['夜里的光，会让身体以为还是白天。','Light at night tells the body it is still day.'],
+             temper:['千灯之海里有只赤鸦，灯油不尽，它便飞个不停。','In the sea of a thousand lamps a red crow circles for as long as the oil lasts.'],
+             react:[['脑子里的灯还亮着。','The lamp in its head is still lit.'],['它眯着眼，不肯睡。','It squints, refusing to sleep.']]},
+    weight: {line:['胸口压着东西。','Something presses on my chest.'],
+             lore:['压着的东西若一直不走，别硬扛，找医生聊聊。','If the weight will not leave, do not bear it alone — talk to a doctor.'],
+             temper:['十二孔古桥下，石头长进了老人的皮肤，河水沉沉地回旋。','Under the twelve-arch bridge stone has grown into an old man\'s skin; the river turns heavy.'],
+             react:[['胸口闷闷的。','A tightness in its chest.'],['它叹了口长长的气。','It sighs, long and slow.']]}
+  }
+};
+
+/* 题目换成对怪物提问：只做显示映射，不动题库结构。key = Q_OBSERVE / Q_LISTEN 的 key，或 Q_INQUIRE 分组名首词 */
+const DISPLAY_Q = {
+  tongue:  {t:['它的舌头，今晚是什么颜色？','What colour is its tongue tonight?'], s:['让它伸出来，看舌体本色','Let it stick it out — look at the true colour']},
+  coating: {t:['它的舌头上盖着什么？','What coats its tongue?'], s:['舌面上那层苔状物','The film on the surface']},
+  face:    {t:['它的脸色和神情怎么样？','How do its face and mood look?'], s:['','']},
+  body:    {t:['它今晚是什么身形？','What shape is it in tonight?'], s:['看它的轮廓、肩背','Look at its outline and shoulders']},
+  eyes:    {t:['它的眼睛怎么了？','What is up with its eyes?'], s:['凑近点看','Look a little closer']},
+  voice:   {t:['它平时说话是什么声音？','What does its voice usually sound like?'], s:['','']},
+  breath:  {t:['它的呼吸听起来怎样？','How does its breathing sound?'], s:['','']},
+  cough:   {t:['它咳嗽吗？有痰吗？','Does it cough? Any phlegm?'], s:['','']},
+  mouth:   {t:['它嘴里是什么味道？','What does its mouth taste like?'], s:['','']},
+  '寒热':  {t:['它冷，还是热？','Is it cold, or hot?'], s:['这个月夜里反复出现的，都点亮','Light up whatever kept happening these nights'],
+            lead:['夜里它把手脚伸出被子——是想取暖，还是想散热？清晨醒来，背上有没有一层薄汗？','At night it sticks its hands and feet out of the blanket — to warm up, or to cool down? Any thin sweat on its back by morning?']},
+  '头面':  {t:['它的头怎么了？','What is wrong with its head?'], s:['这个月反复出现的，都点亮','Light up whatever kept happening'],
+            lead:['不是此刻——是熬夜之后的那个早晨，它的头是什么感觉？','Not right now — the morning after a late night, how did its head feel?']},
+  '胸腹':  {t:['它的胸口和心事怎么样？','How are its chest and its worries?'], s:['这个月反复出现的，都点亮','Light up whatever kept happening'],
+            lead:['最近有没有那么一个瞬间，它忽然想长长地叹一口气？想到了，就点亮。','Lately, was there a moment it suddenly needed a long sigh? If so, light it up.']},
+  '饮食':  {t:['它的肚子在说什么？','What is its belly saying?'], s:['这个月反复出现的，都点亮','Light up whatever kept happening'],
+            lead:['昨天它吃了什么？午饭后那个钟头，它是清醒的，还是困的？','What did it eat yesterday? The hour after lunch — awake, or drowsy?']},
+  '二便':  {t:['它的方便怎么样？','How is its business?'], s:['这个月反复出现的，都点亮','Light up whatever kept happening'],
+            lead:['这是最不优雅、却最诚实的一组。','The least elegant, but most honest set.']},
+  '睡眠':  {t:['它昨晚是怎么睡的？','How did it sleep last night?'], s:['这个月夜里反复出现的，都点亮','Light up whatever kept happening these nights'],
+            lead:['关灯之后，它用了多久才睡着？夜里醒过吗？醒来时，窗外是几点？','After lights out, how long till it fell asleep? Did it wake? What time was it outside?']},
+  '精力':  {t:['它的力气去哪了？','Where did its strength go?'], s:['这个月反复出现的，都点亮','Light up whatever kept happening'],
+            lead:['想象它头顶有一根电量条。下午三点，还剩多少？','Picture a battery bar above its head. At 3 p.m., how much is left?']},
+  '心神':  {t:['它心里装着什么？','What is on its mind?'], s:['这个月反复出现的，都点亮','Light up whatever kept happening'],
+            lead:['这一组问的是它的心。不用评判它——情绪也是信号，信号从不丢人。','These ask about its heart. No judging — feelings are signals, and signals are never shameful.']}
+};
 </script>
 
 <script>
@@ -2465,22 +2742,24 @@ function applyLang(){
   $('#btnLang').textContent = LANG==='en'?'中文':'EN';
   if(ORBS.length){ buildDock(); renderChapters(); renderBadges(); ORBS.forEach(o=>{const em=o.el&&o.el.querySelector('em'); if(em) em.textContent=L(CATS[o.cat].zh,CATS[o.cat].en)+' '+String(o.order+1).padStart(2,'0');}); }
   if(orbTotal) updateHUD();
+  refreshClock();
   closePanel();
   if(window.__guideRefresh) window.__guideRefresh();
 }
 
 /* ---------- 导航与进度 ---------- */
 const FLOW=['screen-intro','screen-intake','screen-stage','screen-deduce','screen-report'];
-const STEP_LABEL={ 'screen-intake':['入夜','NIGHTFALL'],'screen-stage':['探案','STAGE'],'screen-deduce':['推理','DEDUCE'],'screen-report':['日记','DIARY'] };
+const STEP_LABEL={ 'screen-intake':['门开了','DOOR'],'screen-stage':['熬夜','VIGIL'],'screen-deduce':['日出','SUNRISE'],'screen-report':['日记','DIARY'] };
 function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   $('#'+id).classList.add('active');
   document.body.classList.toggle('stage-live',id==='screen-stage');
+  document.body.classList.toggle('clock-on',id==='screen-stage'||id==='screen-deduce');
   if(id==='screen-stage'){ FX.wind&&FX.wind.start(); } else { FX.wind&&FX.wind.stop(); }
   if(id!=='screen-stage'&&typeof setGuide==='function') setGuide(null);
   window.scrollTo({top:0});
   if(window.stopCharts) stopCharts();
-  if(window.__navved){ if(id==='screen-report'){FX.reveal();buzz([20,50,20,50,40]);} else FX.swish(); }
+  if(window.__navved){ if(id==='screen-report'){FX.reveal();buzz([20,50,20,50,40]);} else if(id!=='screen-deduce') FX.swish(); }
   window.__navved=true;
   renderProgress(id);
 }
@@ -2497,6 +2776,93 @@ function renderProgress(id){
     d.title=L(STEP_LABEL[sid][0],STEP_LABEL[sid][1]);
     inner.appendChild(d);
   });
+}
+
+/* ============================================================
+   夜的节奏：时段 / 时钟 / 怪物台词 / 夜访客
+   ============================================================ */
+const DBG=new URLSearchParams(location.search);          // ?debugNight=N 指定第几夜；?debugVisitor=heat 强制访客
+const PHASE=id=>NIGHT.phases.find(p=>p.id===id);
+const hexRGB=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+const monsterName=()=>(state.intake&&state.intake.name)||L('小夜','Nightling');
+function nightNo(){
+  const d=parseInt(DBG.get('debugNight'),10); if(d>0) return d;
+  let n=0; try{n=parseInt(localStorage.getItem('mm_night'),10)||0;}catch(e){}
+  return n+1;
+}
+const fillLine=(s,ex)=>String(s).replace(/\{name\}/g,monsterName()).replace(/\{n\}/g,nightNo()).replace(/\{visitor\}/g,(ex&&ex.visitor)||'');
+const nl=o=>fillLine(L(o.zh,o.en));             // {zh,en} 对象 → 当前语言一句话
+const pl=p=>fillLine(L(p[0],p[1]));             // [zh,en] 对子 → 当前语言一句话
+
+let phaseSlot=0;
+function refreshClock(tick){
+  const p=PHASE(state.phase||'midnight'); if(!p) return;
+  $('#ncT').textContent=p.t; $('#ncN').textContent=L(p.zh,p.en);
+  const ic=$('#ncIcon'); const src=`assets/img/${p.icon}.jpg`; if(ic.getAttribute('src')!==src) ic.src=src;
+  if(tick){const c=$('#nightClock');c.classList.remove('tick');void c.offsetWidth;c.classList.add('tick');}
+}
+/* 切换时段：背景图淡入淡出、色温、人影颗粒、星点密度、时钟一起变 */
+function setPhase(id){
+  const p=PHASE(id); if(!p||state.phase===id) return;
+  const first=!state.phase;
+  state.phase=id; document.body.dataset.phase=id;
+  window.__night={tone:hexRGB(p.tone),dust:p.dust,stars:p.stars};
+  document.documentElement.style.setProperty('--phase-tone',p.tone);
+  $('#figLayer').style.setProperty('--grain',p.grain);
+  const bgs=document.querySelectorAll('#phaseBg i'), nxt=bgs[phaseSlot^1], cur=bgs[phaseSlot];
+  $('#phaseBg').style.setProperty('--bgop',(0.1+(1-p.grain)*0.15).toFixed(2));
+  nxt.style.backgroundImage=`url(assets/img/${p.bg}.jpg)`;
+  nxt.classList.add('on'); cur.classList.remove('on'); phaseSlot^=1;
+  refreshClock(!first);
+  if(!first) FX.clock&&FX.clock();
+}
+/* 怪物说话：一次一句，排队；答题面板打开时先攒着，关闭后再说 */
+const sayQ=[]; let sayBusy=false;
+function say(text,ms){ if(!text) return; sayQ.push([text,ms]); while(sayQ.length>2) sayQ.shift(); pumpSay(); }   // 说不完的旧话直接略过，只留最新两句
+function pumpSay(){
+  if(sayBusy||!sayQ.length||document.body.classList.contains('stage-answering')) return;
+  const [text,ms]=sayQ.shift(), b=$('#monsterSay'); sayBusy=true;
+  $('#monsterSayTxt').textContent=text; b.classList.add('show');
+  setTimeout(()=>{b.classList.remove('show');setTimeout(()=>{sayBusy=false;pumpSay();},380);},ms||Math.max(2400,text.length*170));
+}
+/* 访客：把权重按 NIGHT.visitorOfKey 归组相加，取最高者；太轻则是平静的一夜（山神） */
+function visitorScores(w){const s={};for(const k in w){const v=NIGHT.visitorOfKey[k];if(v)s[v]=(s[v]||0)+(w[k]||0);}return s;}
+function leadVisitor(w){let best=null,bv=0;const s=visitorScores(w);for(const k in s)if(s[k]>bv){bv=s[k];best=k;}return [best,bv];}
+function pickVisitor(w){
+  const d=DBG.get('debugVisitor'); if(d&&NIGHT.visitors[d]) return d;
+  const [v,s]=leadVisitor(w); return s>=3?v:null;
+}
+const visitorName=v=>L(NIGHT.visitors[v].n[0],NIGHT.visitors[v].n[1]);
+/* 每抓一个光点说一句：本题答案明显偏向某位访客 → 访客口吻；否则按章节 / 题目取 */
+function lineKeyFor(o){
+  if(o.cat==='inquire') return Object.keys(NIGHT_LINES.smallhrs.byKey).find(k=>o.g.g.startsWith(k));
+  return o.g&&o.g.key;
+}
+function orbLine(o,diff){
+  if(o.skipped) return nl(NIGHT_LINES.skip);
+  const ph=NIGHT.chapterPhase[o.cat], NLp=NIGHT_LINES[ph]; if(!NLp||!NLp.orb) return '';
+  const [lead,lv]=leadVisitor(diff||{});
+  if(lead&&lv>=2&&o.order%2===0){
+    const arr=NIGHT_LINES.visitors[lead].react; return pl(arr[Math.floor(o.order/2)%arr.length]);
+  }
+  const k=lineKeyFor(o), pair=k&&NLp.byKey&&NLp.byKey[k];
+  if(pair) return pl(pair);
+  const pool=NLp.orb[LANG==='en'?'en':'zh']; return pool[o.order%pool.length];
+}
+/* 进入某个时段：时钟走格；这个时段第一次进入时，怪物开场说一句（黎明的开场在心跳面板里） */
+function enterPhase(id){
+  setPhase(id);
+  state.said=state.said||{};
+  if(!state.said[id]){ state.said[id]=true; if(id!=='dawn'&&NIGHT_LINES[id]) say(nl(NIGHT_LINES[id].open)); }
+}
+function reactToOrb(o,diff){
+  if(o.cat==='pulse') return;
+  enterPhase(NIGHT.chapterPhase[o.cat]);
+  say(orbLine(o,diff));
+}
+function nextPhase(){
+  const nxt=CHAPTERS.find(c=>chapterItems(c).length&&!chapterItems(c).every(o=>o.done));
+  return nxt?NIGHT.chapterPhase[nxt]:'dawn';
 }
 
 /* ---------- 题目渲染（中英双语） ---------- */
@@ -2541,10 +2907,10 @@ function collectMulti(groups, srcName){
 
 /* ---------- 探案舞台：光圈环绕 ---------- */
 const CATS={
- observe:{zh:'望诊',en:'LOOK',col:'#c99a52'},
- listen:{zh:'闻诊',en:'LISTEN',col:'#7fbfae'},
- inquire:{zh:'问诊',en:'ASK',col:'#d6563a'},
- pulse:{zh:'切诊',en:'PULSE',col:'#e9e4d6'}
+ observe:{zh:NIGHT.phases[0].zh,en:NIGHT.phases[0].en.toUpperCase(),col:'#c99a52'},
+ listen:{zh:NIGHT.phases[1].zh,en:NIGHT.phases[1].en.toUpperCase(),col:'#7fbfae'},
+ inquire:{zh:NIGHT.phases[2].zh,en:NIGHT.phases[2].en.toUpperCase(),col:'#d6563a'},
+ pulse:{zh:NIGHT.phases[3].zh,en:NIGHT.phases[3].en.toUpperCase(),col:'#e9e4d6'}
 };
 let ORBS=[], orbDone=0, orbTotal=0, curOrb=null;
 /* 每章最多 5 个光点。问诊 8 组里挑最贴“睡不着”主题、又能覆盖各怪物的 5 组；其余仍留在 Q_INQUIRE 供以后的夜晚使用 */
@@ -2553,13 +2919,18 @@ const INQ_CORE=['睡眠 · 夜间档案','心神 · 心理状态','寒热 · 体
 let inquireGroups = Q_INQUIRE.filter(g=>INQ_CORE.includes(g.g)).slice(0,CHAPTER_MAX);
 let toastTimer=null;
 
+/* 题目对怪物提问：显示文字走 DISPLAY_Q 映射，题库结构不动 */
+function dispKey(o){ return o.cat==='inquire'?Object.keys(DISPLAY_Q).find(k=>o.g.g.startsWith(k)):o.g.key; }
+function qView(o){ const d=DISPLAY_Q[dispKey(o)]; return d?{title:L(d.t[0],d.t[1]),sub:L(d.s[0],d.s[1]),lead:d.lead?L(d.lead[0],d.lead[1]):''}:null; }
 function orbLabel(o){
   if(o.cat==='pulse') return L('听它心跳 · 陪它慢下来','Its heartbeat · help it slow down');
+  const v=qView(o); if(v) return v.title;
   if(o.cat==='inquire') return LANG==='en'?o.g.ge:o.g.g.split(' ')[0];
   return LANG==='en'?(o.g.qe||o.g.q).split(' (')[0]:o.g.q.split('（')[0];
 }
 /* 题干副标：括号里的操作提示或问诊的时间范围，比题干小一号 */
 function orbSub(o){
+  const v=qView(o); if(v) return v.sub;
   if(o.cat==='inquire') return L('近一月反复出现的，都点亮','Tap all that repeated this month');
   const q=LANG==='en'?(o.g.qe||o.g.q):o.g.q, m=q.match(/（(.+)）|\((.+)\)/);
   return m?(m[1]||m[2]):'';
@@ -2576,12 +2947,12 @@ function showSignal(message){
 }
 /* ---------- 坐堂引导签：实时提示下一步操作 ---------- */
 const GUIDE={
-  intro:{zh:'<b>拖动画面</b>环绕山河；<b>点按光点</b>直接捕捉，或<b>按住不放</b>撒出涟漪网——网住的微光会现形，松手收网。找不到？点右下 <b>◎</b> 自动转向。',en:'<b>Drag</b> to orbit; <b>tap an orb</b> to capture, or <b>press &amp; hold</b> to cast a ripple net — glints inside reveal themselves, release to reel in. Lost? Tap <b>◎</b> below.'},
-  question:{zh:'照图<b>点一项</b>最像的表现；想多选、标轻重或自己写几句，点「<b>＋ 更多细节</b>」。选好后点「<b>确 认</b>」归档；确无异常就点「<b>无 异 常</b>」。',en:'<b>Pick the one</b> that fits best; for multi-select, degree or your own note, tap <b>+ MORE DETAIL</b>. Then tap <b>CONFIRM</b> — or <b>NORMAL</b> if nothing is off.'},
-  confirm:{zh:'选好了 —— 点「<b>确 认</b>」把这枚异象收进医案册。',en:'Set — tap <b>CONFIRM</b> to file this omen into the case book.'},
-  pulse:{zh:'听它的心跳：光点落到<b>心口</b>时轻拍一下，跟上了它就慢下来；没跟上也没关系。',en:'Its heartbeat: tap when each light reaches <b>the heart</b>. Keep time and it slows; missing is fine.'},
-  next:{zh:'已收录！点<b>下一枚光点</b>继续勘验，或点右下 <b>◎</b> 自动定位最近的剩余线索。',en:'Filed! Tap the <b>next orb</b> to continue, or hit <b>◎</b> to face the nearest remaining clue.'},
-  deduce:{zh:'全部异象已归档 —— 点下方「<b>开 坛 辨 证</b>」，让群妖现形。',en:'Every omen is filed — tap <b>BEGIN DEDUCTION</b> below and unmask the spirits.'}
+  intro:{zh:'<b>拖动画面</b>环绕；<b>点按光点</b>就能靠近它，或<b>按住不放</b>撒出涟漪网——网住的微光会现形，松手收网。找不到？点右下 <b>◎</b> 自动转向。',en:'<b>Drag</b> to orbit; <b>tap an orb</b> to draw near, or <b>press &amp; hold</b> to cast a ripple net — glints inside reveal themselves, release to reel in. Lost? Tap <b>◎</b> below.'},
+  question:{zh:'照图<b>点一项</b>最像的；想多选、标轻重或自己写几句，点「<b>＋ 更多细节</b>」。选好后点「<b>确 认</b>」；没有异常就点「<b>无 异 常</b>」。',en:'<b>Pick the one</b> that fits best; for multi-select, degree or your own note, tap <b>+ MORE DETAIL</b>. Then tap <b>CONFIRM</b> — or <b>NORMAL</b> if nothing is off.'},
+  confirm:{zh:'选好了 —— 点「<b>确 认</b>」，把它说的记进夜记。',en:'Set — tap <b>CONFIRM</b> and write it into the night log.'},
+  pulse:{zh:'听它的心跳：光点落到<b>心口</b>时轻拍一下，连着拍对 8 下它就困了；没跟上也没关系。',en:'Its heartbeat: tap when each light reaches <b>the heart</b>. Eight in a row and it grows sleepy; missing is fine.'},
+  next:{zh:'记下了！点<b>下一枚光点</b>继续，或点右下 <b>◎</b> 自动转向最近的一个。',en:'Noted! Tap the <b>next orb</b>, or hit <b>◎</b> to face the nearest one.'},
+  deduce:{zh:'今晚的光点都亮过了 —— 点下方「<b>天 快 亮 了</b>」，等日出。',en:'Every light has glowed tonight — tap <b>DAWN IS NEAR</b> below and wait for sunrise.'}
 };
 let guideKey=null;
 function clearGuideGlow(){document.querySelectorAll('.guideGlow').forEach(e=>e.classList.remove('guideGlow'));}
@@ -2592,7 +2963,7 @@ function setGuide(key,targetSel){
   if(!key||!GUIDE[key]){tip.classList.remove('show');return;}
   const g=GUIDE[key];
   tip.querySelector('.gTxt').innerHTML=L(g.zh,g.en);
-  tip.querySelector('.gStep').textContent=L('坐堂提示','CLINIC CUE');
+  tip.querySelector('.gStep').textContent=L('怪物耳语','WHISPER');
   tip.classList.add('show');
   if(targetSel){const t=document.querySelector(targetSel);if(t)t.classList.add('guideGlow');}
 }
@@ -2723,6 +3094,7 @@ function buildStage(){
 function captureOrb(o){
   if(o.done||o._locking||curOrb) return;
   o._locking=true;
+  setPhase(NIGHT.chapterPhase[o.cat]);
   o.el.classList.add('locking');
   FX.lock();buzz(8);
   const ret=$('#contactReticle');
@@ -2794,7 +3166,8 @@ function netCancel(){ const n=_net; if(!n)return; _net=null; n.hooked.forEach(o=
 
 /* ---------- 线索板：稳定的可浏览清单（发现机制的核心） ---------- */
 function dockShortLabel(o){
-  if(o.cat==='pulse') return L('切诊 · 指下辨脉','Pulse · reading beneath fingers');
+  if(o.cat==='pulse') return L('黎明 · 听它心跳','Dawn · its heartbeat');
+  const v=qView(o); if(v) return v.title;
   if(o.cat==='inquire') return LANG==='en'?o.g.ge:o.g.g;
   return LANG==='en'?(o.g.qe||o.g.q):o.g.q;
 }
@@ -2851,8 +3224,9 @@ function skipChapter(cat){
   closePanel();
   rest.forEach(o=>{o.skipped=true;o.done=true;orbDone++;syncOrbState(o);});
   state.cleared=state.cleared||{}; state.cleared[cat]=true;
-  addClue(L('跳过','Skip'),L(`略过「${CATS[cat].zh}」${rest.length} 条线索`,`Skipped ${rest.length} ${CATS[cat].en} clues`),{});
+  addClue(L('跳过','Skip'),L(`${CATS[cat].zh}，它没怎么说话`,`${CATS[cat].en}: it stayed quiet`),{});
   updateHUD(true); afterAnswer();
+  enterPhase(nextPhase());
 }
 function skipRest(){
   const rest=ORBS.filter(o=>!o.done);
@@ -2862,7 +3236,7 @@ function skipRest(){
   rest.forEach(o=>{o.skipped=true;o.done=true;orbDone++;syncOrbState(o);});
   CHAPTERS.forEach(c=>{ if(chapterItems(c).every(o=>o.done)) state.cleared[c]=true; });   // 跳过收尾的章节不颁奖
   syncChapters();
-  addClue(L('跳过','Skip'),L(`侦探选择略过 ${rest.length} 条线索，以现有证据直接推理`,`${rest.length} clues skipped — deduction proceeds on current evidence`),{});
+  addClue(L('跳过','Skip'),L(`剩下的光点就让它们飘着吧：略过 ${rest.length} 条`,`Let the rest drift on: ${rest.length} skipped`),{});
   updateHUD(true); afterAnswer();
 }
 /* ---------- 光点手感：指针靠近时减速 + 点按辅助（放大判定半径） ---------- */
@@ -2942,8 +3316,8 @@ function updateHUD(animate=false){
   g.querySelector('.gFill').style.strokeDashoffset=(94.2*(1-orbDone/Math.max(1,orbTotal))).toFixed(1);
   g.querySelector('b').textContent=String(orbDone).padStart(2,'0');
   g.querySelector('small').textContent='/ '+orbTotal;
-  g.querySelector('.gPct').textContent='◐ '+Math.round(clarity*100)+'%';
-  g.title=L(`已回收 ${orbDone}/${orbTotal} · 显形 ${Math.round(clarity*100)}%`,`Recovered ${orbDone}/${orbTotal} · material ${Math.round(clarity*100)}%`);
+  g.querySelector('.gPct').textContent='';
+  g.title=L(`已熬过 ${orbDone}/${orbTotal}`,`Got through ${orbDone}/${orbTotal}`);
   if(animate){g.classList.remove('pop');void g.offsetWidth;g.classList.add('pop');}
   updateDockProgress();
   syncChapters();
@@ -2962,7 +3336,7 @@ function placeFocus(o){
 function focusQuestion(o,withAction=false){
   const cat=CATS[o.cat],box=document.createElement('div');
   box.className='focusQuestion';
-  const lead=o.cat==='inquire'&&Q_LEAD[o.g.g]?Q_LEAD[o.g.g][LANG==='en'?1:0]:'';
+  const qv=qView(o), lead=qv?qv.lead:'';
   const glyph=o.cat==='inquire'?groupGlyph(o.g.g):GLYPH[o.cat], sub=orbSub(o);
   box.innerHTML=`<div class="focusMeta"><span>${L(cat.zh,cat.en)} / ${String(o.order+1).padStart(2,'0')}</span><span>DECODED</span></div><div class="focusHead"><i class="focusIcon">${glyph}</i><div><div class="focusTitle"></div>${sub?'<div class="focusSub"></div>':''}</div></div>${lead?'<div class="focusLead"></div>':''}${withAction?'<div class="focusActions"><span class="focusPick"></span><span class="focusCount"></span><button class="archiveNode"></button></div>':''}<div class="degreeRow"></div>`;
   box.querySelector('.focusTitle').textContent=orbLabel(o);
@@ -3279,7 +3653,10 @@ function focusNext(o){
 }
 function completeOrb(o,record){
   if(o._completing)return;o._completing=true;
+  const w0=Object.assign({},state.weights);
   record();
+  const diff={}; PATTERN_KEYS.forEach(k=>diff[k]=state.weights[k]-w0[k]);
+  reactToOrb(o,diff);
   if(o.customText) addClue(L(CATS[o.cat].zh,CATS[o.cat].en),L('自述补充：','Own note: ')+o.customText,{});
   o.done=true;orbDone++;syncOrbState(o);o.el.classList.add('absorbed');
   // 连击：25 秒内连续捕捉（非跳过）叠加奖励
@@ -3402,6 +3779,7 @@ function closePanel(){
     const left=ORBS.filter(o=>!o.done).length;
     setGuide(left>0?'intro':'deduce',left>0?'#locateClue':'#btnDeduce');
   }
+  pumpSay();
 }
 $('#qPanelClose').onclick=closePanel;
 $('#qPanel').addEventListener('click',e=>{if(e.target.id==='qPanel')closePanel();});
@@ -3434,7 +3812,7 @@ function markPulseDone(){
 }
 
 /* ---------- 开场 ---------- */
-$('#btnStart').onclick=()=>{ if(window.__loadGrains) window.__loadGrains(); show('screen-intake'); };
+$('#btnStart').onclick=()=>{ if(window.__loadGrains) window.__loadGrains(); FX.knock(); show('screen-intake'); };
 $('#btnHow').onclick=()=>show('screen-how');
 $('#btnHowBack').onclick=()=>show('screen-intro');
 $('#btnLang').onclick=()=>{ LANG = LANG==='zh'?'en':'zh'; applyLang(); };
@@ -3458,11 +3836,18 @@ $('#btnSkipIntake').onclick=()=>enterStage(false);
 function enterStage(useForm){
   const nm=useForm?$('#fName').value.trim():'';
   state.intake={name:nm||L('小夜','Nightling'),fear:useForm?fearPick:null};
-  addClue(L('入夜','Nightfall'),L('今夜的怪物：','Tonight\'s monster: ')+state.intake.name,{});
+  addClue(L('子夜','Midnight'),L('它叫 ','Its name: ')+state.intake.name,{});
   applyIntakeWeights();
   buildStage();
+  state.said={}; state.phase=null; setPhase('midnight');
   show('screen-stage');
   setGuide('intro','#locateClue');
+  // 怪物先回应名字和它怕的东西，再说子夜的开场（排队，一次一句）
+  if(useForm){
+    say(fillLine(L(NIGHT_LINES.intro.zh[2],NIGHT_LINES.intro.en[2])));
+    const fr=NIGHT_LINES.intro.fear[state.intake.fear]; if(fr) say(pl(fr));
+  }
+  enterPhase('midnight');
   // 镜头直接转向第一枚光点并闪一下，新玩家不用先找
   setTimeout(()=>{const o=ORBS[0]; if(!o||curOrb) return;
     if(window.stageFocusWorld) window.stageFocusWorld(o.wx,o.wz);
@@ -3472,7 +3857,7 @@ function enterStage(useForm){
 function applyIntakeWeights(){
   const f=FEARS[(state.intake||{}).fear];
   if(!f) return;
-  addClue(L('入夜','Nightfall'),L(`它怕${f.zh}`,`It is afraid of ${f.en}`)+' → '+Object.keys(f.w).map(pName).join(L('、',', ')),f.w);
+  addClue(L('子夜','Midnight'),L(`它怕${f.zh}`,`It fears ${f.en}`),f.w);
 }
 
 /* ---------- 阶段侧写奖励：由章节通关（checkChapters）驱动 ---------- */
@@ -3647,39 +4032,27 @@ function fireChapterClear(cat,clean){
   const fl=document.getElementById('clearFlash');
   fl.style.setProperty('--catc',col);
   fl.querySelector('.cfEmblem').innerHTML=GLYPH[cat];
-  fl.querySelector('.cfText').textContent=allDone?L('全 案 收 齐','ALL CHAPTERS CLEAR'):(L(CATS[cat].zh,CATS[cat].en)+' · '+L('本章通关','CHAPTER CLEAR'));
+  fl.querySelector('.cfText').textContent=allDone?L('天 快 亮 了','DAWN IS NEAR'):(L(CATS[cat].zh,CATS[cat].en)+' · '+L('过 去 了','PASSED'));
   fl.classList.remove('show');void fl.offsetWidth;fl.classList.add('show');
   window.__bloom=Math.max(window.__bloom||0,.6);
   setTimeout(()=>{fl.classList.remove('show');openChapterModal(cat,clean,allDone);},900);
 }
 function stageBarsHTML(n){return `<div class="msStage">${CHAPTERS.map((c,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}</div>`;}
 function openChapterModal(cat,clean,allDone){
-  const n=clearedCount(), tops=topPatterns(2);
-  const STAGE=[L('初 步 轮 廓','F I R S T · S K E T C H'),L('画 像 渐 显','T A K I N G · S H A P E'),L('呼 之 欲 出','A L M O S T · T H E R E'),L('水 落 石 出','C A S E · R E V E A L E D')];
-  let line;
-  if(tops.length){
-    const main=`<b>${L(PATTERNS[tops[0][0]].name,pName(tops[0][0]))}</b>`;
-    const sub=tops[1]?L(`，${PATTERNS[tops[1][0]].name}为辅线`,`, ${pName(tops[1][0])} secondary`):'';
-    line=[L(`证词最先指向 ${main} —— 轮廓尚模糊，随时可能改判。`,`Testimony first points to ${main} — still a blur.`),
-          L(`${main} 之象渐稳${sub} —— 人物开始有了脾气。`,`${main} stabilises${sub} — the figure gains temperament.`),
-          L(`${main} 已呼之欲出${sub} —— 最后一层雾由推理拨开。`,`${main} is almost here${sub} — deduction lifts the last veil.`),
-          L(`${main} 水落石出 —— 现在，去看完整侧写。`,`${main} revealed — now read the full profile.`)][Math.min(3,n-1)];
-    line+=`<div class="msQuote">${LANG==='en'&&PATTERNS[tops[0][0]].en?PATTERNS[tops[0][0]].en.one:PATTERNS[tops[0][0]].one}</div>`;
-  }else line=L('证词清淡，至今未见明显偏颇 —— <b>平和质</b>正在浮出水面。','Testimony stays mild — a <b>balanced constitution</b> is surfacing.');
-  const bk=tops.length?tops[0][0]:null;
-  const beastHTML=bk?`<div class="msBeast"><div class="ring"><img src="assets/img/${BEASTS[bk].img}.jpg" alt="${FABLES[bk].n}"></div><small>${L('雾中现形','FROM THE MIST')} · <b>${L(FABLES[bk].n,FABLES_EN[bk].n)}</b></small></div>`:'';
+  const n=clearedCount(), ph=PHASE(NIGHT.chapterPhase[cat]);
+  const vk=pickVisitor(state.weights);
+  const sil=['sil1','sil2','sil3','sil3'][Math.min(3,Math.max(0,n-1))];
+  const closeLine=NIGHT_LINES[ph.id].close?nl(NIGHT_LINES[ph.id].close):nl(NIGHT_LINES.dawn.success);
+  const beastHTML=vk?`<div class="msBeast"><div class="ring"><img class="${sil}" src="${nightImg(vk)}" alt=""></div><small>${L('门外有个影子','A SHADOW AT THE DOOR')}</small></div>`:'';
   const body=stageBarsHTML(n)+beastHTML+
-    `<div class="msVisual"><div class="msEmblem ${clean?'':'silver'}" style="--catc:${CATS[cat].col}">${GLYPH[cat]}</div><canvas class="msRadar" id="msRadar" width="150" height="150"></canvas></div>`+
-    `<div class="msLine">${line}</div>`+
-    `<div class="msBonus"><span>+${clean?25:10} XP</span><span>${L('徽章','BADGE')} · ${L(CATS[cat].zh,CATS[cat].en)}${clean?'':L('（银）',' (silver)')}</span><span>${L('图鉴','BESTIARY')} ${n}/${CHAPTERS.length}</span></div>`;
-  openMilestone(L(`图 鉴 收 录 ${n}/${CHAPTERS.length} · `+CATS[cat].zh+'卷',`BESTIARY ${n}/${CHAPTERS.length} · `+CATS[cat].en),
-    STAGE[Math.min(3,n-1)], body,
-    allDone?L('揭 晓 全 案 · 开 始 推 理','R E V E A L · D E D U C E'):L('继 续 探 案','K E E P · G O I N G'),
+    `<div class="msVisual"><div class="msEmblem ${clean?'':'silver'}" style="--catc:${CATS[cat].col}">${GLYPH[cat]}</div></div>`+
+    `<div class="msLine">${closeLine}</div>`+
+    `<div class="msBonus"><span>+${clean?25:10} XP</span><span>${L('徽章','BADGE')} · ${badgeName(BADGES.find(b=>b.id===cat))}${clean?'':L('（银）',' (silver)')}</span><span>${ph.t}</span></div>`;
+  openMilestone(`${ph.t} · ${L(ph.zh,ph.en.toUpperCase())}`,
+    L(ph.zh+' · 过 去 了',ph.en+' · passed'), body,
+    allDone?L('天 快 亮 了','D A W N · I S · N E A R'):L('继 续 熬 夜','K E E P · W A T C H I N G'),
     allDone?()=>{closePanel();startDeduce();}:null);
-  paintRadar(document.getElementById('msRadar'),liveDims(),150,true,true);
-  addClue(L('侧写快照','Snapshot')+` · ${n}/${CHAPTERS.length}`,
-    tops.length?L(`${CATS[cat].zh}收齐 → 主线：${PATTERNS[tops[0][0]].name}（权重 ${state.weights[tops[0][0]]}）`,`${CATS[cat].en} cleared → lead: ${pName(tops[0][0])} (weight ${state.weights[tops[0][0]]})`)
-      :L(`${CATS[cat].zh}收齐 → 无明显主线`,`${CATS[cat].en} cleared → no clear lead`),{});
+  if(!allDone) setTimeout(()=>enterPhase(nextPhase()),700);   // 钟走到下一格
 }
 /* 粒子爆发：通关 / 徽章解锁时从中心向外散开 */
 function burst(x,y,color,n){
@@ -3697,10 +4070,10 @@ function burst(x,y,color,n){
 /* ---------- 成就徽章 ---------- */
 const BADGES=[
   {id:'first',zh:'初次锁定',en:'FIRST LOCK'},
-  {id:'observe',zh:'望诊全收',en:'LOOK CLEARED'},
-  {id:'listen',zh:'闻诊全收',en:'LISTEN CLEARED'},
-  {id:'inquire',zh:'问诊全收',en:'ASK CLEARED'},
-  {id:'pulse',zh:'切诊全收',en:'PULSE CLEARED'},
+  {id:'observe',zh:'熬过子夜',en:'MIDNIGHT DONE'},
+  {id:'listen',zh:'熬过深夜',en:'DEEP NIGHT DONE'},
+  {id:'inquire',zh:'熬过凌晨',en:'SMALL HOURS DONE'},
+  {id:'pulse',zh:'等到黎明',en:'DAWN REACHED'},
   {id:'combo3',zh:'连击 ×3',en:'COMBO ×3'},
   {id:'detail',zh:'细察入微',en:'FINE DETAIL'},
   {id:'pulseAce',zh:'指下有神',en:'PULSE ACE'},
@@ -3777,17 +4150,18 @@ function updateLiveRadar(){
 
 <script>
 /* ============================================================
-   切诊 · 心跳节拍：光点落到心口时轻拍，陪睡不着的怪物把心跳放慢
+   黎明 · 心跳节拍：光点落到心口时轻拍，陪睡不着的怪物把心跳放慢
    只是小游戏：不回写证型权重，没跟上也不扣分
    ============================================================ */
 let pulseAnim=null;
 const BEAT_N=16, BEAT_SLOW=60, BEAT_PERFECT=110, BEAT_OK=240;
-const beat={running:false,start:88,shape:'ping',bpm:88,n:0,hits:0,perfect:0,times:[],hitIdx:-1,next:0};
+const BEAT_WIN=8;   // 连着拍对 8 下，它的眼皮就开始往下坠
+const beat={running:false,start:88,shape:'ping',bpm:88,n:0,hits:0,perfect:0,streak:0,best:0,times:[],hitIdx:-1,next:0};
 
 function applyBeatLang(){
   $('#beatH').textContent=L('听 它 的 心 跳','L I S T E N · T O · I T S · H E A R T');
-  $('#beatTxt').innerHTML=L('它的心还在咚咚乱跳，所以睡不着。<br>把手放在它胸口，<b>光点落到心口时轻拍一下</b>——跟上了，它的心跳就慢一点。没跟上也没关系，它不会怪你。',
-    'Its heart is still racing, so it can\'t sleep.<br>Rest a hand on its chest and <b>tap as each light reaches the heart</b> — keep time and it slows a little. Missing a beat is fine; it won\'t mind.');
+  $('#beatTxt').innerHTML='<b>'+nl(NIGHT_LINES.dawn.open)+'</b><br>'+L('它的心还在咚咚乱跳，所以睡不着。<b>光点落到心口时轻拍一下</b>，连着拍对 8 下，它的眼皮就会往下坠。没跟上也没关系，它不会怪你。',
+    'Its heart is still racing, so it can\'t sleep. <b>Tap as each light reaches the heart</b> — eight in a row and its eyelids start to sink. Missing a beat is fine; it won\'t mind.');
   $('#beatPad').setAttribute('aria-label',L('跟着心跳轻拍','Tap along with the heartbeat'));
   $('#beatHint').textContent=L('点按心口 · 电脑上也可以按空格','Tap the heart · or press Space');
   $('#btnBeatStart').textContent=L('把 手 放 在 它 胸 口','R E S T · A · H A N D');
@@ -3809,7 +4183,7 @@ function beatFloat(txt,good){
   pad.appendChild(f); setTimeout(()=>f.remove(),700);
 }
 function startBeatGame(){
-  Object.assign(beat,{running:true,bpm:beat.start,n:0,hits:0,perfect:0,times:[],hitIdx:-1,next:performance.now()+1100});
+  Object.assign(beat,{running:true,bpm:beat.start,n:0,hits:0,perfect:0,streak:0,best:0,times:[],hitIdx:-1,next:performance.now()+1100});
   $('#beatIntro').style.display='none'; $('#beatGame').style.display='block'; $('#beatEnd').style.display='none';
   if(window.setBPM) setBPM(beat.bpm);
   paintBeatCount();
@@ -3884,6 +4258,7 @@ function beatTap(e){
   if(last) consider(last.t,beat.n-1);
   if(beat.n<BEAT_N) consider(beat.next,beat.n);
   if(!best||best.i<=beat.hitIdx||best.d>BEAT_OK){ FX.tap(); return; }   // 没对上：只有轻响，不扣分
+  beat.streak=(best.i===beat.hitIdx+1)?beat.streak+1:1; beat.best=Math.max(beat.best,beat.streak);
   beat.hitIdx=best.i;
   const perfect=best.d<=BEAT_PERFECT;
   beat.hits++; if(perfect) beat.perfect++;
@@ -3898,11 +4273,10 @@ function finishBeat(){
   beat.running=false;
   if(pulseAnim){ cancelAnimationFrame(pulseAnim); pulseAnim=null; }
   $('#beatGame').style.display='none'; $('#beatEnd').style.display='block';
-  const calm=beat.hits>=BEAT_N/2;
-  $('#beatEndH').textContent=calm?L('它 的 心 跳 慢 下 来 了','I T S · H E A R T · S L O W S'):L('它 还 有 一 点 醒 着','S T I L L · A · L I T T L E · A W A K E');
-  $('#beatEndTxt').innerHTML=L(`你陪它合上了 <b>${beat.hits}</b> 拍。`+(calm?'它打了个哈欠，眼皮开始往下掉。':'不要紧，它喜欢你在旁边。'),
-    `You kept time for <b>${beat.hits}</b> beats. `+(calm?'It yawns; its eyelids start to droop.':'That\'s fine — it likes having you nearby.'));
-  if(beat.hits>=12) awardBadge('pulseAce');
+  const calm=beat.best>=BEAT_WIN;
+  $('#beatEndH').textContent=calm?L('它 的 眼 皮 往 下 坠 了','I T S · E Y E L I D S · S I N K'):L('它 还 有 一 点 醒 着','S T I L L · A · L I T T L E · A W A K E');
+  $('#beatEndTxt').innerHTML=nl(calm?NIGHT_LINES.dawn.success:NIGHT_LINES.dawn.soft)+'<br><small>'+L(`合上了 ${beat.hits} 拍，最长连着 ${beat.best} 拍。`,`Kept time for ${beat.hits} beats, ${beat.best} in a row.`)+'</small>';
+  if(calm) awardBadge('pulseAce');
 }
 $('#btnBeatStart').onclick=startBeatGame;
 $('#beatPad').addEventListener('pointerdown',beatTap);
@@ -3949,44 +4323,37 @@ function computeResults(){
   state.dims=dimsFrom(state.scores);
 }
 
-/* ---------- 推理演绎 ---------- */
+/* ---------- 日出（原推理过场）：天快亮了，夜访客的影子渐渐清晰 ---------- */
 function startDeduce(){
   computeResults();
+  state.visitor=pickVisitor(state.weights);            // null = 平静的一夜，山神来了
+  const v=state.visitor, T=[];
+  const at=(ms,fn)=>T.push(setTimeout(fn,ms));
+  state.sunriseTimers=T;
   show('screen-deduce');
+  const h=$('#sunriseLine');
+  const line=v?NIGHT_LINES.sunrise:NIGHT_LINES.sunrise.calm;
+  h.dataset.zh=line.zh; h.dataset.en=line.en; h.textContent=L(line.zh,line.en);
+  const img=$('#vrImg'); img.className='inkArt';
+  img.src=v?nightImg(v):`assets/img/${NIGHT.god.img}.jpg`;
+  img.alt=v?visitorName(v):L(SHAN_GOD.zh,SHAN_GOD.en);
+  const box=$('#visitorReveal'); box.classList.remove('named');
+  $('#vrName').textContent=v?visitorName(v):L(SHAN_GOD.zh,SHAN_GOD.en);
+  $('#vrLine').textContent=v?pl(NIGHT_LINES.visitors[v].line):pl(['山河清晏。今晚，谁也没来敲门。','All is calm. No one knocked tonight.']);
+  $('#btnReport').style.display='none';
   const log=$('#deduceLog'); log.innerHTML='';
-  const lines=[];
-  const topS=state.scores[state.top[0]];
-  lines.push({tag:L('汇总','SUM'), ico:'file', text:L(`四诊共收录线索 <b>${state.clues.length}</b> 条，加权演绎开始……`,`<b>${state.clues.length}</b> clues on file. Weighted deduction begins…`), cls:''});
-  if(topS<3){
-    lines.push({tag:L('辨证','PATTERN'), text:L('诸证权重皆轻 —— 十问九平，脉象和缓。','All pattern weights stay light — a calm pulse and even answers.'), cls:'gold'});
-    lines.push({tag:L('结论','VERDICT'), text:L('今夜没有怪物作乱 —— <b>山神</b>坐镇，山河清晏。','No monster stirs tonight — <b>the Mountain God</b> keeps watch and all is calm.'), cls:'verdict'});
-  }else{
-    state.top.slice(0,3).forEach(k=>{
-      const s=state.scores[k]; if(s<2) return;
-      const ev=state.clues.filter(c=>c.w[k]).slice(0,3)
-        .map(c=>'「'+c.txt.replace(/^.*?：/,'').slice(0,12)+'」').join(' ＋ ');
-      lines.push({tag:L('辨证','PATTERN'), text:L(`${ev||'（夜色指向）'} ⇒ <b>${PATTERNS[k].name}</b>之象渐明`,`${ev||'(the night points)'} ⇒ the picture of <b>${pName(k)}</b> emerges`), cls:''});
-    });
-    const els=Object.entries(state.elements).sort((a,b)=>b[1]-a[1]);
-    lines.push({tag:L('五行','ELEMENTS'), text:L(`五行侧写：<b>${els[0][0]}</b>行最盛 · <b>${els[4][0]}</b>行最弱 —— ${els[0][1]-els[4][1]>=6?'五行失衡明显。':'整体尚在动态平衡之内。'}`,`Five elements: <b>${EL(els[0][0])}</b> strongest · <b>${EL(els[4][0])}</b> weakest — ${els[0][1]-els[4][1]>=6?'clearly out of balance.':'still within dynamic balance.'}`), cls:'gold'});
-    state.top.slice(0,3).forEach((k,i)=>{
-      const s=state.scores[k]; if(s<2) return;
-      lines.push({tag:L('结论','VERDICT'), text:L(`现形 ${i+1}：<b>${PATTERNS[k].name}</b>（${PATTERNS[k].eng}）`,`Revealed ${i+1}: <b>${pName(k)}</b>`), cls:'verdict'});
-    });
-  }
-  lines.push({tag:L('备忘','NOTE'), ico:'inquire', text:L('这是故事，不是诊断；不舒服请找医生。','This is a story, not a diagnosis. If you feel unwell, please see a doctor.'), cls:''});
-  // 逐行上演（标签以图标呈现，文字留在 title 里）
-  lines.forEach((l,i)=>{
-    setTimeout(()=>{
-      const d=document.createElement('div');
-      d.className='dl '+l.cls;
-      const ico=l.ico||(l.cls==='verdict'?'badge':l.cls==='gold'?'orb':'detail');
-      d.innerHTML=`<i class="dlIco" title="${l.tag}">${GLYPH[ico]}</i><div class="dlTxt">${l.text}</div>`;
-      log.appendChild(d);
-      requestAnimationFrame(()=>d.classList.add('show'));
-      if(i===lines.length-1) setTimeout(()=>{$('#btnReport').style.display='inline-block';},600);
-    }, 500+i*750);
-  });
+  document.body.classList.add('sunrise'); document.body.classList.remove('sunrise-play');
+  at(250,()=>{document.body.classList.add('sunrise-play');FX.sunrise();});
+  at(2000,()=>enterPhase('dawn'));                      // 钟走到 06:00，背景换成云
+  at(1500,()=>{img.className='inkArt s1';FX.reveal&&FX.clock&&FX.clock();});
+  at(2700,()=>{img.className='inkArt s2';});
+  at(3900,()=>{img.className='inkArt s3';solidifyReward();});
+  at(5200,()=>{box.classList.add('named');FX.capture(2);buzz([20,40,20]);
+    burst(innerWidth*.5,innerHeight*.42,'#f0cf8e',26);});
+  at(5700,()=>{const d=document.createElement('div');d.className='dl verdict';
+    d.innerHTML=`<i class="dlIco">${GLYPH.inquire}</i><div class="dlTxt">${L('这是故事，不是诊断；不舒服请找医生。','This is a story, not a diagnosis. If you feel unwell, please see a doctor.')}</div>`;
+    log.appendChild(d);requestAnimationFrame(()=>d.classList.add('show'));});
+  at(6000,()=>{$('#btnReport').style.display='inline-block';});
 }
 
 /* ---------- 图表 ---------- */
@@ -4086,67 +4453,65 @@ function drawWheel(cv, els, S, k=1, t=0){
   ctx.fillStyle=cg; ctx.beginPath(); ctx.arc(cx,cy,cr*2.2,0,7); ctx.fill();
 }
 
-/* ---------- 日记（占位）：今夜的怪物 + 证型名 + 三件小事 + 免责声明 ---------- */
-const ACTS={
- qi:[['今晚早点关灯，让谷风雀把风囊攒满','Lights out a little earlier so the Grain-Wind Sparrow can fill its sack'],
-     ['明早出门前，陪它慢慢走十分钟','Tomorrow morning, stroll with it for ten slow minutes'],
-     ['累了就说一声“我歇会儿”，不用硬撑','When you\'re tired, say "I\'ll rest a bit" — no need to push through']],
- xue:[['睡前一小时把屏幕扣过去，让河灯歇一歇','Turn the screen face-down an hour before bed so the river lanterns can rest'],
-     ['给它讲一件昨天发生的好事','Tell it one good thing that happened yesterday'],
-     ['把被角掖好，脚别露在外面','Tuck the blanket in; keep your feet covered']],
- yin:[['别熬到三更，让月光有空滴进井里','Don\'t stay up past midnight — give the moonlight time to drip into the well'],
-     ['睡前喝一小口温水，给井添一点','Take a small sip of warm water before bed to top up the well'],
-     ['窗留一条缝，让房间凉下来','Leave the window open a crack and let the room cool']],
- yang:[['睡前泡泡脚，给暖灶兽添一根柴','Soak your feet before bed — one more log for the Hearth Beast'],
-     ['今晚少吃一口冰的','One less bite of something icy tonight'],
-     ['明早拉开窗帘，晒五分钟太阳','Open the curtains tomorrow and soak up five minutes of sun']],
- yu:[['把一句没说出口的话写在纸上','Write down one thing you never said out loud'],
-     ['对着窗外长长地叹一口气，不用忍','Let out one long sigh at the window — no need to hold it in'],
-     ['明天找个人随便聊十分钟','Tomorrow, chat with someone for ten minutes about anything']],
- pi:[['晚饭吃到七分饱就放下筷子','Put the chopsticks down at seven-tenths full'],
-     ['今晚不拆零食袋，让仓廪官早点下班','No snack bags tonight — let the Granary Steward clock off early'],
-     ['饭后陪它散步一小圈','Take it for a short walk after dinner']],
- tan:[['明天出门晒晒太阳，帮它把雾晒散','Go out in the sun tomorrow and help burn off its fog'],
-     ['少喝一杯甜饮，沟渠就通一点','One fewer sweet drink, and the channels flow a little better'],
-     ['站起来伸个大大的懒腰','Stand up and take one big stretch']],
- re:[['今晚撤掉一道油腻的夜宵','Skip one greasy late-night snack tonight'],
-     ['多喝几口白水，给蒸岚蟒降降温','A few extra sips of plain water to cool the Steam-Haze Serpent'],
-     ['睡前别吃太饱','Don\'t go to bed too full']],
- yux:[['坐久了起来走一圈，让桥下的船动一动','After sitting a while, walk a lap so the barges under the bridge can move'],
-     ['睡前搓搓手心，捏捏肩膀','Rub your palms and squeeze your shoulders before bed'],
-     ['明天走一段平时不走的路','Tomorrow, walk a stretch of road you usually don\'t']],
- huo:[['睡前把灯一盏盏关掉，只留一盏给月亮','Switch the lamps off one by one; leave just one for the moon'],
-     ['把手机放到伸手够不着的地方','Put your phone out of arm\'s reach'],
-     ['数十次慢慢的呼吸，陪烛宫鸦落地','Count ten slow breaths and help the Lantern-Palace Crow land']],
- calm:[['照今晚这样就很好','Tonight was just right — do it again'],
-     ['睡前和它说一声晚安','Say goodnight to it before you sleep'],
-     ['明晚再来看看它','Come back and check on it tomorrow night']]
-};
+/* ---------- 怪物日记（结局一屏） ---------- */
 const escHTML=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function diaryData(){
+  const v=state.visitor===undefined?pickVisitor(state.weights):state.visitor;
+  const vis=v?NIGHT.visitors[v]:null, bk=vis?vis.beast:null, vl=v?NIGHT_LINES.visitors[v]:null;
+  const f=bk?(LANG==='en'&&FABLES_EN[bk]?FABLES_EN[bk]:FABLES[bk]):null;
+  return {v,bk,vl,f,n:nightNo(),name:monsterName()};
+}
 function renderDiary(){
-  show('screen-report');
-  solidifyReward();
-  const k=state.top[0], calm=!k||state.scores[k]<3;
-  const name=escHTML((state.intake&&state.intake.name)||L('小夜','Nightling'));
-  const img=calm?SHAN_GOD.img:BEASTS[k].img;
-  const who=calm?L(SHAN_GOD.zh,SHAN_GOD.en):L(FABLES[k].n,FABLES_EN[k].n);
-  const pat=calm?L('平和','Balanced'):pName(k);
-  const line=calm
-    ?L(`昨夜 <b>${who}</b> 来坐了坐，${name} 睡得很安稳。`,`Last night <b>${who}</b> dropped by, and ${name} slept soundly.`)
-    :L(`昨夜来串门的是 <b>${who}</b>，${name} 陪它熬到了天亮。`,`Last night's visitor was <b>${who}</b>; ${name} kept it company until dawn.`);
+  show('screen-report'); solidifyReward();
+  const d=diaryData(), D=NIGHT_LINES.diary;
+  state.visitor=d.v; state.diaryN=d.n; state.pickedAct=null;
+  if(!DBG.get('debugNight')){ try{localStorage.setItem('mm_night',String(d.n));}catch(e){} }   // 第 N 夜：只在本机记数
+  const title=escHTML(fillLine(L(D.title.zh,D.title.en))),
+        img=d.v?nightImg(d.v):`assets/img/${NIGHT.god.img}.jpg`,
+        who=d.v?visitorName(d.v):L(SHAN_GOD.zh,SHAN_GOD.en);
+  const lead=d.v?escHTML(fillLine(L(D.visitor.zh,D.visitor.en),{visitor:'\u0001'})).replace('\u0001','<b>'+escHTML(who)+'</b>')
+               :escHTML(fillLine(L(D.calm.zh,D.calm.en)));
+  const temper=d.v?pl(d.vl.temper):L(SHAN_GOD.classic,SHAN_GOD.classicEN);
+  const fableHTML=d.f?`<div class="diaryFable"><small>${L(D.fable.zh,D.fable.en)}</small><b>${escHTML(d.f.n)}</b>：${escHTML(d.f.say||'')}<br>${escHTML(d.f.moral||'')}</div>`:'';
   $('#reportWrap').innerHTML=`<div class="rCard diaryCard">
-    <h3>${L(`${name} 的日记`,`${name}'s diary`)}</h3>
-    <p class="diaryLine">${line}</p>
-    <div class="beastCard${calm?' shan':''} diaryBeast"><span class="seal bSeal">${L('昨夜','LAST NIGHT')}</span>
-      <img class="bImg paperArt" src="assets/img/${img}.jpg" alt="${escHTML(who)}">
-      <div class="bName">${who}</div></div>
-    <div class="diaryPat"><small>${L('它的名字在书里写作','In the old books it is written as')}</small><b>${pat}</b></div>
-    <div class="diaryActsT">${L('今晚的三件小事','Three small things for tonight')}</div>
-    <ol class="diaryActs">${ACTS[calm?'calm':k].map(a=>`<li>${L(a[0],a[1])}</li>`).join('')}</ol>
+    <h3>${title}</h3>
+    <p class="diaryLine">${lead}</p>
+    <div class="beastCard${d.v?'':' shan'} diaryBeast"><span class="seal bSeal">${L('昨夜','LAST NIGHT')}</span>
+      <img class="bImg paperArt" src="${img}" alt="${escHTML(who)}">
+      <div class="bName">${escHTML(who)}</div></div>
+    ${d.v?`<p class="diaryQuote">“${escHTML(pl(d.vl.line))}”</p>`:''}
+    <p class="diaryTemper">${escHTML(temper)}</p>
+    ${d.v?`<p class="diaryLore">${escHTML(pl(d.vl.lore))}</p>`:''}
+    <div class="diaryActsT">${L(D.pick.zh,D.pick.en)}</div>
+    <div class="actCards">${D.acts.map((a,i)=>`<button type="button" class="actCard" data-i="${i}">${escHTML(L(a[0],a[1]))}</button>`).join('')}</div>
+    ${fableHTML}
+    <p class="diaryOutro">${escHTML(fillLine(L(D.outro.zh,D.outro.en)))}</p>
   </div>`;
+  $('#reportWrap').querySelector('.actCards').addEventListener('click',e=>{
+    const b=e.target.closest('.actCard'); if(!b) return;
+    document.querySelectorAll('.actCard').forEach(x=>x.classList.toggle('on',x===b));
+    state.pickedAct=+b.dataset.i; FX.capture(1); const r=b.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,'#f0cf8e',10);
+  });
 }
 $('#btnReport').onclick=renderDiary;
 $('#btnRestart').onclick=()=>location.reload();
+/* 保存日记卡：在本机用 canvas 画一张宣纸色的卡，下载为 PNG，不上传任何东西 */
+$('#btnSaveCard').onclick=async()=>{
+  const d=diaryData(), D=NIGHT_LINES.diary, W=720, H=1000, c=document.createElement('canvas'); c.width=W; c.height=H;
+  const x=c.getContext('2d'), who=d.v?visitorName(d.v):L(SHAN_GOD.zh,SHAN_GOD.en);
+  const g=x.createLinearGradient(0,0,W,H); g.addColorStop(0,'#f0e9d3'); g.addColorStop(1,'#e2d6b4'); x.fillStyle=g; x.fillRect(0,0,W,H);
+  x.strokeStyle='rgba(60,45,20,.45)'; x.lineWidth=3; x.strokeRect(24,24,W-48,H-48); x.lineWidth=1; x.strokeRect(34,34,W-68,H-68);
+  const wrap=(txt,px,py,maxW,lh)=>{let line='',y=py;for(const ch of txt){const t=line+ch;if(x.measureText(t).width>maxW&&line){x.fillText(line,px,y);line=ch;y+=lh;}else line=t;}if(line)x.fillText(line,px,y);return y+lh;};
+  x.textAlign='center'; x.fillStyle='#2b2415'; x.font='600 34px serif'; x.fillText(fillLine(L(D.title.zh,D.title.en)),W/2,100);
+  try{ const im=new Image(); im.src=d.v?nightImg(d.v):`assets/img/${NIGHT.god.img}.jpg`; await im.decode(); x.drawImage(im,W/2-170,130,340,486); }catch(e){}
+  x.fillStyle='#2b2415'; x.font='600 36px serif'; x.fillText(who,W/2,668);
+  x.font='italic 26px serif'; x.fillStyle='#94422c'; wrap(d.v?pl(d.vl.line):pl(['山河清晏。','All is calm.']),W/2,716,W-150,38);
+  x.font='22px serif'; x.fillStyle='#3a3222'; let y=wrap(d.v?pl(d.vl.temper):L(SHAN_GOD.zh,SHAN_GOD.en),W/2,780,W-150,34);
+  if(state.pickedAct!=null){ x.font='24px serif'; x.fillStyle='#2b2415'; y=wrap('✓ '+L(D.acts[state.pickedAct][0],D.acts[state.pickedAct][1]),W/2,y+16,W-150,34); }
+  x.font='18px serif'; x.fillStyle='rgba(60,45,20,.7)'; x.fillText(L(D.disclaimer.zh,D.disclaimer.en),W/2,H-62);
+  const a=document.createElement('a'); a.download=`monster-sleepless-night${d.n}.png`;
+  try{ a.href=c.toDataURL('image/png'); a.click(); }catch(e){ showSignal(L('这个环境不允许保存图片','Saving images is not allowed here')); }
+};
 
 /* ============================================================
    山河志怪 · 寓言小剧场
@@ -4280,6 +4645,7 @@ const SHAN_GOD={img:'pealk',src:'合瑞 Pealk',srcEN:'Herui Pealk',zh:'山神 ·
 
 /* ---------- 启动 ---------- */
 window.__clarity=0.55; // 开场即半虚粒子态，点明「由虚到实」
+setPhase('midnight');
 show('screen-intro');
 </script>
 
