@@ -86,3 +86,21 @@ state = { intake:{}, clues:[], weights:{}, pulseTruth:null, pulseAnswered:0,
 - 中英双语机制（`LANG`、`L()`、`data-zh/data-en`）
 - 音效开关 `mm_mute`
 - 免责声明：“这是故事，不是诊断；不舒服请找医生。”（S0 不改动代码，后续 PR 加入）
+
+## 7. 进度
+
+行号以上文基线为准；改动后以函数名定位。
+
+### S1 · 瘦身（`chore/slim`）
+
+`index.html`：455,447 B / 5,603 行 → 约 299 KB / 4,258 行。
+
+- **入夜（原建档）**：只问怪物名字 + 1 个“它怕什么”（太亮/太吵/太冷/太热/太静）。`state.intake = {name, fear}`；`applyIntakeWeights()` 只读 `fear`（`FEARS` 表映射到初始权重），其他字段缺失也不受影响。删除 `bmi()`、`showIntakeProfile()`、`caseNo`、`Q_FEMALE`（及其引导语、图示）。
+- **报告 → 日记占位**：`renderDiary()` 只渲染证型名、3 条小行动（`ACTS`，怪物口吻）和免责声明，并复用 `BEASTS` 插画与 `.beastCard` 宣纸卡。删除 11 个 tab（`tabHTML`、`TAB_NAMES`）、心理侧写、推理路径图、六维读数、导出/打印与寓言剧场生成（`buildScript*`）。`FABLES`、`BEASTS`、`SHAN_GOD` 数据保留。
+- **删除内容**：`TEA`、`HABIT`、`HEAL`、`THEORY*`、`PSYDEEP*`、`TEA_NOTE*`、`LIFE_EN`、`EVIDENCE`/`EV_*`、`evHTML`、`rankOf`、`PATTERNS(_EN)` 的 `nutri/move/life/tea/habit/heal` 字段，以及对应 CSS。推理页去掉吻合度百分比和权重数字。
+- **切诊 → 心跳节拍**：`enterPulse()` 只用 `PULSE_OF` 决定起始节奏和波形。`startBeatGame()`、`beatTap()`、`finishBeat()` 实现 16 拍跟拍：合拍或接近会让心跳变慢，没跟上不扣分。整个小游戏不回写 `state.weights`。删除 `PULSE_WEIGHTS`、`SHAPE_NAME*`、`PULSE_ART`、寸关尺教学、辨脉四问和自测心率。
+- **题目默认单选**：`DEG5` 程度条、`CONTEXTS` 情境交叉、自述补充和“可多选”开关都收进「＋ 更多细节」折叠（`#qPanel.more`）。
+- 删除巡夜模式（`?patrol`，只服务旧仓库的录屏页）。
+- 补回 S0 漏拷的 `reference-figures.mp4`（`index.html` 背景人物视频引用它，否则 Pages 上 404）。
+
+**尚未处理，留给后续任务**：`PATTERNS` 的 `tcm/west/psy` 文案、线索簿与 HUD 中的权重数字、各处“诊所/四诊”口吻、`drawWheel`（五行轮，暂未挂到日记页）。

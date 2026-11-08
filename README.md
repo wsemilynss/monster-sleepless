@@ -8,8 +8,8 @@
 
 ## 来源
 
-由 [wsemilynss/mad-medicine](https://github.com/wsemilynss/mad-medicine) 的提交 `fc5e3a4` 复制而来（`index.html` 与 `assets/`）。
-S0 阶段除 `<title>` 外代码零改动，行为与原版一致；后续按 `docs/audit.md` 中的清单逐步改造。
+由 [wsemilynss/mad-medicine](https://github.com/wsemilynss/mad-medicine) 的提交 `fc5e3a4` 复制而来（`index.html`、`assets/` 与背景人物视频 `reference-figures.mp4`）。
+S0 阶段除 `<title>` 外代码零改动；S1 起按 `docs/audit.md` 中的清单逐步改造。
 
 ## 技术约束
 
