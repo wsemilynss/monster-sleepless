@@ -104,3 +104,11 @@ state = { intake:{}, clues:[], weights:{}, pulseTruth:null, pulseAnswered:0,
 - 补回 S0 漏拷的 `reference-figures.mp4`（`index.html` 背景人物视频引用它，否则 Pages 上 404）。
 
 **尚未处理，留给后续任务**：`PATTERNS` 的 `tcm/west/psy` 文案、线索簿与 HUD 中的权重数字、各处“诊所/四诊”口吻、`drawWheel`（五行轮，暂未挂到日记页）。
+
+### S2 · 光点手感（`fix/orb-feel`，叠在 S1 之上）
+
+- `.orb` 命中框 76px（移动端同）；`stageTap()`/`nearestOrb()` 放大判定半径（鼠标 44px、手指 60px，重叠区取最近）。
+- `orbSlowFactor()`：指针靠近光点时，`stageTick` 的轨道漂移与背景 `frame()` 的镜头自转、视差一起降到约 8%。
+- 每章最多 `CHAPTER_MAX = 5` 个光点；问诊取 `INQ_CORE` 5 组（总数 18 → 15）。
+- `skipChapter(cat)` + 线索板「跳过本章」按钮；`skipRest()` 保留。
+- 点击成功率测试方法与结果见 [s2-click-test.md](s2-click-test.md)。

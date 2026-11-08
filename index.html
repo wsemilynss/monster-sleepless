@@ -243,7 +243,8 @@ h2{font-family:var(--serif);font-size:28px;font-size:clamp(24px,3.4vw,34px);lett
 #screen-stage:active{cursor:grabbing}
 #orbLayer{position:fixed;top:0;left:0;right:0;bottom:0;inset:0;z-index:3;pointer-events:none;overflow:hidden}
 /* 环绕光点 = 可捕捉的线索目标：在两人周围漂浮，点按锁定即打开证词 */
-.orb{position:absolute;width:46px;height:46px;margin:-23px 0 0 -23px;pointer-events:auto;cursor:pointer;
+/* 命中框 76px：远处缩放到 .62 时仍有 ≥47px，满足触控 ≥44px */
+.orb{position:absolute;width:76px;height:76px;margin:-38px 0 0 -38px;pointer-events:auto;cursor:pointer;
   color:var(--gold);will-change:left,top,opacity,transform;-webkit-tap-highlight-color:transparent;
   display:flex;align-items:center;justify-content:center}
 .orb i{display:block;position:relative;width:13px;height:13px;transform:rotate(45deg);
@@ -252,7 +253,7 @@ h2{font-family:var(--serif);font-size:28px;font-size:clamp(24px,3.4vw,34px);lett
 .orb i::after{content:"";position:absolute;top:3px;left:3px;right:3px;bottom:3px;background:currentColor;opacity:.75}
 .orb b{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;
   border:1px dashed currentColor;opacity:.32;animation:orbSpin 9s linear infinite}
-.orb em{position:absolute;left:50%;top:100%;transform:translate(-50%,-6px);font:9px/1 monospace;
+.orb em{position:absolute;left:50%;top:calc(50% + 24px);transform:translate(-50%,0);font:9px/1 monospace;
   letter-spacing:.2em;color:currentColor;opacity:0;white-space:nowrap;transition:opacity .2s;font-style:normal;
   text-shadow:0 0 8px rgba(0,0,0,.9)}
 .orb:hover i,.orb.near i{transform:rotate(45deg) scale(1.3);box-shadow:0 0 28px currentColor}
@@ -324,7 +325,10 @@ body.stage-answering #clueDock{opacity:.22;pointer-events:none}
 .dockGroupHead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
   font-family:var(--serif);font-size:13px;letter-spacing:.28em;color:var(--catc);margin-bottom:8px;
   padding-bottom:5px;border-bottom:1px dashed rgba(233,228,214,.14)}
-.dockGroupProg{font:10px/1 monospace;color:var(--ink-dim);letter-spacing:.08em}
+.dockGroupProg{font:10px/1 monospace;color:var(--ink-dim);letter-spacing:.08em;margin-left:auto}
+.dockSkip{align-self:center;min-height:32px;padding:0 10px;background:none;border:1px dashed rgba(154,149,138,.5);color:var(--ink-dim);
+  font:10.5px/1 var(--sans);letter-spacing:.1em;cursor:pointer;border-radius:4px}
+.dockSkip:hover{color:var(--gold-bright);border-color:var(--gold)}
 .dockItem{display:flex;align-items:center;gap:9px;width:100%;min-height:38px;text-align:left;cursor:pointer;
   background:rgba(13,15,19,.5);border:1px solid rgba(233,228,214,.1);border-left:2px solid var(--catc);
   color:var(--ink);padding:8px 10px;margin-bottom:6px;font-size:12px;line-height:1.55;border-radius:2px;
@@ -460,6 +464,7 @@ body.stage-answering #stageControls{opacity:.12;pointer-events:none}
   .degBadge{right:10px;bottom:6px;font-size:8.5px}
   #clueDock:not(.open) #dockBody{display:none}
   .dockItem{min-height:44px;font-size:12.5px}
+  .dockSkip{min-height:44px;min-width:44px;padding:0 12px}
   #stageControls{right:14px;top:58px;bottom:auto}#stageControls span,#turnLeft,#turnRight{display:none}
   #deduceGate{bottom:calc(150px + env(safe-area-inset-bottom))}
   /* 答题面板 → 底部抽屉（整行大按钮，题目完整可读）
@@ -493,8 +498,7 @@ body.stage-answering #stageControls{opacity:.12;pointer-events:none}
   .skipOrbBtn{margin:14px auto 0;font-size:11px;padding:9px 4px}
   .miniChip{font-size:11px;padding:8px 10px}
   .msCard{padding:20px 18px 16px}
-  /* 捕捉目标：手指可点的最小尺寸 */
-  .orb{width:56px;height:56px;margin:-28px 0 0 -28px}
+  /* 捕捉目标：命中框与桌面一致（76px × 最小缩放 .62 ≥ 44px） */
   .orb b{width:52px;height:52px;margin:-26px 0 0 -26px}
   .orb em{font-size:8.5px}
   #streakTag{right:14px;top:112px}
@@ -1597,8 +1601,11 @@ body.stage-answering .dockEdge{opacity:0!important;pointer-events:none}
     if(castArm&&Math.hypot(e.clientX-castArm.x,e.clientY-castArm.y)>12){clearTimeout(castArm.t);castArm=null;}
     if(window.netMove) window.netMove(e.clientX,e.clientY);
   });
-  addEventListener('pointerup',()=>{ dragX=null;
-    if(castArm){clearTimeout(castArm.t);castArm=null;}
+  addEventListener('pointerup',e=>{ dragX=null;
+    if(castArm){   // 没拖动、没按住 = 一次点按：交给点击辅助（放大判定半径）
+      const a=castArm; clearTimeout(a.t); castArm=null;
+      if(window.stageTap) window.stageTap(a.x,a.y,e.pointerType);
+    }
     if(window.netEnd) window.netEnd();
   });
   addEventListener('pointercancel',()=>{ dragX=null;
@@ -1615,11 +1622,14 @@ body.stage-answering .dockEdge{opacity:0!important;pointer-events:none}
     return [W/2 + rx*d*H*0.62, H*0.56 - ry2*d*H*0.62, d];
   }
 
-  let t0=performance.now(), lastFrame=t0, autoAng=0, lockedMx=0, lockedMy=0;
+  let t0=performance.now(), lastFrame=t0, autoAng=0, lockedMx=0, lockedMy=0, vmx=0, vmy=0;
   function frame(now){
     const t=(now-t0)/1000;
     const dt=Math.min(.05,(now-lastFrame)/1000); lastFrame=now;
-    if(!window.__stageFocus){autoAng+=dt*0.06;lockedMx=mx;lockedMy=my;}
+    // 指针靠近光点时（stageTick 算出 __orbSlow）：镜头自转与视差一起放慢，目标在屏幕上几乎停住
+    const slow=window.__orbSlow==null?1:window.__orbSlow;
+    vmx+=(mx-vmx)*Math.min(1,dt*4)*slow; vmy+=(my-vmy)*Math.min(1,dt*4)*slow;
+    if(!window.__stageFocus){autoAng+=dt*0.06*slow;lockedMx=vmx;lockedMy=vmy;}
     if(Math.abs(focusDelta)>.001){const step=focusDelta*Math.min(1,dt*7);dragAng+=step;focusDelta-=step;}
     ctx.clearRect(0,0,W,H);
     // 底色渐变
@@ -1627,7 +1637,7 @@ body.stage-answering .dockEdge{opacity:0!important;pointer-events:none}
     g.addColorStop(0,'#1b1410'); g.addColorStop(1,'#0a0705');
     ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
 
-    const viewMx=window.__stageFocus?lockedMx:mx, viewMy=window.__stageFocus?lockedMy:my;
+    const viewMx=window.__stageFocus?lockedMx:vmx, viewMy=window.__stageFocus?lockedMy:vmy;
     const ang = autoAng + dragAng + viewMx*0.35;  // 缓慢环绕 + 拖动 + 视差
     const ca=Math.cos(ang), sa=Math.sin(ang);
     const camY = 0.55 + viewMy*0.5;
@@ -2401,7 +2411,7 @@ const FX=(()=>{
     toggle(){muted=!muted;localStorage.setItem('mm_mute',muted?'1':'0');if(!muted)ensure();else windStop();return muted;}
   };
   // 全局微触感：任何可按元素按下即「嗒」一声 + 轻振
-  const TAPSEL='.btn,.opt,.answerNode,.dockItem,.miniChip,.chChip,.archiveNode,.moreToggle,#clueToggle,#btnLang,#stageControls button,#dockHead,select,input[type=range]';
+  const TAPSEL='.btn,.opt,.answerNode,.dockItem,.dockSkip,.miniChip,.chChip,.archiveNode,.moreToggle,#clueToggle,#btnLang,#stageControls button,#dockHead,select,input[type=range]';
   document.addEventListener('pointerdown',e=>{
     if(!(e.target instanceof Element))return;
     ensure();                                  // 首次手势解锁 AudioContext
@@ -2537,7 +2547,10 @@ const CATS={
  pulse:{zh:'切诊',en:'PULSE',col:'#e9e4d6'}
 };
 let ORBS=[], orbDone=0, orbTotal=0, curOrb=null;
-let inquireGroups = Q_INQUIRE.slice();
+/* 每章最多 5 个光点。问诊 8 组里挑最贴“睡不着”主题、又能覆盖各怪物的 5 组；其余仍留在 Q_INQUIRE 供以后的夜晚使用 */
+const CHAPTER_MAX=5;
+const INQ_CORE=['睡眠 · 夜间档案','心神 · 心理状态','寒热 · 体温的证词','饮食消化 · 中焦报告','精力 · 筋骨状态'];
+let inquireGroups = Q_INQUIRE.filter(g=>INQ_CORE.includes(g.g)).slice(0,CHAPTER_MAX);
 let toastTimer=null;
 
 function orbLabel(o){
@@ -2673,8 +2686,8 @@ function buildStage(){
   window.__stageFocus=false;
   if(window.__loadGrains) window.__loadGrains();
   $('#orbLayer').innerHTML='';
-  Q_OBSERVE.forEach(g=>ORBS.push({cat:'observe',g}));
-  Q_LISTEN.forEach(g=>ORBS.push({cat:'listen',g}));
+  Q_OBSERVE.slice(0,CHAPTER_MAX).forEach(g=>ORBS.push({cat:'observe',g}));
+  Q_LISTEN.slice(0,CHAPTER_MAX).forEach(g=>ORBS.push({cat:'listen',g}));
   inquireGroups.forEach(g=>ORBS.push({cat:'inquire',g}));
   ORBS.push({cat:'pulse',done:false});
   orbTotal=ORBS.length;
@@ -2691,7 +2704,9 @@ function buildStage(){
     d.className='orb cat-'+o.cat;
     d.innerHTML='<b></b><i></i><em></em>';
     d.querySelector('em').textContent=L(CATS[o.cat].zh,CATS[o.cat].en)+' '+String(i+1).padStart(2,'0');
-    d.addEventListener('click',e=>{e.stopPropagation();captureOrb(o);});
+    d.addEventListener('click',e=>{e.stopPropagation();
+      // 76px 命中框会互相重叠：重叠区按“离点击点最近的光点”算，而不是 DOM 顺序
+      captureOrb((e.clientX||e.clientY)&&nearestOrb(e.clientX,e.clientY,60)||o);});
     $('#orbLayer').appendChild(d);
     o.el=d;
     syncOrbState(o);
@@ -2797,6 +2812,7 @@ function updateDockProgress(){
     const g=$('#dockBody .dockGroup.cat-'+cat); if(!g) return;
     const items=ORBS.filter(o=>o.cat===cat);
     g.querySelector('.dockGroupProg').textContent=items.filter(o=>o.done).length+'/'+items.length;
+    const sb=g.querySelector('.dockSkip'); if(sb) sb.style.display=items.every(o=>o.done)?'none':'';
   });
   const rest=ORBS.filter(o=>!o.done).length;
   const sk=$('#btnSkipRest'); if(sk) sk.style.display=rest?'':'none';
@@ -2808,7 +2824,8 @@ function buildDock(){
     if(!items.length) return;
     const g=document.createElement('div'); g.className='dockGroup cat-'+cat;
     const head=document.createElement('div'); head.className='dockGroupHead';
-    head.innerHTML=`<span>${L(CATS[cat].zh,CATS[cat].en)}</span><span class="dockGroupProg"></span>`;
+    head.innerHTML=`<span>${L(CATS[cat].zh,CATS[cat].en)}</span><span class="dockGroupProg"></span><button type="button" class="dockSkip">${L('跳过本章','Skip chapter')}</button>`;
+    head.querySelector('.dockSkip').onclick=e=>{e.stopPropagation();skipChapter(cat);};
     g.appendChild(head);
     items.forEach(o=>{
       const b=document.createElement('button'); b.className='dockItem';
@@ -2827,6 +2844,16 @@ function skipOrb(o){
   o.skipped=true;
   completeOrb(o,()=>addClue(L(CATS[o.cat].zh,CATS[o.cat].en),dockShortLabel(o)+L(' — 未勘验，略过',' — skipped, not inspected'),{}));
 }
+/* 跳过本章：只略过这一章还没做的光点，没有惩罚，也不会弹出通关奖励 */
+function skipChapter(cat){
+  const rest=ORBS.filter(o=>o.cat===cat&&!o.done);
+  if(!rest.length){showSignal(L(CATS[cat].zh+' · 本章已收齐',CATS[cat].en+' · chapter cleared'));return;}
+  closePanel();
+  rest.forEach(o=>{o.skipped=true;o.done=true;orbDone++;syncOrbState(o);});
+  state.cleared=state.cleared||{}; state.cleared[cat]=true;
+  addClue(L('跳过','Skip'),L(`略过「${CATS[cat].zh}」${rest.length} 条线索`,`Skipped ${rest.length} ${CATS[cat].en} clues`),{});
+  updateHUD(true); afterAnswer();
+}
 function skipRest(){
   const rest=ORBS.filter(o=>!o.done);
   if(!rest.length) return;
@@ -2838,19 +2865,53 @@ function skipRest(){
   addClue(L('跳过','Skip'),L(`侦探选择略过 ${rest.length} 条线索，以现有证据直接推理`,`${rest.length} clues skipped — deduction proceeds on current evidence`),{});
   updateHUD(true); afterAnswer();
 }
+/* ---------- 光点手感：指针靠近时减速 + 点按辅助（放大判定半径） ---------- */
+let _ptr=null;
+const SLOW_R={mouse:150,touch:120}, TAP_R={mouse:44,touch:60};
+addEventListener('pointermove',e=>{_ptr={x:e.clientX,y:e.clientY,k:e.pointerType==='touch'?'touch':'mouse'};},{passive:true});
+addEventListener('pointerdown',e=>{_ptr={x:e.clientX,y:e.clientY,k:e.pointerType==='touch'?'touch':'mouse'};},{passive:true});
+['pointerup','pointercancel'].forEach(t=>addEventListener(t,e=>{if(e.pointerType==='touch')_ptr=null;},{passive:true}));
+document.documentElement.addEventListener('pointerleave',()=>{_ptr=null;});
+function orbSlowFactor(){
+  if(!_ptr||curOrb) return 1;
+  const R=SLOW_R[_ptr.k]; let f=1;
+  ORBS.forEach(o=>{
+    if(o.done||o.sx==null) return;
+    const d=Math.hypot(o.sx-_ptr.x,o.sy-_ptr.y);
+    if(d<R){const k=d/R; f=Math.min(f,.08+.92*k*k);}
+  });
+  return f;
+}
+function nearestOrb(x,y,R){
+  let best=null,bd=R;
+  ORBS.forEach(o=>{
+    if(o.done||o._locking||o.sx==null) return;
+    const d=Math.hypot(o.sx-x,o.sy-y);
+    if(d<=bd){bd=d;best=o;}
+  });
+  return best;
+}
+/* 点在空白处但离某个光点很近：当作点中它。只在没有被其他控件拦截的舞台点按时触发 */
+window.stageTap=function(x,y,type){
+  if(curOrb||_net||!ORBS.length) return null;
+  const best=nearestOrb(x,y,TAP_R[type==='touch'?'touch':'mouse']);
+  if(best) captureOrb(best);
+  return best;
+};
 /* 由背景渲染循环每帧调用：光点沿轨道巡游、上下浮动，并按远近强调可捕捉的目标 */
 let _tickT=performance.now(), _nearOrb=null;
 window.stageTick=function(project){
   const on=$('#screen-stage').classList.contains('active');
   $('#orbLayer').style.display=on?'':'none';
-  if(!on||!ORBS.length) return;
+  if(!on||!ORBS.length){ window.__orbSlow=1; return; }
   const now=performance.now(), dt=Math.min(.05,(now-_tickT)/1000); _tickT=now;
-  const dpr=window.__dpr||1, drift=curOrb?0:1;
+  const slow=orbSlowFactor(); window.__orbSlow=slow;
+  const dpr=window.__dpr||1, drift=curOrb?0:slow;
   let best=null,bestD=0;
   ORBS.forEach(o=>{
     if(o===curOrb){o.el.style.opacity='0';return;}
     if(!o.done&&!o._locking){
-      o.a0+=o.spd*dt*drift; o.bob+=dt*0.9;
+      o.a0+=o.spd*dt*drift; o.bob+=dt*0.9*slow;
       o.wx=Math.cos(o.a0)*o.r; o.wz=Math.sin(o.a0)*o.r; o.wy=o.wy0+Math.sin(o.bob)*0.07;
     }
     const p=project(o.wx,o.wy,o.wz);
@@ -3402,6 +3463,10 @@ function enterStage(useForm){
   buildStage();
   show('screen-stage');
   setGuide('intro','#locateClue');
+  // 镜头直接转向第一枚光点并闪一下，新玩家不用先找
+  setTimeout(()=>{const o=ORBS[0]; if(!o||curOrb) return;
+    if(window.stageFocusWorld) window.stageFocusWorld(o.wx,o.wz);
+    o.el.classList.add('locating'); setTimeout(()=>o.el.classList.remove('locating'),1500);},700);
 }
 /* 只认 fear 字段，其余字段缺失或残留都不影响 */
 function applyIntakeWeights(){
