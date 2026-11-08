@@ -1293,6 +1293,34 @@ body.stage-answering #monsterSay{display:none}
 .monsterQuote::before{content:"“";margin-right:2px;opacity:.6}.monsterQuote::after{content:"”";margin-left:2px;opacity:.6}
 @keyframes quoteIn{from{opacity:0;transform:translateY(6px)}}
 @media(max-width:700px){.monsterFig{width:112px}.monsterQuote{font-size:15px}#monsterSay{top:calc(92px + env(safe-area-inset-top))}}
+/* 再次打开：同一屏换成「第 N 夜」+ 今晚继续；怪物外观由 --m* 变量平滑驱动 */
+.returnBlock{display:none;text-align:center}
+body.returning .returnBlock{display:block}
+body.returning .newBlock{display:none}
+.linkBtn{background:none;border:0;color:var(--ink-dim);font:11.5px/1 var(--sans);letter-spacing:.14em;text-decoration:underline;cursor:pointer;padding:12px 10px;min-height:44px}
+.dexRow{display:flex;justify-content:center;gap:5px;margin:4px auto 14px;flex-wrap:wrap;max-width:420px}
+.dexCell{position:relative;width:38px;height:50px;border:1px solid rgba(233,228,214,.18);border-radius:6px;overflow:hidden;background:rgba(13,15,19,.5)}
+.dexCell img{width:100%;height:100%;object-fit:cover;object-position:50% 25%;opacity:.35;filter:brightness(0) invert(.5)}
+.dexCell.seen{border-color:rgba(212,175,106,.55)}
+.dexCell.seen img{opacity:1;filter:none}
+.dexCell b{position:absolute;right:2px;bottom:1px;font:600 10px/1 monospace;color:var(--gold-bright);text-shadow:0 0 4px #000}
+.monsterDoor{--mGlow:0;--mTint:#f0cf8e;--mBag:.12}
+.doorLight::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(ellipse at 50% 70%,var(--mTint),transparent 66%);
+  opacity:calc(var(--mGlow)*.5);transition:opacity 1.4s,background 1.4s}
+.mTint{display:none}
+.mBag{position:absolute;top:19.6%;width:8%;height:3.2%;border-radius:50%;background:#0b0d14;filter:blur(2px);opacity:var(--mBag);transition:opacity 1.4s;mix-blend-mode:multiply}
+.mBag.l{left:32%}.mBag.r{left:40%}
+.mParts{position:absolute;left:50%;top:0;width:min(300px,86vw);height:100%;transform:translateX(-50%);pointer-events:none}
+.mParts i{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--c);box-shadow:0 0 8px 2px var(--c);opacity:0;
+  animation:mPart 6s linear infinite;animation-delay:var(--d)}
+@keyframes mPart{0%{opacity:0;transform:translateY(10px)}20%{opacity:.85}100%{opacity:0;transform:translateY(-70px)}}
+/* 哄睡 */
+#ritualModal{position:fixed;inset:0;z-index:15;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(6,8,14,.72);backdrop-filter:blur(4px)}
+#ritualModal.show{display:flex}
+.ritualBox{width:min(440px,100%);text-align:center;padding:18px 16px 16px;border:1px solid var(--line);border-radius:12px;background:rgba(13,15,19,.92)}
+.ritualLead{font:italic 15px/1.8 var(--serif);letter-spacing:.08em;color:var(--gold-bright);margin:6px 0 12px}
+.ritualSay{min-height:28px;font:italic 15px/1.8 var(--serif);letter-spacing:.08em;color:var(--gold-bright);margin:10px 0 6px}
+#ritualCards.done .actCard:not(.on){opacity:.4;pointer-events:none}
 /* 日出 */
 #sunrise{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0;overflow:hidden;transition:opacity 1.2s}
 body.sunrise #sunrise{opacity:1}
@@ -1409,8 +1437,10 @@ body:not(.sunrise) #screen-report .disclaimer{color:var(--ink-dim)}
       <div class="heroMain">
         <div class="monsterDoor" id="monsterDoor">
           <div class="doorLight" aria-hidden="true"></div>
-          <div class="monsterFig"><img class="inkArt" id="heroImg" src="assets/img/keyao.jpg" alt="睡不着的怪物，睁着眼蹲在门口" width="168" height="240"><span class="mEye l"></span><span class="mEye r"></span></div>
+          <div class="monsterFig"><img class="inkArt" id="heroImg" src="assets/img/keyao.jpg" alt="睡不着的怪物，睁着眼蹲在门口" width="168" height="240"><span class="mBag l"></span><span class="mBag r"></span><span class="mEye l"></span><span class="mEye r"></span><span class="mTint"></span></div>
+          <div class="mParts" id="mParts" aria-hidden="true"></div>
         </div>
+        <div class="newBlock">
         <div class="kicker"><span data-zh="午 夜 · 0 : 0 0" data-en="MIDNIGHT · 0:00">午 夜 · 0 : 0 0</span></div>
         <h1 class="title"><span data-zh="怪 物 夜 未 眠" data-en="MONSTER SLEEPLESS">怪 物 夜 未 眠</span>
           <span class="en" data-zh="午夜 0:00，一只睡不着的怪物敲门" data-en="Midnight, 0:00 — a sleepless monster knocks">午夜 0:00，一只睡不着的怪物敲门</span>
@@ -1430,6 +1460,18 @@ body:not(.sunrise) #screen-report .disclaimer{color:var(--ink-dim)}
         <div class="btnRow">
           <button class="btn" id="btnStart" data-zh="开 门 让 它 进 来" data-en="L E T · I T · I N">开 门 让 它 进 来</button>
           <button class="btn ghost" id="btnHow" data-zh="手 册" data-en="M A N U A L">手 册</button>
+        </div>
+        </div>
+        <div class="returnBlock">
+          <div class="kicker" id="rtKicker"></div>
+          <h1 class="title" id="rtName"></h1>
+          <p class="monsterQuote" id="rtQuote"></p>
+          <div class="dexRow" id="dexRow"></div>
+          <div class="btnRow">
+            <button class="btn" id="btnContinue" data-zh="今 晚 继 续" data-en="T O N I G H T">今 晚 继 续</button>
+            <button class="btn ghost" id="btnRestartAll" data-zh="重 新 开 始" data-en="S T A R T · O V E R">重 新 开 始</button>
+          </div>
+          <button class="linkBtn" id="btnClearSave" data-zh="清除存档" data-en="Erase save">清除存档</button>
         </div>
         <p class="disclaimer" data-zh="这是故事，不是诊断；不舒服请找医生。" data-en="This is a story, not a diagnosis. If you feel unwell, please see a doctor.">这是故事，不是诊断；不舒服请找医生。</p>
       </div>
@@ -1564,6 +1606,16 @@ body:not(.sunrise) #screen-report .disclaimer{color:var(--ink-dim)}
     <p class="disclaimer" data-zh="这是故事，不是诊断；不舒服请找医生。" data-en="This is a story, not a diagnosis. If you feel unwell, please see a doctor.">这是故事，不是诊断；不舒服请找医生。</p>
   </section>
 
+</div>
+
+<div id="ritualModal" role="dialog" aria-modal="true" aria-labelledby="ritualLead">
+  <div class="ritualBox">
+    <div class="kicker" data-zh="哄 睡 · 选 一 张" data-en="LULLABY · PICK ONE">哄 睡 · 选 一 张</div>
+    <p class="ritualLead" id="ritualLead"></p>
+    <div class="actCards" id="ritualCards"></div>
+    <p class="ritualSay" id="ritualSay"></p>
+    <button class="btn" id="btnRitualDone" style="display:none" data-zh="天 亮 了 · 翻 开 日 记" data-en="D A W N · O P E N · T H E · D I A R Y">天 亮 了 · 翻 开 日 记</button>
+  </div>
 </div>
 
 <div id="milestoneModal">
@@ -2761,6 +2813,7 @@ function applyLang(){
   if(orbTotal) updateHUD();
   refreshClock();
   closePanel();
+  if(document.body.classList.contains('returning')) showReturn();
   if(window.__guideRefresh) window.__guideRefresh();
 }
 
@@ -2803,10 +2856,12 @@ const DBG=new URLSearchParams(location.search);          // ?debugNight=N 指定
 const PHASE=id=>NIGHT.phases.find(p=>p.id===id);
 const hexRGB=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
 const monsterName=()=>(state.intake&&state.intake.name)||L('小夜','Nightling');
+let SAVE=null;   // 本机存档（mm_save），启动时由 loadSave() 填入
+/* 第几夜：?debugNight=N 优先；否则 存档里已熬过的夜数 + 1；日记写入存档之后固定为刚写入的那一夜 */
 function nightNo(){
   const d=parseInt(DBG.get('debugNight'),10); if(d>0) return d;
-  let n=0; try{n=parseInt(localStorage.getItem('mm_night'),10)||0;}catch(e){}
-  return n+1;
+  if(state.committed&&state.diaryN) return state.diaryN;
+  return (SAVE?SAVE.nights:0)+1;
 }
 const fillLine=(s,ex)=>String(s).replace(/\{name\}/g,monsterName()).replace(/\{n\}/g,nightNo()).replace(/\{visitor\}/g,(ex&&ex.visitor)||'');
 const nl=o=>fillLine(L(o.zh,o.en));             // {zh,en} 对象 → 当前语言一句话
@@ -3069,16 +3124,19 @@ function scanClues(){
   }
   showSignal(L(`尚有 ${rest.length} 条线索漂浮中 · 镜头已转向最近一条`,`${rest.length} clues adrift · camera turned to the nearest`));
 }
-function buildStage(){
+function buildStage(list){
   ORBS=[]; orbDone=0; curOrb=null;
   state.cleared={}; state.badges={}; _liveVals=null;
   window.__stageFocus=false;
   if(window.__loadGrains) window.__loadGrains();
   $('#orbLayer').innerHTML='';
+  if(list) list.forEach(o=>ORBS.push(o));   // 夜间小关：只放挑出来的 5 个
+  else{
   Q_OBSERVE.slice(0,CHAPTER_MAX).forEach(g=>ORBS.push({cat:'observe',g}));
   Q_LISTEN.slice(0,CHAPTER_MAX).forEach(g=>ORBS.push({cat:'listen',g}));
   inquireGroups.forEach(g=>ORBS.push({cat:'inquire',g}));
   ORBS.push({cat:'pulse',done:false});
+  }
   orbTotal=ORBS.length;
   // 光点 = 漂浮在两人周围的可捕捉线索：沿三条轨道缓慢巡游，点按锁定即开启证词
   const rings=[{r:1.72,y:0.5},{r:2.12,y:1.04},{r:1.82,y:1.52}];
@@ -3339,7 +3397,7 @@ function updateHUD(animate=false){
   if(animate){g.classList.remove('pop');void g.offsetWidth;g.classList.add('pop');}
   updateDockProgress();
   syncChapters();
-  if(orbTotal && orbDone>=orbTotal) $('#deduceGate').classList.add('show');
+  if(orbTotal && orbDone>=orbTotal && !state.nightRun) $('#deduceGate').classList.add('show');
 }
 function placeFocus(o){
   const mobile=innerWidth<700;
@@ -3658,6 +3716,10 @@ function afterAnswer(){
     ?L(`已归档 ${orbDone} 条 · 还剩 ${left} 条线索`,`${orbDone} filed · ${left} clues remain`)
     :L('全部线索归档 · 可以开始推理','All clues filed · ready to deduce'));
   if(left===0&&ORBS.every(o=>!o.skipped)) awardBadge('flawless');
+  if(state.nightRun){   // 夜间小关：不弹章节奖励，收齐 5 个光点后直接进入哄睡
+    if(left===0){ setGuide(null); setTimeout(openRitual,900); } else setGuide('next','#locateClue');
+    return;
+  }
   checkChapters();
   setGuide(left>0?'next':'deduce',left>0?'#locateClue':'#btnDeduce');
 }
@@ -3852,6 +3914,7 @@ $('#fearRow').addEventListener('click',e=>{
 $('#btnIntake').onclick=()=>enterStage(true);
 $('#btnSkipIntake').onclick=()=>enterStage(false);
 function enterStage(useForm){
+  state.nightRun=false; state.committed=false; state.diaryN=null; state.ritual=null;
   const nm=useForm?$('#fName').value.trim():'';
   state.intake={name:nm||L('小夜','Nightling'),fear:useForm?fearPick:null};
   addClue(L('子夜','Midnight'),L('它叫 ','Its name: ')+state.intake.name,{});
@@ -4500,13 +4563,13 @@ function diaryData(){
   const v=state.visitor===undefined?pickVisitor(state.weights):state.visitor;
   const vis=v?NIGHT.visitors[v]:null, bk=vis?vis.beast:null, vl=v?NIGHT_LINES.visitors[v]:null;
   const f=bk?(LANG==='en'&&FABLES_EN[bk]?FABLES_EN[bk]:FABLES[bk]):null;
-  return {v,bk,vl,f,n:nightNo(),name:monsterName()};
+  return {v,bk,vl,f,n:state.diaryN||nightNo(),name:monsterName()};
 }
 function renderDiary(){
   show('screen-report'); solidifyReward();
   const d=diaryData(), D=NIGHT_LINES.diary;
   state.visitor=d.v; state.diaryN=d.n; state.pickedAct=null;
-  if(!DBG.get('debugNight')){ try{localStorage.setItem('mm_night',String(d.n));}catch(e){} }   // 第 N 夜：只在本机记数
+  commitNight(d);
   const title=escHTML(fillLine(L(D.title.zh,D.title.en))),
         img=d.v?nightImg(d.v):`assets/img/${NIGHT.god.img}.jpg`,
         who=d.v?visitorName(d.v):L(SHAN_GOD.zh,SHAN_GOD.en);
@@ -4689,8 +4752,200 @@ const SHAN_GOD={img:'pealk',src:'合瑞 Pealk',srcEN:'Herui Pealk',zh:'山神 ·
  classic:'山有神焉，其状如鹿而枝角，节节而生风，名曰合瑞。百怪不侵之境，其现身而为贺。见则山河清晏，阴阳平秘。',
  classicEN:'A god walks these mountains: deer-shaped, antlered with living branches, wind at each step — Pealk, the Mountain God. It shows itself only where no monster dares to breed. Where it appears, the realm is calm and yin and yang keep their peace.'};
 
+/* ============================================================
+   存档与「明晚再来」：mm_save · 夜间小关 · 哄睡卡 · 怪物外观
+   mm_save = {v,name,fear,element,nights,calm,visitors:{id:次数},dex:[id],badges:{id:tier}}，只存在本机
+   ============================================================ */
+const SAVE_KEY='mm_save';
+const ELEMS=['木','火','土','金','水'];
+const DEX_IDS=[...Object.keys(NIGHT.visitors),'god'];      // god = 平静的一夜（山神）
+const VCOLOR={heat:'#e0794a',whisper:'#8fc07a',stone:'#d1a95c',cold:'#78b0e0',glare:'#f2d878',weight:'#9a86c8',god:'#e9e4d6'};
+const intIn=(x,max)=>Math.max(0,Math.min(max,Math.floor(+x)||0));
+const isObj=o=>o&&typeof o==='object'&&!Array.isArray(o);
+/* 逐字段校验：缺的补默认、不认识的丢掉，所以手改坏、旧版本、被截断的存档都不会让游戏打不开 */
+function sanitizeSave(o){
+  if(!isObj(o)) return null;
+  const s={v:1,name:typeof o.name==='string'?o.name.slice(0,12):'',fear:FEARS[o.fear]?o.fear:null,
+    element:ELEMS.includes(o.element)?o.element:null,nights:intIn(o.nights,9999),calm:intIn(o.calm,9999),
+    visitors:{},dex:[],badges:{}};
+  const vs=isObj(o.visitors)?o.visitors:{};
+  DEX_IDS.forEach(k=>{const c=intIn(vs[k],9999); if(c) s.visitors[k]=c;});
+  const dx=Array.isArray(o.dex)?o.dex:[];
+  DEX_IDS.forEach(k=>{ if(dx.includes(k)||s.visitors[k]) s.dex.push(k); });
+  const bd=isObj(o.badges)?o.badges:{};
+  Object.keys(bd).slice(0,60).forEach(k=>{ if(/^\w{1,24}$/.test(k)&&typeof bd[k]==='string'&&bd[k].length<=8) s.badges[k]=bd[k]; });
+  return s;
+}
+function loadSave(){
+  let raw; try{ raw=localStorage.getItem(SAVE_KEY); }catch(e){ return null; }
+  if(raw==null){   // 迁移：S3/S4 只记了夜数
+    try{ const n=parseInt(localStorage.getItem('mm_night'),10); if(n>0) return sanitizeSave({nights:n}); }catch(e){}
+    return null;
+  }
+  try{ const s=sanitizeSave(JSON.parse(raw)); if(s) return s; }catch(e){}
+  try{ localStorage.removeItem(SAVE_KEY); }catch(e){}   // 损坏的存档：当作没有
+  return null;
+}
+function writeSave(){ try{ localStorage.setItem(SAVE_KEY,JSON.stringify(SAVE)); }catch(e){} }
+function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); localStorage.removeItem('mm_night'); }catch(e){} SAVE=null; }
+/* ?debugNight=N：假装已经熬过 N-1 夜（访客次数按固定规则铺开），不读写真实存档 */
+function activeSave(){
+  const d=parseInt(DBG.get('debugNight'),10);
+  if(!(d>0)) return SAVE;
+  const s=Object.assign({},SAVE||sanitizeSave({}),{nights:d-1});
+  if(!SAVE||!Object.keys(SAVE.visitors).length){
+    const ids=Object.keys(NIGHT.visitors); s.visitors={};
+    for(let i=0;i<d-1;i++){ const k=ids[i%3===2?(1+Math.floor(i/3))%ids.length:0]; s.visitors[k]=(s.visitors[k]||0)+1; }
+    s.dex=Object.keys(s.visitors); s.calm=Math.floor((d-1)/3);
+  }
+  return s;
+}
+/* 日记出来的那一刻写入存档：夜数 +1、访客计数 +1、图鉴、五行、徽章 */
+function commitNight(d){
+  if(state.committed||DBG.get('debugNight')) return;
+  state.committed=true;
+  const s=SAVE||sanitizeSave({});
+  computeResults();
+  if(state.intake&&state.intake.name) s.name=state.intake.name;
+  if(state.intake&&state.intake.fear) s.fear=state.intake.fear;
+  s.nights=d.n;
+  const id=d.v||'god'; s.visitors[id]=(s.visitors[id]||0)+1; if(!s.dex.includes(id)) s.dex.push(id);
+  const el=ELEMS.slice().sort((a,b)=>(state.elements[b]||0)-(state.elements[a]||0))[0];
+  if((state.elements[el]||0)>0) s.element=el;
+  const bd=state.badges||{}; Object.keys(bd).forEach(k=>{ if(!s.badges[k]||bd[k]==='gold') s.badges[k]=bd[k]||'gold'; });
+  if(state.ritual&&state.ritual.matched) s.calm=Math.min(9999,s.calm+1);
+  SAVE=s; writeSave();
+}
+
+/* ---------- 怪物外观：夜数与访客计数 → 连续变化的颜色、光晕、黑眼圈、粒子 ---------- */
+function monsterLook(s){
+  const n=s.nights, tot=Object.values(s.visitors).reduce((a,b)=>a+b,0);
+  const glow=1-Math.exp(-n/6);                                   // 夜数越多越亮，渐近于 1
+  let r=0,g=0,b=0; for(const k in s.visitors){ const c=hexRGB(VCOLOR[k]),w=s.visitors[k]; r+=c[0]*w; g+=c[1]*w; b+=c[2]*w; }
+  const tint=tot?`rgb(${Math.round(r/tot)},${Math.round(g/tot)},${Math.round(b/tot)})`:'#f0cf8e';   // 常来的访客决定主色
+  const bag=Math.max(.06,Math.min(.62,.08+.5*(1-Math.exp(-n/9))-Math.min(.2,s.calm*.025)));        // 熬得久黑眼圈深，被哄睡过会淡一点
+  const parts=Math.min(14,Math.round(tot*1.4)+(n>0?2:0));
+  const keys=Object.keys(s.visitors).sort(), colors=[];
+  for(let i=0;i<parts;i++){ let t=(i+.5)/parts*tot,k=keys[0]; for(const kk of keys){ if(t<s.visitors[kk]){k=kk;break;} t-=s.visitors[kk]; } colors.push(VCOLOR[k]||'#f0cf8e'); }
+  return {glow,tint,bag,parts,colors};
+}
+function applyMonsterLook(s){
+  const el=$('#monsterDoor'), K=monsterLook(s), P=$('#mParts');
+  const set=()=>{ el.style.setProperty('--mGlow',K.glow.toFixed(3)); el.style.setProperty('--mTint',K.tint); el.style.setProperty('--mBag',K.bag.toFixed(3)); };
+  if(!el._looked){ el.style.setProperty('--mGlow',0); el.style.setProperty('--mBag',.06); setTimeout(set,120); el._looked=true; } else set();   // 先从素颜起步，让变化看得见
+  P.innerHTML=K.colors.map((c,i)=>`<i style="--c:${c};--d:${(-i*0.93).toFixed(2)}s;left:${(((i*.618)%1)*100).toFixed(1)}%;top:${(34+((i*.37)%1)*58).toFixed(1)}%"></i>`).join('');
+}
+
+/* ---------- 再次打开：第 N 夜 + 今晚继续 / 重新开始 ---------- */
+const BACK_LINES={
+  quote:[['你来啦。我又睡不着了。','You came. I can\'t sleep again.'],['……今晚也是这样。陪我一会儿？','…Same tonight. Stay a while?'],['门没关。我就知道你会来。','I left the door open. I knew you\'d come.'],['我等你好久了。','I\'ve been waiting for you.']],
+  open:[['又是这个钟点。你来了。','This hour again. You came.'],['我躺不住，只好等你。','I couldn\'t lie still, so I waited.'],['小声点，别吵醒月亮。','Quietly — don\'t wake the moon.']],
+  meh:[['……嗯，谢谢你。还不太困。','…Thanks. Not sleepy yet.'],['有一点点用。我再想想。','A little help. I\'ll think it over.']],
+  lead:['{name}还是睡不着。哄哄它？','{name} still can\'t sleep. Lull it?']
+};
+function showReturn(){
+  const s=activeSave();
+  if(!s||s.nights<1){ document.body.classList.remove('returning'); applyMonsterLook(sanitizeSave({})); return false; }
+  const n=s.nights+1, name=s.name||L('小夜','Nightling');
+  document.body.classList.add('returning');
+  $('#rtKicker').textContent=L(`第 ${n} 夜 · 它又睡不着了`,`NIGHT ${n} · SLEEPLESS AGAIN`);
+  $('#rtName').textContent=name;
+  $('#rtQuote').textContent=pl(BACK_LINES.quote[n%BACK_LINES.quote.length]);
+  $('#dexRow').innerHTML=DEX_IDS.map(k=>{
+    const c=s.visitors[k]||0, img=k==='god'?`assets/img/${NIGHT.god.img}.jpg`:nightImg(k), nm=k==='god'?L(SHAN_GOD.zh,SHAN_GOD.en):visitorName(k);
+    return `<div class="dexCell${c?' seen':''}" title="${escHTML(c?nm:'？')}"><img src="${img}" alt="">${c?`<b>×${c}</b>`:''}</div>`;
+  }).join('');
+  applyMonsterLook(s);
+  return true;
+}
+$('#btnContinue').onclick=()=>{ if(window.__loadGrains) window.__loadGrains(); FX.knock(); startNightRun(); };
+$('#btnRestartAll').onclick=()=>{
+  const s=activeSave()||{}; $('#fName').value=s.name||''; fearPick=s.fear||null;
+  $('#fearRow').querySelectorAll('.opt').forEach(x=>x.classList.toggle('sel',x.dataset.fear===fearPick));
+  if(window.__loadGrains) window.__loadGrains(); FX.knock(); show('screen-intake');
+};
+$('#btnClearSave').onclick=()=>{
+  if(!confirm(L('清除存档后，它会忘掉所有的夜晚。确定吗？','Erasing the save makes it forget every night. Sure?'))) return;
+  clearSave(); location.href=location.pathname;
+};
+
+/* ---------- 夜间小关：5 个光点 → 选 1 张哄睡卡 → 怪物一句反馈 → 日记（≤ 2 分钟） ---------- */
+/* 每夜 5 个：三种取法轮流，起点随夜数移动，每晚问到的题不完全一样 */
+function pickNightOrbs(n){
+  const pools={observe:Q_OBSERVE.slice(0,CHAPTER_MAX),listen:Q_LISTEN.slice(0,CHAPTER_MAX),inquire:inquireGroups};
+  const plan=[{observe:2,listen:2,inquire:1},{observe:1,listen:2,inquire:2},{observe:2,listen:1,inquire:2}][n%3], out=[];
+  ['observe','listen','inquire'].forEach(cat=>{
+    const P=pools[cat], k=plan[cat], st=(n*k)%P.length;
+    for(let i=0;i<k;i++) out.push({cat,g:P[(st+i)%P.length]});
+  });
+  return out;
+}
+function startNightRun(){
+  const s=activeSave()||sanitizeSave({}), n=s.nights+1;
+  state.intake={name:s.name||L('小夜','Nightling'),fear:s.fear};
+  state.nightRun=true; state.committed=false; state.diaryN=null; state.ritual=null; state.runT0=performance.now();
+  addClue(L('子夜','Midnight'),L(`第 ${n} 夜 · 它又来了`,`Night ${n} · it is back`),{});
+  applyIntakeWeights();
+  buildStage(pickNightOrbs(n));
+  state.said={}; state.phase=null; setPhase('midnight');
+  show('screen-stage');
+  setGuide('intro','#locateClue');
+  say(pl(BACK_LINES.open[n%BACK_LINES.open.length]));
+  enterPhase('midnight');
+  setTimeout(()=>{const o=ORBS[0]; if(!o||curOrb) return;
+    if(window.stageFocusWorld) window.stageFocusWorld(o.wx,o.wz);
+    o.el.classList.add('locating'); setTimeout(()=>o.el.classList.remove('locating'),1500);},700);
+}
+/* 哄睡卡：每条 ≤ 20 字；for = 这张卡最对哪位访客。选哪张都行，没有对错，怪物都会回一句 */
+const RITUAL_CARDS=[
+  {id:'heat1',for:'heat',zh:'把被子掀开一角。',en:'Fold the blanket back a corner.',say:['凉快了。眼皮在打架。','Cooler. My eyelids are fighting.']},
+  {id:'heat2',for:'heat',zh:'用凉水洗洗它的手心。',en:'Rinse its palms with cool water.',say:['手心凉凉的，舒服。','Cool palms. Lovely.']},
+  {id:'whisper1',for:'whisper',zh:'让它把心事说给枕头听。',en:'Let it tell the pillow its worries.',say:['说出来……轻了一点。','Said aloud… a little lighter.']},
+  {id:'whisper2',for:'whisper',zh:'在纸上画个圈，装下它。',en:'Draw a circle on paper to hold it.',say:['圈里很安静，谢谢。','It\'s quiet in the circle. Thanks.']},
+  {id:'stone1',for:'stone',zh:'给它轻轻揉揉肚子。',en:'Gently rub its belly.',say:['软软的，不那么胀了。','Soft. Not so full now.']},
+  {id:'stone2',for:'stone',zh:'陪它走到窗边再回来。',en:'Walk to the window and back.',say:['走一走，石头轻了。','A little walk — the stone is lighter.']},
+  {id:'cold1',for:'cold',zh:'给它的脚盖条小毯子。',en:'Tuck a small blanket over its feet.',say:['脚暖了，慢慢睡。','Warm feet. Slowly, sleep.']},
+  {id:'cold2',for:'cold',zh:'递给它一杯温的。',en:'Hand it something warm to sip.',say:['暖到心口了。','The warmth reaches my chest.']},
+  {id:'glare1',for:'glare',zh:'把灯一盏盏吹灭。',en:'Blow out the lamps, one by one.',say:['黑下来了。真好。','Dark at last. Lovely.']},
+  {id:'glare2',for:'glare',zh:'给它戴上软软的眼罩。',en:'Fit it with a soft eye mask.',say:['眼前是软软的黑。','A soft dark, right in front of me.']},
+  {id:'weight1',for:'weight',zh:'拍拍它的背，慢慢呼气。',en:'Pat its back; breathe out slowly.',say:['胸口松了一点。','My chest loosens a little.']},
+  {id:'weight2',for:'weight',zh:'把重的东西轻轻放下。',en:'Set the heavy things gently down.',say:['放下了。好轻。','Put down. So light.']}
+];
+function pickRitualCards(v,n){
+  const mine=RITUAL_CARDS.filter(c=>c.for===v), others=RITUAL_CARDS.filter(c=>c.for!==v);
+  const first=v?mine[n%mine.length]:others[n%others.length], s=(n*3)%others.length;
+  const rest=[others[s],others[(s+3)%others.length]].filter(c=>c!==first);
+  const out=[first,...rest]; const k=n%3;
+  return out.slice(k).concat(out.slice(0,k));      // 对的那张每晚换位置
+}
+function openRitual(){
+  closePanel(); computeResults();
+  const v=state.visitor=pickVisitor(state.weights), cards=pickRitualCards(v,nightNo());
+  state.ritualCards=cards;
+  $('#ritualLead').textContent=fillLine(L(BACK_LINES.lead[0],BACK_LINES.lead[1]));
+  const box=$('#ritualCards'); box.className='actCards'; box.innerHTML=cards.map((c,i)=>`<button type="button" class="actCard" data-i="${i}">${escHTML(L(c.zh,c.en))}</button>`).join('');
+  $('#ritualSay').textContent=''; $('#btnRitualDone').style.display='none';
+  $('#ritualModal').classList.add('show');
+}
+$('#ritualCards').addEventListener('click',e=>{
+  const b=e.target.closest('.actCard'); if(!b||state.ritual) return;
+  const c=state.ritualCards[+b.dataset.i], matched=!state.visitor||c.for===state.visitor;
+  state.ritual={id:c.id,matched};
+  b.classList.add('on'); $('#ritualCards').classList.add('done');
+  $('#ritualSay').textContent='“'+pl(matched?c.say:BACK_LINES.meh[nightNo()%BACK_LINES.meh.length])+'”';
+  FX.capture(2); const r=b.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,'#f0cf8e',14);
+  setTimeout(()=>{ $('#btnRitualDone').style.display='inline-block'; },700);
+});
+$('#btnRitualDone').onclick=()=>{
+  $('#ritualModal').classList.remove('show');
+  state.runMs=Math.round(performance.now()-state.runT0);
+  document.body.classList.add('sunrise'); enterPhase('dawn'); renderDiary();
+};
+
 /* ---------- 启动 ---------- */
 window.__clarity=0.55; // 开场即半虚粒子态，点明「由虚到实」
+SAVE=loadSave();
+showReturn();
 setPhase('midnight');
 show('screen-intro');
 </script>

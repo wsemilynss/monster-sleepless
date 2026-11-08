@@ -103,6 +103,15 @@ state = { intake:{}, clues:[], weights:{}, pulseTruth:null, pulseAnswered:0,
 - 按钮：「再玩一夜」（重新加载，`mm_night` 记数）、「分享日记卡」（本机 canvas 画 PNG，支持 Web Share 则分享，否则下载）。
 - 测试六类访客：`?debugVisitor=heat|whisper|stone|cold|glare|weight`，配合 `?debugNight=N`；控制台执行 `state.weights={};renderDiary()`。
 - 日记页隐藏底部进度条，避免压住按钮。
+
+## S5 · 存档与“明晚再来”（`feat/save-return`，叠在 S4 之上）
+
+- 存档 `mm_save`：`{v,name,fear,element,nights,calm,visitors:{id:次数},dex:[id],badges:{id:tier}}`，只存本机。`sanitizeSave()` 逐字段校验，缺字段补默认、坏 JSON/数组/错类型当作没有并清掉；`loadSave()` 还会迁移 S3/S4 的 `mm_night`；`clearSave()` + 入口「清除存档」。`id` 为六位访客，`god` 表示平静的一夜（山神）。
+- 写入时机：日记出现时 `commitNight()` 写一次（夜数 +1、访客 +1、图鉴、五行、徽章、哄睡命中则 `calm`+1）；`?debugNight=N` 不读写真实存档，`activeSave()` 给出一个“已熬过 N-1 夜”的虚拟存档。
+- 再次打开：开场页换成「第 N 夜 · 怪物名 · 访客图鉴 ×次数」+「今晚继续」/「重新开始」（回到取名页，整夜从头玩，存档保留）。
+- 夜间小关 `startNightRun()`：`pickNightOrbs(n)` 每夜 5 个光点（观/听/问按 2-2-1、1-2-2、2-1-2 轮换，起点随夜数移动）→ `openRitual()` 从 `RITUAL_CARDS`（12 张，≤20 字）里给 3 张，其中最对访客的一张每晚换位置 → 怪物一句反馈（没选对也不惩罚）→ 日记。小关内不弹章节奖励，不跑心跳和日出过场。
+- 怪物外观 `monsterLook()` / `applyMonsterLook()`：光晕 = 1-e^(-n/6)，主色 = 各访客颜色按次数加权平均，黑眼圈 = 0.08+0.5(1-e^(-n/9)) 减去被哄睡次数的折扣，粒子数 = min(14, 1.4×访客次数+2)，颜色按访客占比；CSS 变量带 1.4s 过渡。
+- 调试：`?debugNight=N` 看第 N 夜的外观与「第 N 夜」。
 - 音效开关 `mm_mute`
 - 免责声明：“这是故事，不是诊断；不舒服请找医生。”（S0 不改动代码，后续 PR 加入）
 
