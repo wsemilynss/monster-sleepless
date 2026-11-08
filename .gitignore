@@ -10,3 +10,10 @@ Thumbs.db
 _*.html
 _*.png
 _*.ps1
+
+# Reference 原始素材库（体积大，只在本地作素材源）
+Reference/
+
+# 审阅台：明文任务书和本地密钥不入库；线上只发布加密的 lane-brief.enc
+lane-brief.md
+review.key.json

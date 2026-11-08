@@ -1,0 +1,975 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>专业学科与剧情分析 · 《怪物夜未眠》审阅台</title>
+<style>
+:root{
+  --ink:#1d2129; --ink2:#4b5260; --mute:#7a8190; --line:#e3e1da; --paper:#faf8f3; --card:#fff;
+  --gold:#b08a3e; --ok:#2e8b57; --warn:#c98a12; --err:#c9372c; --info:#3b6db3; --chg:#8a4fb3;
+  --shadow:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.04);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.6 -apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif}
+a{color:var(--info)}
+button,select,input,textarea{font:inherit;color:inherit}
+button,.btn{cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 12px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+button:hover,.btn:hover{border-color:var(--gold)}
+button.pri{background:var(--ink);color:#fff;border-color:var(--ink)}
+.top{position:relative;z-index:20;background:#15181f;color:#eee;padding:10px 18px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.brand b{font-size:16px;letter-spacing:.06em;color:#f0d9a6}
+.brand span{display:block;font-size:12px;color:#aab}
+.top .btn,.top button,.top select,.top input{background:#232833;border-color:#363d4b;color:#e6e6e6}
+.top a.btn{text-decoration:none}
+.sync{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-left:auto;font-size:12px}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;background:#232833;border:1px solid #363d4b}
+.dot{width:8px;height:8px;border-radius:50%;background:#777}
+.dot.live{background:#3ecf7a;box-shadow:0 0 0 0 rgba(62,207,122,.6);animation:pulse 2s infinite}
+.dot.busy{background:#f0c040}.dot.err{background:#ff5d50}.dot.pause{background:#888}
+@keyframes pulse{70%{box-shadow:0 0 0 7px rgba(62,207,122,0)}100%{box-shadow:0 0 0 0 rgba(62,207,122,0)}}
+@media (prefers-reduced-motion:reduce){.dot.live{animation:none}}
+.srcs{display:flex;gap:6px;flex-wrap:wrap}
+.src{font-family:ui-monospace,Consolas,monospace;font-size:11px;color:#bbc;background:#1c2029;border-radius:6px;padding:2px 8px}
+.src.bad{color:#ffb4ad}
+.acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.notice{margin:12px 18px 0;padding:10px 14px;border-left:3px solid var(--gold);background:#fff7e6;color:var(--ink2);font-size:13px;border-radius:6px}
+.tabs{display:flex;gap:2px;flex-wrap:wrap;padding:10px 18px 0;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--paper);z-index:10}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;padding:8px 12px;color:var(--ink2)}
+.tabs button.on{border-bottom-color:var(--gold);color:var(--ink);font-weight:600}
+.tabs .n{font-size:11px;color:var(--mute);margin-left:2px}
+main{padding:16px 18px 60px;max-width:1400px;margin:0 auto}
+h2{font-size:18px;margin:18px 0 8px}h3{font-size:15px;margin:14px 0 6px}
+.sub{color:var(--mute);font-size:12px}
+.grid{display:grid;gap:12px}
+.g4{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.g2{grid-template-columns:repeat(auto-fill,minmax(420px,1fr))}
+.box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow)}
+.kpi b{font-size:26px;display:block;line-height:1.2}
+.kpi span{color:var(--mute);font-size:12px}
+.bar{height:8px;border-radius:4px;background:#eee;overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:1px 9px;font-size:12px;border:1px solid var(--line);background:#fff;color:var(--ink2);cursor:default}
+.chip.click{cursor:pointer}
+.chip.cat{background:#f3efe6}
+.chip.ent{background:#eef3f8}
+.chip.src-game{background:#15181f;color:#f0d9a6;border-color:#15181f}
+.chip.src-brief{background:#fff;color:#7a5a1a;border-color:#d9c38e}
+.chip.lv-error{background:#fde8e6;color:var(--err);border-color:#f5c2bd}
+.chip.lv-warn{background:#fff3db;color:#8a5c00;border-color:#f1d79c}
+.chip.lv-info{background:#e8effa;color:var(--info);border-color:#c5d6f0}
+.chip.fresh{background:var(--chg);color:#fff;border-color:var(--chg)}
+.chip.impl-yes{background:#e3f4ea;color:var(--ok);border-color:#b9e0c8}
+.chip.impl-no{background:#f1f1f1;color:#777}
+.st{font-size:12px;border-radius:6px;padding:2px 8px;font-weight:600}
+.st-todo{background:#eee;color:#666}.st-ok{background:#e3f4ea;color:var(--ok)}.st-fix{background:#fde8e6;color:var(--err)}
+.st-discuss{background:#fff3db;color:#8a5c00}.st-changed{background:#efe5f7;color:var(--chg)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0 12px}
+.filters select,.filters input[type=search]{border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:#fff}
+.filters input[type=search]{min-width:220px}
+.qtabs{display:flex;gap:6px;flex-wrap:wrap}
+.qtabs button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+.item.is-fresh{border-color:var(--chg);box-shadow:0 0 0 2px rgba(138,79,179,.15)}
+.item .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--mute)}
+.item .loc{font-family:ui-monospace,Consolas,monospace;font-size:11px;color:var(--mute)}
+.item .zh{font-size:16px;margin:6px 0 2px;color:var(--ink)}
+.item .en{font-size:12.5px;color:var(--mute)}
+.item .old{font-size:13px;color:var(--chg);margin-top:4px}
+.item .sec{margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+.item .lab{font-size:12px;color:var(--mute);margin-right:4px}
+.topic{border-left:3px solid var(--gold);padding:6px 10px;margin:6px 0;background:#fbfaf6;border-radius:0 8px 8px 0;font-size:13px}
+.topic b{font-size:13px}
+.topic .why{color:var(--ink2)}
+.topic .care{color:#8a5c00;font-size:12.5px;margin-top:2px}
+.cite{font-size:12px}
+.cite a{text-decoration:none}
+.revctl{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.revctl button{padding:3px 10px;font-size:12px}
+.revctl button.on.s-ok{background:var(--ok);color:#fff;border-color:var(--ok)}
+.revctl button.on.s-fix{background:var(--err);color:#fff;border-color:var(--err)}
+.revctl button.on.s-discuss{background:var(--warn);color:#fff;border-color:var(--warn)}
+.revctl button.on.s-todo{background:#666;color:#fff;border-color:#666}
+.revctl textarea{flex:1 1 280px;min-height:34px;border:1px solid var(--line);border-radius:8px;padding:5px 8px;resize:vertical}
+.revctl .who{font-size:11px;color:var(--mute)}
+table{border-collapse:collapse;width:100%;background:#fff}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top;font-size:13px}
+th{background:#f5f2ea;font-weight:600}
+.mx th,.mx td{white-space:nowrap}
+.mx td.c{text-align:center;cursor:pointer;min-width:62px}
+.mx td.c:hover{outline:2px solid var(--gold);outline-offset:-2px}
+.mx th.rot{font-size:12px;white-space:nowrap}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--ink2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.chain{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px}
+.chain svg{display:block;width:100%;height:auto;min-width:820px}
+.chain svg text{font-size:12px;fill:var(--ink)}
+.chain .lk{fill:none;stroke-opacity:.28;transition:stroke-opacity .15s}
+.chain .lk.hi{stroke-opacity:.85}
+.chain .nd{cursor:pointer}
+.chain .nd rect{rx:6;ry:6}
+.check{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px dashed var(--line)}
+.check .ic{font-weight:700;width:18px;text-align:center}
+.ic.ok{color:var(--ok)}.ic.no{color:var(--err)}.ic.pend{color:var(--warn)}
+.refs li{margin:6px 0}
+.vbadge{font-size:11px;border-radius:4px;padding:0 6px;margin-left:6px}
+.v-ok{background:#e3f4ea;color:var(--ok)}.v-todo{background:#fff3db;color:#8a5c00}.v-book{background:#efe9f7;color:#6a3f8f}
+details.tp{background:#fff;border:1px solid var(--line);border-radius:10px;margin:8px 0;padding:8px 12px}
+details.tp summary{cursor:pointer;font-weight:600}
+.log li{margin:6px 0}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:12px}
+.empty{color:var(--mute);padding:30px;text-align:center}
+.toast{position:fixed;right:18px;bottom:18px;z-index:50;background:#15181f;color:#fff;border-radius:10px;padding:10px 14px;box-shadow:0 6px 24px rgba(0,0,0,.25);font-size:13px;max-width:420px;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+.help{background:#fff;border:1px dashed var(--gold);border-radius:12px;padding:14px 16px;margin:12px 0}
+.help code{background:#f3efe6;padding:1px 5px;border-radius:4px}
+@media (max-width:720px){.g2{grid-template-columns:1fr}.sync{margin-left:0}.filters input[type=search]{min-width:0;flex:1}}
+@media print{.top,.tabs,.notice,.filters,.revctl button,.acts,.toast{display:none!important}.item{break-inside:avoid;box-shadow:none}body{background:#fff}}
+.lock{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 50% 30%,#232838,#0d0f14 70%);display:flex;align-items:center;justify-content:center;padding:20px}
+.lock form{background:#fff;border-radius:14px;padding:26px 24px 22px;max-width:360px;width:100%;box-shadow:0 12px 48px rgba(0,0,0,.45)}
+.lock h1{font-size:18px;margin:0 0 4px;color:var(--ink);letter-spacing:.04em}
+.lock input[type=password]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:16px;margin:14px 0 8px}
+.lock .err{color:var(--err);min-height:1.5em;font-size:13px;margin:4px 0 8px}
+.lock button{width:100%;justify-content:center;padding:9px}
+body.locked>.top,body.locked>.notice,body.locked>.tabs,body.locked>main{visibility:hidden}
+</style>
+</head>
+<body class="locked">
+<div class="lock" id="lock" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
+  <form id="lockForm" autocomplete="off">
+    <h1 id="lockTitle">专业学科与剧情分析</h1>
+    <div class="sub">《怪物夜未眠》审阅台 · 请输入查看密码（不区分大小写）</div>
+    <input type="password" id="lockPw" placeholder="查看密码" aria-label="查看密码" required>
+    <label class="row sub"><input type="checkbox" id="lockRemember"> 在这台设备上记住</label>
+    <div class="err" id="lockErr" aria-live="polite"></div>
+    <button class="pri" type="submit" id="lockBtn">进入</button>
+  </form>
+</div>
+<header class="top" id="top">
+  <div class="brand"><b>专业学科与剧情分析</b><span>《怪物夜未眠》审阅台 · 供睡眠医学 / 心理背景审阅者使用</span></div>
+  <div class="sync">
+    <span class="pill"><i class="dot" id="syncDot"></i><span id="syncText">准备中…</span></span>
+    <select id="selInterval" title="检查间隔">
+      <option value="auto">自动间隔</option><option value="2000">每 2 秒</option><option value="5000">每 5 秒</option>
+      <option value="20000">每 20 秒</option><option value="60000">每 60 秒</option><option value="0">暂停</option>
+    </select>
+    <span class="srcs" id="srcInfo"></span>
+  </div>
+  <div class="acts">
+    <input id="reviewer" placeholder="审阅人姓名" size="9" title="写进审阅记录">
+    <button id="btnRefresh" title="立即重新读取两份文件">立即检查</button>
+    <button id="btnLock" title="清除这台设备记住的密码，并锁定本页">锁定</button>
+    <button id="btnConnect" title="用 file:// 打开本页时，连接仓库文件夹以实时读取">连接本地文件夹</button>
+    <a class="btn" href="怪物夜未眠.html" target="_blank" rel="noopener">打开游戏 ↗</a>
+    <button id="btnMd">导出审阅报告</button>
+    <button id="btnJson">导出记录</button>
+    <label class="btn">导入记录<input type="file" id="fileImport" accept=".json,application/json" hidden></label>
+  </div>
+</header>
+<div class="notice">本页是内部审阅工具。它会实时读取 <b>怪物夜未眠.html</b>（游戏剧本数据）和 <b>lane-brief.md</b>（v4 任务书），按文本内容和数据路径自动归类，并标出专业原理和出处。自动归类与规则检查只作提示，以审阅者判断为准；条目原文被修改后，审阅状态会自动变成"已改动 · 待复审"。</div>
+<nav class="tabs" id="tabs"></nav>
+<main id="view"><div class="empty">正在读取剧本…</div></main>
+<div class="toast" id="toast"></div>
+<script>
+'use strict';
+/* ================= 知识库：学科 · 审阅类别 · 专业原理 · 出处 · 规则 ================= */
+const CONF={game:'怪物夜未眠.html',mirror:'index.html',brief:'lane-brief.md',briefEnc:'lane-brief.enc',fastMs:2000,slowMs:20000,store:'mmReview.v1'};
+// 查看密码的校验值（由 review-lock.ps1 -SetPassword 生成；只含盐与派生值的哈希，不含密码本身）
+const LOCK={salt:'VzReAtNlu1jHLimwwq98Xg==',iter:310000,check:'f945c818d4b949026685c5f0721495c0e5cb6dc4f63f74bc711cc12990287e42'};
+
+const DISC={
+  cbti_b:{n:'CBT-I · 行为',c:'#2f7d6d'},
+  cbti_c:{n:'CBT-I · 认知',c:'#3b6db3'},
+  phys:{n:'睡眠生理 / 昼夜节律',c:'#b5651d'},
+  psy:{n:'心理 / 情绪',c:'#8a4fb3'},
+  nutri:{n:'营养与物质',c:'#5f8a1f'},
+  tcm:{n:'中医传统说法',c:'#a33b3b'},
+  safety:{n:'安全与就医（红旗）',c:'#d1342f'}
+};
+const CATS={
+  card:{n:'手札卡',d:'夜游手札、图鉴多学科卡、跨学科四格（VISITOR_CARDS / NOTEBOOK / four）'},
+  redflag:{n:'红旗',d:'需要就医或求助的信号：鼾与憋醒、情绪、腿不适、依赖酒精或药物、慢性失眠等'},
+  window:{n:'睡眠窗口',d:'睡眠限制、卧床时间、"躺得比睡得久"相关表述'},
+  body:{n:'体征文案（4.1b）',d:'舌、面、眼、寒热、汗、鼾等体征描写，以及旧问诊题库'},
+  action:{n:'行动建议',d:'哄睡卡、小行动卡、第三幕改法、镜子"带回现实的一件事"'},
+  health:{n:'其他健康相关',d:'命中专业主题，但不属于以上类别的文案'}
+};
+const CORE_CATS=['card','redflag','window','body'];
+
+/* 专业原理主题：re 只在中文文本上匹配；匹配结果是"可能相关"，需人工确认 */
+const TOPICS=[
+ {id:'cbti',n:'CBT-I 总体框架',disc:['cbti_b','cbti_c'],re:/失眠|CBT-?I|认知行为/,refs:['edinger2021','qaseem2016','riemann2023','riemann2017','cn2017','cn2018'],
+  logic:'成人慢性失眠的一线治疗是 CBT-I。它由多个成分组成：刺激控制、睡眠限制、认知治疗、放松训练和睡眠卫生教育，指南推荐优先于药物。',
+  story:'整体结构：第一幕揭示维持因素，第二幕做认知重构，第三幕只改一个维持因素。',
+  caution:'游戏只做科普叙事，不替代评估与治疗；持续失眠应就医。'},
+ {id:'3p',n:'3P 模型（素质 · 诱发 · 维持）',disc:['cbti_c','psy'],re:/素质|诱发|维持因素|三根柱子/,refs:['spielman1987a'],
+  logic:'失眠由易感素质、诱发事件和维持因素共同造成。慢性化主要由维持因素（适应不良的行为与信念）驱动，因此它是干预的靶点。',
+  story:'图鉴"三根柱子"总板；体征线索★计入"素质"。',caution:'素质（体质、性格）只描述，不评判。'},
+ {id:'drive',n:'睡眠驱力与小睡（两过程模型）',disc:['phys','cbti_b'],re:/沙漏|攒着困|攒困|困意|小睡|午睡|打盹|长盹|眯一会|补觉|补回来|睡眠压力|腺苷|累了就|躺平/,refs:['borbely1982','milner2009'],
+  logic:'睡眠由稳态驱力（醒得越久，压力越大）和昼夜节律共同调节。白天长时间或傍晚小睡会消耗睡眠压力，夜里更难入睡。',
+  story:'伦德桑塔纳：沙漏与白天长盹；手札卡 1。',caution:'不给具体小睡时长；轮班者、嗜睡者不一概而论。'},
+ {id:'light',n:'光照与昼夜节律',disc:['phys'],re:/屏幕|手机|刷屏|刷评论|灯光|亮光|开灯|关灯|熄灯|大灯|窗帘|晨光|早晨的光|见光|晒太阳|太阳|褪黑素|生物钟|夜猫|作息|起床时间|同一时间起床|夜班|夜场|睡到中午/,refs:['khalsa2003','chang2015','riemann2023'],
+  logic:'晨间光照让生物钟提前，夜间光照（包括屏幕）让它推迟，并抑制褪黑素分泌。固定起床时间是稳定节律的"锚"。',
+  story:'旁妮儿拉灯：窗帘缝、固定起床时间；手札卡 3。',caution:'轮班工作者的光照安排需要个体化（见红旗"轮班"）。'},
+ {id:'stimulus',n:'刺激控制',disc:['cbti_b'],re:/床只|在床上|床上|下床|离开床|起身去|床也会记|床记性|客厅/,refs:['bootzin1972','edinger2021'],
+  logic:'解除床与清醒、焦虑活动之间的条件联结：困了才上床，床只用于睡眠，躺着睡不着就离开床，困了再回来。',
+  story:'潮天稳：清床；手札卡 2。',caution:'不给"躺多少分钟离床"的具体数字；行动不便者需调整。'},
+ {id:'window',n:'睡眠限制 / 睡眠窗口',disc:['cbti_b'],re:/睡眠窗口|睡眠限制|躺得比睡得久|躺得越久|躺久|躺够|补够|早早上床|早点上床|多躺|卧床/,refs:['spielman1987b','edinger2021','riemann2023'],
+  logic:'按实际睡眠量压缩在床时间，提高睡眠效率和睡眠驱力，再逐步放宽。它是 CBT-I 中效果最强的行为成分之一。',
+  story:'山姬娇 - 学徒版：手札卡 4，只讲"躺得比睡得久，床会变成雾"的概念。',
+  caution:'必须在专业人员指导下实施；不给具体卧床时长。文献常提示需要谨慎的人群包括双相障碍、癫痫、日间嗜睡明显或从事需高度警觉的作业（如驾驶）者，请审阅者按最新指南确认措辞。'},
+ {id:'cog',n:'认知模型：担忧与反刍',disc:['cbti_c','psy'],re:/心事|担心|担忧|复盘|反刍|写下|纸上|写在|脑子|念头|想清楚|想完|别想|想事|回放|没说完/,refs:['harvey2002','harvey2003','carney2006'],
+  logic:'睡前的认知唤醒（担忧、反刍）会维持失眠。提前安排"担忧时段"或做结构化问题解决，可降低睡前认知唤醒；刻意压抑念头反而可能反弹。',
+  story:'明娜戈礼拜：担忧盒；手札卡 5。',caution:'持续、难以控制的担忧可能属于焦虑障碍，应提示求助。'},
+ {id:'reframe',n:'认知重构：灾难化与失眠信念',disc:['cbti_c'],re:/完了|搞砸|万一|一定会|念头不是事实|平衡的说法|只剩.{0,4}小时|就完/,refs:['harvey2002','morin2007'],
+  logic:'"睡不好明天就完了"这类灾难化信念会提高唤醒和睡眠焦虑。识别它，并替换成更平衡的想法，是 CBT-I 的认知成分。',
+  story:'喇巴菜菜子：摘念头；手札卡 6。',caution:'不否定真实压力，只调整对睡眠后果的过度预期。'},
+ {id:'effort',n:'睡眠努力与矛盾意图',disc:['cbti_c'],re:/努力睡|越想.{0,4}睡|快点睡着|放手|不赶|较劲|一定要睡着|必须睡着|练到完美|助眠功课/,refs:['espie2006','ascher1979'],
+  logic:'"努力去睡"会把注意力和意图引向睡眠，提高唤醒（注意—意图—努力通路）。矛盾意图（不去赶睡意，安静地醒着）可以降低表现焦虑。',
+  story:'山姬娇：松手（手札卡 8）；K钥科斯基：接纳（手札卡 14）。',caution:'矛盾意图不等于"故意熬夜"，措辞要避免误读。'},
+ {id:'clock',n:'看钟与时间监控',disc:['cbti_c'],re:/看钟|看表|钟面|几点|手表|还剩|还能睡|翻钟|背过去/,refs:['tang2007'],
+  logic:'夜间看钟、计算剩余睡眠时间会增加担忧和觉醒，是失眠的维持因素之一；移开钟面可以减少监控。',
+  story:'铂金咪咪莎：翻钟；手札卡 11。',caution:'—'},
+ {id:'temp',n:'体温调节与入睡',disc:['phys'],re:/手脚|脚底|泡脚|体温|洗澡|被子|结霜|白霜|霜花|冰凉|暖和|暖暖|凉快|凉水|太热|怕冷|怕热|潮热|发烫|卧室凉/,refs:['krauchi1999','haghayegh2019'],
+  logic:'入睡前，手脚的血管扩张散热，核心体温下降，有利于入睡。荟萃分析显示，睡前 1–2 小时温水浴或淋浴可缩短入睡时间；卧室略凉更利于睡眠。',
+  story:'肯卡特勋章：添柴；手札卡 7；铂金咪咪莎：卧室凉一点。',caution:'不给水温等处方式数字；循环障碍、糖尿病足等人群泡脚需谨慎。'},
+ {id:'caffeine',n:'咖啡因',disc:['nutri','phys'],re:/咖啡|浓茶|奶茶|可乐|咖啡因/,refs:['drake2013'],
+  logic:'咖啡因阻断腺苷受体，削弱睡眠压力。即使在睡前 6 小时摄入，仍可明显减少总睡眠时间。',
+  story:'卢布喏喏花：下午奶茶；手札卡 10；旁妮儿拉灯：浓茶。',caution:'只作一般科普，不涉及个体剂量。'},
+ {id:'alcohol',n:'酒精',disc:['nutri','phys','safety'],re:/酒|喝一杯|来一杯|醉/,refs:['ebrahim2013'],
+  logic:'酒精会缩短入睡时间，但让后半夜睡眠变碎，并扰乱 REM 睡眠，不能当作助眠手段。依赖酒精入睡属于红旗。',
+  story:'卢布喏喏花：散岚；黑泪斯基：睡前酒加重憋醒。',caution:'避免"酒鬼"等污名化措辞；依赖问题提示求助。'},
+ {id:'diet',n:'晚餐、夜宵与反流',disc:['nutri','phys'],re:/夜宵|晚饭|晚餐|胃|胀|撑|反酸|酸水|零食|吃饱|饿着|(?<!一)肚子|甜食|吃得晚|吃一口|撸串|外卖|七分饱/,refs:['fujiwara2005','riemann2023'],
+  logic:'晚餐离就寝太近与胃食管反流风险增加有关；平躺会加重反流，影响睡眠的连续性。',
+  story:'咸豆腐片儿翠翠：揉肚子；手札卡 9。',caution:'不评价体重和身材，不给节食建议；对进食障碍风险人群，慎用"管住嘴"式叙事。'},
+ {id:'routine',n:'睡前仪式与可预测性',disc:['cbti_b','psy'],re:/仪式|三件事|顺序|讲故事|夜灯|洗漱|拖延|再玩/,refs:['mindell2015'],
+  logic:'规律、可预测的睡前流程与儿童更好的睡眠结局呈剂量相关；拖延上床会推迟入睡。',
+  story:'喇嘛菜菜子-幼年版：点夜灯；手札卡 12。',caution:'儿童失眠或夜惊持续存在时，建议咨询儿科或儿童睡眠专科。'},
+ {id:'tracker',n:'睡眠追踪与完美主义（orthosomnia）',disc:['cbti_c','psy'],re:/手环|分数|数据|追踪|打分|账本/,refs:['baron2017'],
+  logic:'过度关注可穿戴设备的睡眠数据，可能加重睡眠焦虑和"努力去睡"（orthosomnia）。消费级设备的准确性有限。',
+  story:'山姬娇 - 学徒版：合上账本；手札卡 4。',caution:'剧情里的"62 分"只是情节，不作为玩家分数。'},
+ {id:'relax',n:'放松训练与呼吸',disc:['cbti_b','phys'],re:/按住吸气|慢慢呼气|呼气五次|腹式呼吸|呼吸节奏|放松|松肩|揉肚子|轻轻揉|拍拍|眼罩|发条|松手/,refs:['edinger2021','riemann2023'],
+  logic:'放松训练（渐进性肌肉放松、腹式呼吸等）是 CBT-I 的成分之一，用来降低生理唤醒。',
+  story:'第四幕各哄睡小游戏（吹灯、揉肚子、添柴、松手）。',caution:'呼吸节奏只作放松引导，不作治疗声明。'},
+ {id:'osa',n:'红旗：疑似睡眠呼吸暂停',disc:['safety','phys'],re:/鼾|憋醒|呼吸暂停|憋得|白天(犯困|嗜睡|很困)|白天.{0,6}(打瞌睡|睡着)/,refs:['kapur2017','icsd3'],
+  logic:'响亮打鼾伴有憋醒或他人目击的呼吸暂停，加上白天嗜睡，提示阻塞性睡眠呼吸暂停的可能，需要睡眠专科评估（多导睡眠监测或居家睡眠呼吸检测），不能靠自我调整解决。',
+  story:'黑泪斯基：就医信笺；手札卡 13；固定触发红旗。',caution:'不暗示"侧睡或垫高枕头可以治疗"；必须给出就医指引。'},
+ {id:'mood',n:'红旗：情绪与自伤风险',disc:['safety','psy'],re:/低落|失去兴趣|兴趣减退|没兴趣|提不起劲|伤害自己|自伤|轻生|热线|绝望/,refs:['riemann2023','cn2018'],
+  logic:'失眠与抑郁、焦虑高度共病。持续低落、兴趣丧失或有自伤念头时，需要及时转介心理或精神专业服务。',
+  story:'镜子题红旗分支（R6）。',caution:'提示当地心理援助热线，不写死某个地区的号码；不游戏化，不发奖励。'},
+ {id:'rls',n:'红旗：不宁腿',disc:['safety','phys'],re:/腿不适|动腿|腿.{0,4}(不舒服|难受|抽动)|不宁腿/,refs:['allen2014'],
+  logic:'傍晚或夜间静息时，腿部不适并有强烈想活动的冲动、活动后缓解，提示不宁腿综合征，需要医学评估。',
+  story:'4.4 红旗清单。',caution:'不给补铁等自我处理建议。'},
+ {id:'chronic',n:'红旗：慢性失眠与共病就医',disc:['safety'],re:/三个月|3 个月|就医|看医生|找医生|医生|信笺|药物|轮班|怀孕|慢性疼痛/,refs:['icsd3','riemann2023','qaseem2016','cn2017'],
+  logic:'失眠每周至少 3 晚、持续至少 3 个月并影响日间功能，符合慢性失眠障碍的诊断标准（ICSD-3），应寻求专业评估。轮班、妊娠、慢性疼痛等情况需要个体化处理。',
+  story:'4.4 红旗；免责声明"不舒服请找医生"。',caution:'不提及任何药物名称或剂量。'},
+ {id:'tcm',n:'中医传统说法（志怪叙事）',disc:['tcm'],re:/心火|肝郁|气滞|脾虚|脾胃|胃不和|阳不入阴|阴虚|火旺|痰湿|痰扰|湿热|气虚|血虚|血瘀|心肾不交|神不守舍|神不入舍|心神|证型|五行|传统说法/,refs:['suwen34','lingshu80','lingshu28','tcm_todo','cn2017'],
+  logic:'中医用"阳不入阴""胃不和则卧不安"等解释不寐。本作只借用它们作为角色体质和志怪叙事。',
+  story:'4.1b 体质标签；图鉴"志怪录"；跨学科四格的"志怪"一格。',caution:'界面上必须标注"传统说法"；不写成疗效结论或诊断，不与现代机制混为一谈。'},
+ {id:'bodysign',n:'体征描写（望闻问 → 角色造型）',disc:['tcm','phys'],re:/舌|苔|面色|脸色|眼白|血丝|黑眼圈|手脚冰|手足|盗汗|潮热|出汗|细汗|口干|口苦|口臭|口黏|齿痕|心悸|心慌|耳鸣|头晕|头重|夜尿|大便|小便|二便|浮肿|鼾|腹胀|嗳气|反酸/,refs:['suwen34','lingshu80'],
+  logic:'v4 起，体征只作为怪物造型和第一幕的"观察线索"，用来讲述"素质"，不作自测依据。旧问诊题库只留给"揭下面具"后的镜子题。',
+  story:'4.1b：望 / 闻 / 醒着态 / 睡着态 / 体征线索★。',caution:'不对玩家的身体发问；不暗示"有这个体征就是某证、某病"；红旗体征只出现在黑泪斯基身上。'}
+];
+const TOPIC=Object.fromEntries(TOPICS.map(t=>[t.id,t]));
+
+/* 出处：v = 核对状态（crossref / pubmed / 典籍 / 待核对） */
+const REFS=[
+ {id:'edinger2021',a:'Edinger JD, Arnedt JT, Bertisch SM, et al.',t:'Behavioral and psychological treatments for chronic insomnia disorder in adults: an American Academy of Sleep Medicine clinical practice guideline.',j:'J Clin Sleep Med. 2021;17(2):255–262.',doi:'10.5664/jcsm.8986',type:'临床指南',pmid:'33164742',v:'Crossref/PubMed 已核对'},
+ {id:'qaseem2016',a:'Qaseem A, Kansagara D, Forciea MA, et al.',t:'Management of chronic insomnia disorder in adults: a clinical practice guideline from the American College of Physicians.',j:'Ann Intern Med. 2016;165(2):125–133.',doi:'10.7326/M15-2175',type:'临床指南',pmid:'27136449',v:'Crossref/PubMed 已核对'},
+ {id:'riemann2017',a:'Riemann D, Baglioni C, Bassetti C, et al.',t:'European guideline for the diagnosis and treatment of insomnia.',j:'J Sleep Res. 2017;26(6):675–700.',doi:'10.1111/jsr.12594',type:'临床指南',pmid:'28875581',v:'Crossref/PubMed 已核对'},
+ {id:'riemann2023',a:'Riemann D, Espie CA, Altena E, et al.',t:'The European Insomnia Guideline: an update on the diagnosis and treatment of insomnia 2023.',j:'J Sleep Res. 2023;32(6):e14035.',doi:'10.1111/jsr.14035',type:'临床指南',pmid:'37845791',v:'Crossref/PubMed 已核对'},
+ {id:'cn2017',a:'中国睡眠研究会.',t:'中国失眠症诊断和治疗指南.',j:'中华医学杂志. 2017;97(24):1844–1856.',doi:'10.3760/cma.j.issn.0376-2491.2017.24.002',type:'临床指南',v:'Crossref 已核对（CNKI/万方收录，非 PubMed）'},
+ {id:'cn2018',a:'中华医学会神经病学分会, 中华医学会神经病学分会睡眠障碍学组.',t:'中国成人失眠诊断与治疗指南(2017版).',j:'中华神经科杂志. 2018;51(5):324–335.',doi:'10.3760/cma.j.issn.1006-7876.2018.05.002',type:'临床指南',v:'Crossref 已核对（CNKI/万方收录，非 PubMed）'},
+ {id:'icsd3',a:'American Academy of Sleep Medicine.',t:'International Classification of Sleep Disorders, 3rd ed. (ICSD-3).',j:'Darien, IL: AASM; 2014.',type:'诊断分类（专著）',v:'专著'},
+ {id:'spielman1987a',a:'Spielman AJ, Caruso LS, Glovinsky PB.',t:'A behavioral perspective on insomnia treatment.',j:'Psychiatr Clin North Am. 1987;10(4):541–553.',type:'理论（3P 模型）',pmid:'3332317',v:'Crossref/PubMed 已核对'},
+ {id:'spielman1987b',a:'Spielman AJ, Saskin P, Thorpy MJ.',t:'Treatment of chronic insomnia by restriction of time in bed.',j:'Sleep. 1987;10(1):45–56.',doi:'10.1093/sleep/10.1.45',type:'研究',pmid:'3563247',v:'Crossref/PubMed 已核对'},
+ {id:'borbely1982',a:'Borbély AA.',t:'A two process model of sleep regulation.',j:'Hum Neurobiol. 1982;1(3):195–204.',type:'理论（两过程模型）',pmid:'7185792',v:'Crossref/PubMed 已核对'},
+ {id:'bootzin1972',a:'Bootzin RR.',t:'Stimulus control treatment for insomnia.',j:'Proceedings of the 80th Annual Convention of the American Psychological Association. 1972;7:395–396.',type:'会议论文',v:'已核对：会议论文，无 DOI / PMID'},
+ {id:'harvey2002',a:'Harvey AG.',t:'A cognitive model of insomnia.',j:'Behav Res Ther. 2002;40(8):869–893.',doi:'10.1016/S0005-7967(01)00061-4',type:'理论',pmid:'12186352',v:'Crossref/PubMed 已核对'},
+ {id:'harvey2003',a:'Harvey AG.',t:'The attempted suppression of presleep cognitive activity in insomnia.',j:'Cognit Ther Res. 2003;27(6):593–602.',doi:'10.1023/A:1026322310019',type:'研究',v:'Crossref 已核对（PsycINFO 收录，非 PubMed）'},
+ {id:'carney2006',a:'Carney CE, Waters WF.',t:'Effects of a structured problem-solving procedure on pre-sleep cognitive arousal in college students with insomnia.',j:'Behav Sleep Med. 2006;4(1):13–28.',doi:'10.1207/s15402010bsm0401_2',type:'研究',pmid:'16390284',v:'Crossref/PubMed 已核对'},
+ {id:'morin2007',a:'Morin CM, Vallières A, Ivers H.',t:'Dysfunctional beliefs and attitudes about sleep (DBAS): validation of a brief version (DBAS-16).',j:'Sleep. 2007;30(11):1547–1554.',doi:'10.1093/sleep/30.11.1547',type:'量表研究',pmid:'18041485',v:'Crossref/PubMed 已核对'},
+ {id:'espie2006',a:'Espie CA, Broomfield NM, MacMahon KMA, et al.',t:'The attention–intention–effort pathway in the development of psychophysiologic insomnia: a theoretical review.',j:'Sleep Med Rev. 2006;10(4):215–245.',doi:'10.1016/j.smrv.2006.03.002',type:'综述',pmid:'16843021',v:'Crossref/PubMed 已核对'},
+ {id:'ascher1979',a:'Ascher LM, Turner RM.',t:'Paradoxical intention and insomnia: an experimental investigation.',j:'Behav Res Ther. 1979;17(4):408–411.',type:'研究',doi:'10.1016/0005-7967(79)90015-9',pmid:'486046',v:'Crossref/PubMed 已核对'},
+ {id:'tang2007',a:'Tang NKY, Schmidt DA, Harvey AG.',t:'Sleeping with the enemy: clock monitoring in the maintenance of insomnia.',j:'J Behav Ther Exp Psychiatry. 2007;38(1):40–55.',doi:'10.1016/j.jbtep.2005.07.004',type:'研究',pmid:'16314143',v:'Crossref/PubMed 已核对'},
+ {id:'haghayegh2019',a:'Haghayegh S, Khoshnevis S, Smolensky MH, et al.',t:'Before-bedtime passive body heating by warm shower or bath to improve sleep: a systematic review and meta-analysis.',j:'Sleep Med Rev. 2019;46:124–135.',doi:'10.1016/j.smrv.2019.04.008',type:'系统综述 / 荟萃分析',pmid:'31102877',v:'Crossref/PubMed 已核对'},
+ {id:'krauchi1999',a:'Kräuchi K, Cajochen C, Werth E, Wirz-Justice A.',t:'Warm feet promote the rapid onset of sleep.',j:'Nature. 1999;401(6748):36–37.',doi:'10.1038/43366',type:'研究',pmid:'10485705',v:'Crossref/PubMed 已核对'},
+ {id:'ebrahim2013',a:'Ebrahim IO, Shapiro CM, Williams AJ, Fenwick PB.',t:'Alcohol and sleep I: effects on normal sleep.',j:'Alcohol Clin Exp Res. 2013;37(4):539–549.',doi:'10.1111/acer.12006',type:'综述',pmid:'23347102',v:'Crossref/PubMed 已核对'},
+ {id:'drake2013',a:'Drake C, Roehrs T, Shambroom J, Roth T.',t:'Caffeine effects on sleep taken 0, 3, or 6 hours before going to bed.',j:'J Clin Sleep Med. 2013;9(11):1195–1200.',doi:'10.5664/jcsm.3170',type:'研究',pmid:'24235903',v:'Crossref/PubMed 已核对'},
+ {id:'chang2015',a:'Chang AM, Aeschbach D, Duffy JF, Czeisler CA.',t:'Evening use of light-emitting eReaders negatively affects sleep, circadian timing, and next-morning alertness.',j:'Proc Natl Acad Sci U S A. 2015;112(4):1232–1237.',doi:'10.1073/pnas.1418490112',type:'研究',pmid:'25535358',v:'Crossref/PubMed 已核对'},
+ {id:'khalsa2003',a:'Khalsa SBS, Jewett ME, Cajochen C, Czeisler CA.',t:'A phase response curve to single bright light pulses in human subjects.',j:'J Physiol. 2003;549(Pt 3):945–952.',doi:'10.1113/jphysiol.2003.040477',type:'研究',pmid:'12717008',v:'Crossref/PubMed 已核对'},
+ {id:'milner2009',a:'Milner CE, Cote KA.',t:'Benefits of napping in healthy adults: impact of nap length, time of day, age, and experience with napping.',j:'J Sleep Res. 2009;18(2):272–281.',doi:'10.1111/j.1365-2869.2008.00718.x',type:'综述',pmid:'19645968',v:'Crossref/PubMed 已核对'},
+ {id:'fujiwara2005',a:'Fujiwara Y, Machida A, Watanabe Y, et al.',t:'Association between dinner-to-bed time and gastro-esophageal reflux disease.',j:'Am J Gastroenterol. 2005;100(12):2633–2636.',doi:'10.1111/j.1572-0241.2005.00354.x',type:'研究',pmid:'16393202',v:'Crossref/PubMed 已核对'},
+ {id:'mindell2015',a:'Mindell JA, Li AM, Sadeh A, Kwon R, Goh DYT.',t:'Bedtime routines for young children: a dose-dependent association with sleep outcomes.',j:'Sleep. 2015;38(5):717–722.',doi:'10.5665/sleep.4662',type:'研究',pmid:'25325467',v:'Crossref/PubMed 已核对'},
+ {id:'baron2017',a:'Baron KG, Abbott S, Jao N, Manalo N, Mullen R.',t:'Orthosomnia: are some patients taking the quantified self too far?',j:'J Clin Sleep Med. 2017;13(2):351–354.',doi:'10.5664/jcsm.6472',type:'病例报告 / 评论',pmid:'27855744',v:'Crossref/PubMed 已核对'},
+ {id:'kapur2017',a:'Kapur VK, Auckley DH, Chowdhuri S, et al.',t:'Clinical practice guideline for diagnostic testing for adult obstructive sleep apnea: an American Academy of Sleep Medicine clinical practice guideline.',j:'J Clin Sleep Med. 2017;13(3):479–504.',doi:'10.5664/jcsm.6506',type:'临床指南',pmid:'28162150',v:'Crossref/PubMed 已核对'},
+ {id:'allen2014',a:'Allen RP, Picchietti DL, Garcia-Borreguero D, et al.',t:'Restless legs syndrome/Willis–Ekbom disease diagnostic criteria: updated International Restless Legs Syndrome Study Group (IRLSSG) consensus criteria.',j:'Sleep Med. 2014;15(8):860–873.',doi:'10.1016/j.sleep.2014.03.025',type:'共识标准',pmid:'25023924',v:'Crossref/PubMed 已核对'},
+ {id:'suwen34',a:'《黄帝内经·素问》',t:'逆调论篇第三十四："胃不和则卧不安。"',j:'中医典籍。本作只作志怪叙事，不作为循证证据。',type:'典籍',v:'典籍'},
+ {id:'lingshu80',a:'《黄帝内经·灵枢》',t:'大惑论第八十："卫气不得入于阴，常留于阳……故目不瞑矣。"',j:'中医典籍。本作只作志怪叙事，不作为循证证据。',type:'典籍',v:'典籍'},
+ {id:'lingshu28',a:'《黄帝内经·灵枢》',t:'口问第二十八："阳气尽，阴气盛，则目瞑；阴气尽而阳气盛，则寤矣。"',j:'中医典籍。本作只作志怪叙事，不作为循证证据。',type:'典籍',v:'典籍'},
+ {id:'tcm_todo',a:'（待补）',t:'"心肾不交""心火扰神""痰扰心神""神不入舍"等后世证型的出处。',j:'请中医背景审阅者补充具体文献与原文。',type:'待补',v:'待补'}
+];
+const REF=Object.fromEntries(REFS.map(r=>[r.id,r]));
+const REF_NO=Object.fromEntries(REFS.map((r,i)=>[r.id,i+1]));
+
+/* 规则：level = error（违反第 0 节底线）/ warn（高风险，需要专业判断）/ info（提示，请确认） */
+const RULES=[
+ {id:'dx',level:'error',n:'诊断性用语',re:/诊断为|确诊|你患有|你得了|你有[^，。]{0,6}(症|病)/,ex:/不是诊断|不做诊断|不诊断|诊断标准/,why:'游戏不做诊断（第 0 节）。'},
+ {id:'rx',level:'error',n:'药物 / 处方 / 剂量 / 保健品',re:/\d+\s*(mg|毫克|片|粒|滴)\b|安眠药|助眠药|处方|服用|剂量|褪黑素(片|软糖|补充)|保健品|补铁/i,ex:/不开处方|不给药物|不提及任何药物|不给.*保健品/,why:'不给药物或保健品建议。'},
+ {id:'cure',level:'error',n:'疗效承诺',re:/治愈|根治|疗效|包治|保证.{0,4}睡着|一定能睡着|立刻睡着/,ex:/不写成疗效|不是疗效|不作疗效|疗效结论/,why:'不作疗效承诺。'},
+ {id:'tib',level:'warn',n:'具体卧床 / 睡眠时长',re:/(卧床|躺|在床上|上床|睡)[^，。；]{0,6}\d+(\.\d+)?\s*个?(小时|钟头|分钟)|\d+\s*(小时|分钟)[^，。；]{0,4}(卧床|躺|上床)/,ex:/不给具体|入睡困难|早醒/,why:'不给具体卧床时长；睡眠窗口必须由专业人员个体化制定。'},
+ {id:'num',level:'info',n:'行动建议里含具体数字',re:/(\d+|[一二两三四五六七八九十半]+)\s*(分钟|小时|个钟头|刻钟|点后|点前)/,cats:['action','window'],why:'请确认数字是否合适（避免变成"处方"）。'},
+ {id:'you',level:'warn',n:'对玩家身体直问',re:/你的(身体|舌头|舌|手脚|大便|小便|睡眠质量|体质)/,why:'不对玩家用"你的身体"直问（第 0 节）。'},
+ {id:'score',level:'info',n:'分数 / 百分比',re:/\d+\s*%|健康分|\d+\s*分(?!钟)/,why:'不显示健康分数或百分比；剧情数字需注明不是玩家分数。'},
+ {id:'stigma',level:'warn',n:'可能污名化的措辞',re:/酒鬼|你就是懒|就是懒|不够自律|胖子|没用|管不住/,why:'这类措辞如果是"错误选项"，可以保留，但请确认怪物的回应没有羞辱意味。'},
+ {id:'len',level:'info',n:'台词超过 20 字',test:it=>it.dialog&&cjkLen(it.zh)>20,why:'台词每句 ≤ 20 字（第 0 节）。'},
+ {id:'tcmlabel',level:'info',n:'中医说法需标"传统说法"',test:it=>it.topics.includes('tcm')&&it.cats.some(c=>c==='card'||c==='body'),why:'中医内容在界面上需标注为"传统说法"。'},
+ {id:'swpro',level:'warn',n:'睡眠窗口缺少"专业指导"提示',test:it=>/睡眠窗口|睡眠限制|躺得比睡得久/.test(it.zh)&&!/专业|医生/.test(it.zh)&&(it.src==='game'||it.cats.includes('card')),why:'睡眠窗口须提示"和专业的人一起调整"。'},
+ {id:'osaself',level:'warn',n:'呼吸暂停相关却暗示自我处理',test:it=>it.topics.includes('osa')&&/侧睡|侧卧|垫高|枕头|止鼾/.test(it.zh)&&!/医生|就医|信笺|安抚|不说成治疗/.test(it.zh),why:'疑似呼吸暂停只能引导就医，不暗示体位或枕头可以治疗。'}
+];
+const LV={error:{n:'底线',o:0},warn:{n:'高风险',o:1},info:{n:'提示',o:2}};
+const cjkLen=s=>String(s).replace(/\{[^}]*\}/g,'').replace(/[\s\p{P}\p{S}A-Za-z0-9]/gu,'').length;
+/* ================= 工具 ================= */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const CJK=/[\u3400-\u9fff]/;
+function fnv(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193);}return (h>>>0).toString(16).padStart(8,'0');}
+const fmtT=t=>t?new Date(t).toLocaleString('zh-CN',{hour12:false}):'—';
+const fmtKB=n=>n?(n/1024).toFixed(0)+' KB':'—';
+const norm=s=>String(s).replace(/[\s“”"'‘’「」『』（）()，,。.、！!？?…—\-:：;；·*`★✔✗→]/g,'');
+function store(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(CONF.store+'.'+k)||'null');localStorage.setItem(CONF.store+'.'+k,JSON.stringify(v));}catch(e){return null;}}
+function lineIndex(src){const a=[0];for(let i=0;i<src.length;i++)if(src.charCodeAt(i)===10)a.push(i+1);return a;}
+function lineAt(idx,off){let lo=0,hi=idx.length-1;while(lo<hi){const m=(lo+hi+1)>>1;if(idx[m]<=off)lo=m;else hi=m-1;}return lo+1;}
+
+/* ================= 查看密码与任务书解密（WebCrypto，与 review-lock.ps1 对应） ================= */
+const PWK='mmReview.pw';
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const hexOf=buf=>[...new Uint8Array(buf)].map(x=>x.toString(16).padStart(2,'0')).join('');
+const KEYS=new Map();
+async function derive(pw,salt,iter){
+  const norm=String(pw).trim().toUpperCase(),k=norm+'|'+salt+'|'+iter;if(KEYS.has(k))return KEYS.get(k);
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(norm),'PBKDF2',false,['deriveBits']);
+  const bits=new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:b64(salt),iterations:iter},base,512));
+  KEYS.set(k,bits);return bits;
+}
+async function checkPw(pw){if(!LOCK.check)return true;const bits=await derive(pw,LOCK.salt,LOCK.iter);return hexOf(await crypto.subtle.digest('SHA-256',bits))===LOCK.check;}
+async function decryptEnc(text){
+  const o=JSON.parse(text),bits=await derive(S.pw,o.salt,o.iter);
+  const ek=await crypto.subtle.importKey('raw',bits.slice(0,32),'AES-CBC',false,['decrypt']);
+  const mk=await crypto.subtle.importKey('raw',bits.slice(32),{name:'HMAC',hash:'SHA-256'},false,['verify']);
+  const iv=b64(o.iv),ct=b64(o.ct),data=new Uint8Array(iv.length+ct.length);data.set(iv);data.set(ct,iv.length);
+  if(!await crypto.subtle.verify('HMAC',mk,b64(o.mac),data))throw new Error('加密任务书校验失败（密码已更换？）');
+  return new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-CBC',iv},ek,ct));
+}
+
+/* ================= 读取源文件（http 轮询 / 本地文件夹） ================= */
+const S={
+  mode:/^https?:$/.test(location.protocol)?'http':'none', dir:null, pw:'',
+  src:{game:{file:CONF.game},brief:{file:CONF.brief,alt:CONF.briefEnc},mirror:{file:CONF.mirror}},
+  game:null, brief:null, items:[], byKey:new Map(), fresh:new Set(), log:store('log')||[],
+  reviews:store('reviews')||{}, snap:store('snap')||{}, checks:[], busy:false, timer:null, lastCheck:0, err:null,
+  ui:{tab:'overview',q:'card',srcF:'all',st:'all',disc:'all',ent:'all',text:'',issues:false,limit:80,mxSrc:'auto',chSrc:'auto',topic:null}
+};
+async function probe(f){
+  if(S.mode==='fs'){const h=await S.dir.getFileHandle(f.file);const file=await h.getFile();return {sig:file.lastModified+':'+file.size,mtime:file.lastModified,size:file.size,read:()=>file.text()};}
+  let r=await fetch(f.file,{method:'HEAD',cache:'no-cache'});
+  if(r.status===404)throw new Error('404 未找到');
+  const lm=r.headers.get('last-modified'),et=r.headers.get('etag'),cl=r.headers.get('content-length');
+  if(!r.ok||(!lm&&!et)){r=await fetch(f.file,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const t=await r.text();return {sig:'h'+fnv(t),mtime:Date.parse(r.headers.get('last-modified')||'')||null,size:t.length,read:async()=>t};}
+  return {sig:[et,lm,cl].join('|'),mtime:Date.parse(lm||'')||null,size:+cl||0,read:async()=>{const g=await fetch(f.file,{cache:'no-store'});if(!g.ok)throw new Error('HTTP '+g.status);return g.text();}};
+}
+async function refreshSource(key,force){
+  const f=S.src[key];
+  try{
+    let p;
+    try{p=await probe(f);}
+    catch(e){ // 线上没有明文任务书时，改读加密版
+      if(f.alt&&f.file!==f.alt&&/404|NotFound|could not be found/i.test(e.name+' '+e.message)){f.file=f.alt;f.sig=null;p=await probe(f);}else throw e;
+    }
+    f.checked=Date.now(); f.err=null;
+    if(!force&&p.sig===f.sig)return false;
+    let text=await p.read();
+    if(/\.enc$/.test(f.file))text=await decryptEnc(text);
+    const h=fnv(text);
+    f.sig=p.sig; f.mtime=p.mtime; f.size=p.size||text.length;
+    if(h===f.hash&&!force)return false;
+    f.hash=h; f.text=text; return true;
+  }catch(e){f.err=e.message||String(e);f.checked=Date.now();return false;}
+}
+
+/* ================= 沙箱运行游戏，读取真实剧本数据 ================= */
+const KNOWN_ROOTS=['MONSTERS','NOTEBOOK','RED_FLAGS','LANE','SCENES','MUSIC','NIGHT','NIGHT_LINES','DISPLAY_Q','Q_OBSERVE','Q_LISTEN','Q_INQUIRE','VISITOR_CARDS','RITUAL_CARDS','PATTERN_ACTS','FABLES','BEASTS','SHAN_GOD','BACK_LINES','EVO_SAY','STAGES','BADGES','CHAPTERS','DIMS','CONTEXTS'];
+const SKIP_ROOTS=new Set(['FABLES_EN','DIMS_EN','EL_EN','GLYPH','GROUP_GLYPH','PICTO','FX','ART','UNK','PAL','WORDS','NODES','LINKS','PANELS','STREAMS']);
+function discoverRoots(html){
+  const set=new Set(KNOWN_ROOTS),re=/^(?:const|let|var)\s+([A-Z][A-Z0-9_]{2,})\s*=/gm;let m;
+  while((m=re.exec(html)))set.add(m[1]);
+  return [...set].filter(n=>!SKIP_ROOTS.has(n));
+}
+function sandboxDoc(html,roots,token){
+  // 不含换行：保证沙箱里的报错行号与原文件一致
+  const pre="<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; style-src 'unsafe-inline'; img-src data:; media-src data:; font-src data:; connect-src 'none'\">"
+   +"<script>(function(){window.__rvErr=[];addEventListener('error',function(e){__rvErr.push(String(e.message)+(e.lineno?' @L'+e.lineno:''))});function M(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}try{Object.defineProperty(window,'localStorage',{value:M(),configurable:true})}catch(e){}try{Object.defineProperty(window,'sessionStorage',{value:M(),configurable:true})}catch(e){}window.alert=window.confirm=window.prompt=function(){};})();<\/script>";
+  const ser="function __s(v,d,seen){if(v===null||typeof v==='string'||typeof v==='number'||typeof v==='boolean')return v;if(typeof v==='function')return {__fn:1};if(typeof v!=='object'||d>9)return null;if(typeof Node!=='undefined'&&v instanceof Node)return {__node:1};if(seen.has(v))return {__cyc:1};seen.add(v);var o;if(Array.isArray(v)){o=v.map(function(x){return __s(x,d+1,seen)})}else if(v instanceof Map){o={};v.forEach(function(x,k){o[String(k)]=__s(x,d+1,seen)})}else if(v instanceof Set){o=[];v.forEach(function(x){o.push(__s(x,d+1,seen))})}else{o={};for(var k in v){try{o[k]=__s(v[k],d+1,seen)}catch(e){}}}seen.delete(v);return o}";
+  const body=roots.map(n=>`try{if(typeof ${n}!=='undefined')__o[${JSON.stringify(n)}]=__s(${n},0,new WeakSet())}catch(e){__e.push(${JSON.stringify(n)}+': '+e.message)}`).join('');
+  const post=`<script>(function(){var __o={},__e=[];${ser}${body}parent.postMessage({__review:${JSON.stringify(token)},data:__o,errors:__e,runtime:window.__rvErr||[]},'*')})();<\/script>`;
+  let out=/<head[^>]*>/i.test(html)?html.replace(/<head[^>]*>/i,m=>m+pre):pre+html;
+  const i=out.toLowerCase().lastIndexOf('</body>');
+  return i<0?out+post:out.slice(0,i)+post+out.slice(i);
+}
+function runSandbox(html){
+  const roots=discoverRoots(html);
+  return new Promise((resolve,reject)=>{
+    const token='rv'+Math.random().toString(36).slice(2),f=document.createElement('iframe');
+    f.setAttribute('sandbox','allow-scripts');f.setAttribute('aria-hidden','true');f.tabIndex=-1;
+    f.style.cssText='position:absolute;left:-9999px;top:0;width:390px;height:700px;border:0;visibility:hidden';
+    const timer=setTimeout(()=>{done();reject(new Error('游戏脚本 15 秒内没有返回数据'));},15000);
+    function onMsg(e){if(e.source!==f.contentWindow||!e.data||e.data.__review!==token)return;done();resolve(e.data);}
+    function done(){clearTimeout(timer);removeEventListener('message',onMsg);f.remove();}
+    addEventListener('message',onMsg);
+    f.srcdoc=sandboxDoc(html,roots,token);document.body.appendChild(f);
+  });
+}
+
+/* ================= 游戏条目采集 ================= */
+const PAT_ZH={qi:'气虚',xue:'血虚',yin:'阴虚',yang:'阳虚',yu:'气郁',pi:'脾虚',tan:'痰湿',re:'湿热',yux:'血瘀',huo:'火旺'};
+const DIALOG_ROOTS=new Set(['NIGHT_LINES','BACK_LINES','EVO_SAY','RITUAL_CARDS','PATTERN_ACTS','MONSTERS']);
+const EN_KEY={zh:'en',q:'qe',g:'ge',t:'te',src:'srcEN'};
+function pathStr(p){return p.map((x,i)=>i===0?x:(typeof x==='number'?`[${x}]`:'.'+x)).join('');}
+function harvestGame(data,src){
+  const items=[],idx=lineIndex(src),decl={};
+  for(const r in data){const m=new RegExp('(?:const|let|var)\\s+'+r+'\\s*=').exec(src);decl[r]=m?m.index:0;}
+  const vis=(data.NIGHT&&data.NIGHT.visitors)||{},v2k=(data.NIGHT&&data.NIGHT.visitorOfKey)||{},mon=data.MONSTERS||{};
+  const visN=k=>vis[k]&&vis[k].n?vis[k].n[0]:k;
+  function entity(root,path){
+    const p1=path[1];
+    if(root==='MONSTERS'&&mon[p1])return {id:'m:'+p1,name:(mon[p1].name||[p1])[0]};
+    if(root==='NOTEBOOK'){const c=(data.NOTEBOOK||[])[p1];if(c&&mon[c.from])return {id:'m:'+c.from,name:(mon[c.from].name||[c.from])[0]};}
+    if(root==='VISITOR_CARDS'&&vis[p1])return {id:'v:'+p1,name:visN(p1)};
+    if(root==='RITUAL_CARDS'){const c=(data.RITUAL_CARDS||[])[p1];if(c&&vis[c.for])return {id:'v:'+c.for,name:visN(c.for)};}
+    if(['PATTERN_ACTS','FABLES','BEASTS'].includes(root)&&v2k[p1])return {id:'v:'+v2k[p1],name:visN(v2k[p1])+'（'+(PAT_ZH[p1]||p1)+'）'};
+    if(/^(Q_OBSERVE|Q_LISTEN|Q_INQUIRE|DISPLAY_Q)$/.test(root))return {id:'x:body',name:'旧问诊题库（体征）'};
+    for(const seg of path)if(typeof seg==='string'&&vis[seg])return {id:'v:'+seg,name:visN(seg)};
+    return {id:'x:general',name:'通用 / 旁白 / 界面'};
+  }
+  function findLine(root,zh){
+    const vars=[zh,zh.replace(/'/g,"\\'"),JSON.stringify(zh).slice(1,-1)];
+    for(const v of vars){let o=src.indexOf(v,decl[root]||0);if(o<0)o=src.indexOf(v);if(o>=0)return lineAt(idx,o);}
+    return null;
+  }
+  function enOf(parent,key,gp){
+    if(Array.isArray(parent)){
+      for(let j=key+1;j<parent.length;j++){const x=parent[j];if(typeof x==='string'&&!CJK.test(x)&&/[A-Za-z]/.test(x))return x;}
+      if(gp&&gp.key==='zh'&&gp.obj&&Array.isArray(gp.obj.en))return gp.obj.en[key]||'';
+      return '';
+    }
+    const k2=EN_KEY[key]||(key+'En');return typeof parent[k2]==='string'?parent[k2]:(typeof parent[key+'EN']==='string'?parent[key+'EN']:'');
+  }
+  function walk(v,path,parent,gp,root){
+    if(typeof v==='string'){
+      if(CJK.test(v)&&!/^\s*</.test(v)){
+        const ps=pathStr(path);
+        items.push({key:'game|'+ps,src:'game',root,path:ps,zh:v,en:parent?enOf(parent,path[path.length-1],gp):'',line:findLine(root,v),
+          entity:entity(root,path),dialog:DIALOG_ROOTS.has(root)&&!/\.(four|myth|classic|omen|temper|lore)\b/.test(ps)});
+      }
+      return;
+    }
+    if(!v||typeof v!=='object'||v.__fn||v.__node||v.__cyc)return;
+    const ctx={obj:parent,key:path[path.length-1]};
+    if(Array.isArray(v))v.forEach((x,i)=>walk(x,[...path,i],v,ctx,root));
+    else for(const k in v)walk(v[k],[...path,k],v,ctx,root);
+  }
+  for(const r in data)walk(data[r],[r],null,null,r);
+  // HTML 静态文案：data-zh / data-en
+  const re=/data-zh="([^"]*[\u3400-\u9fff][^"]*)"(?:\s+data-en="([^"]*)")?/g;let m;const seen={};
+  while((m=re.exec(src))){const zh=m[1].replace(/&quot;/g,'"').replace(/&amp;/g,'&');const k='HTML·'+fnv(zh);seen[k]=(seen[k]||0)+1;const ps=k+(seen[k]>1?'#'+seen[k]:'');
+    items.push({key:'game|'+ps,src:'game',root:'HTML',path:'HTML 静态文案',zh,en:(m[2]||'').replace(/&quot;/g,'"').replace(/&amp;/g,'&'),line:lineAt(idx,m.index),entity:{id:'x:general',name:'通用 / 旁白 / 界面'},dialog:false});}
+  return items;
+}
+
+/* ================= 任务书（lane-brief.md）解析 ================= */
+function parseBrief(md){
+  const L=md.split(/\r?\n/),items=[],heads=[],tables=[];
+  let fence=false;const inFence=[];
+  L.forEach((l,i)=>{if(/^```/.test(l))fence=!fence;inFence[i]=fence;const m=/^(#{2,4})\s+(.*)$/.exec(l);if(m&&!fence)heads.push({lv:m[1].length,text:m[2],line:i+1});});
+  const secAt=line=>{let c={};for(const h of heads){if(h.line>line)break;if(h.lv===2)c={h2:h};else if(h.lv===3){c.h3=h;delete c.h4;}else c.h4=h;}return c;};
+  const cells=l=>l.trim().replace(/^\||\|$/g,'').split('|').map(s=>s.trim());
+  const clean=s=>String(s).replace(/`/g,'').replace(/\*\*/g,'').replace(/^[“"']|[”"']$/g,'').replace(/^★\s*/,'').trim();
+  for(let i=0;i<L.length;i++){
+    if(!inFence[i]&&/^\|/.test(L[i])&&i+1<L.length&&/^\|\s*:?-{2,}/.test(L[i+1])){
+      const t={head:cells(L[i]),rows:[],line:i+1,sec:secAt(i+1)};let j=i+2;
+      for(;j<L.length&&/^\|/.test(L[j]);j++)t.rows.push({c:cells(L[j]),line:j+1});
+      tables.push(t);i=j-1;
+    }
+  }
+  const tbl=pre=>tables.find(t=>t.sec.h3&&t.sec.h3.text.startsWith(pre))||tables.find(t=>t.sec.h2&&t.sec.h2.text.startsWith(pre));
+  const col=(t,name)=>t.head.findIndex(h=>h.replace(/\*/g,'').startsWith(name));
+  // 角色名册（0.5）
+  const roster=tbl('0.5');let names=[];
+  if(roster){const ci=col(roster,'中文名');names=roster.rows.map(r=>clean(r.c[ci])).filter(Boolean);}
+  names.sort((a,b)=>b.length-a.length);
+  const nameIn=s=>names.find(n=>String(s).includes(n))||'';
+  const ent=n=>({id:'b:'+(n||'全局'),name:n||'全局 / 通用'});
+  const push=(o)=>items.push(Object.assign({src:'brief',root:'BRIEF',dialog:false,en:''},o,{key:'brief|'+o.path}));
+  // 2.3 夜游手札
+  const t23=tbl('2.3');
+  if(t23){const cNo=col(t23,'卡'),cFrom=col(t23,'来自'),cTh=col(t23,'主题'),cS=col(t23,'故事化');
+    t23.rows.forEach(r=>push({path:`§2.3 手札卡 ${r.c[cNo]}`,zh:clean(r.c[cS]),note:`主题：${clean(r.c[cTh])}`,line:r.line,entity:ent(nameIn(r.c[cFrom])),forceCats:['card']}));}
+  // 4.1 总表：四格 + 第三幕工具
+  const t41=tbl('4.1 ');
+  if(t41){const cM=col(t41,'怪物'),cF=col(t41,'跨学科'),cT=col(t41,'第三幕');const lab=['志怪','生理','心理','饮食起居'];
+    t41.rows.forEach(r=>{const n=nameIn(r.c[cM]);
+      if(cF>=0)r.c[cF].split(/\s\/\s/).forEach((s,k)=>push({path:`§4.1 ${n} · 四格·${lab[k]||k+1}`,zh:clean(s),line:r.line,entity:ent(n),forceCats:['card']}));
+      if(cT>=0)push({path:`§4.1 ${n} · 第三幕工具`,zh:clean(r.c[cT]),line:r.line,entity:ent(n),forceCats:['action']});});}
+  // 4.1b 体征
+  const t4b=tbl('4.1b');
+  if(t4b){const cols=[['体质','body'],['望','body'],['闻','body'],['现代生理','card'],['第一幕体征','body']];
+    t4b.rows.forEach(r=>{const n=nameIn(r.c[0]);cols.forEach(([h,c])=>{const ci=col(t4b,h);if(ci<0)return;
+      push({path:`§4.1b ${n} · ${h}`,zh:clean(r.c[ci]),line:r.line,entity:ent(n),forceCats:c==='card'?['card','body']:['body']});});});}
+  // 4.4 红旗
+  const h44=heads.find(h=>h.text.startsWith('4.4'));
+  if(h44){let on=false,k=0;for(let i=h44.line;i<L.length;i++){const l=L[i];if(/^#{2,4}\s/.test(l))break;
+    if(/RED_FLAGS/.test(l)){on=true;continue;} if(on&&/^\*\*/.test(l))break;
+    if(on&&/^\s*-\s+/.test(l)){k++;push({path:`§4.4 红旗 #${k}`,zh:clean(l.replace(/^\s*-\s+/,'')),line:i+1,entity:ent(''),forceCats:['redflag']});}}}
+  // 4.2 / 4.3 / 4.5 剧本：✔ 选项与镜子"带回现实"
+  const cnt={};
+  L.forEach((l,i)=>{if(inFence[i])return;const sec=secAt(i+1),h=(sec.h4||sec.h3||{}).text||'';
+    if(!/^4\.(2|3|5)/.test(h))return;
+    const n=nameIn(h)||(h.startsWith('4.2')?'旁妮儿拉灯':h.startsWith('4.5')?'K钥科斯基':'');
+    if(/✔/.test(l)&&!/✔\s*=/.test(l)){cnt[n]=(cnt[n]||0)+1;push({path:`§${h.split(' ')[0]} ${n} · ✔#${cnt[n]}`,zh:clean(l.replace(/^\s*[-\d.]+\s*/,'').replace(/✔/g,'').replace(/→\s*手札卡\s*\d+/,'')),line:i+1,entity:ent(n),forceCats:['action']});}
+    const mm=/镜子[^：:]*[：:]\s*(.+)$/.exec(l);
+    if(mm){push({path:`§${h.split(' ')[0]} ${n} · 镜子`,zh:clean(mm[1]),line:i+1,entity:ent(n),forceCats:['action']});}
+  });
+  // 其余"睡眠窗口"表述
+  const used=new Set(items.map(x=>x.line));
+  L.forEach((l,i)=>{if(inFence[i]||used.has(i+1))return;if(/睡眠窗口|躺得比睡得久/.test(l)&&!/^(#{1,4}\s|>)/.test(l)){const sec=secAt(i+1),h=(sec.h4||sec.h3||sec.h2||{}).text||'';
+    push({path:`§睡眠窗口 · ${fnv(l)}`,zh:clean(l.replace(/^\s*[-|]\s*/,'')).slice(0,240),note:`所在章节：${h}`,line:i+1,entity:ent(nameIn(h)||nameIn(l)),forceCats:['window']});}});
+  return {items,names,heads};
+}
+
+/* ================= 分析：主题 · 类别 · 规则 · 审阅状态 ================= */
+function analyzeItem(it){
+  it.topics=TOPICS.filter(t=>t.re.test(it.zh)).map(t=>t.id);
+  const c=new Set(it.forceCats||[]),r=it.root,p=it.path;
+  if(r==='VISITOR_CARDS'||r==='NOTEBOOK'||/\.four\./.test(p))c.add('card');
+  if(r==='RED_FLAGS'||it.topics.some(t=>['osa','mood','rls'].includes(t)))c.add('redflag');
+  if(it.topics.includes('window'))c.add('window');
+  if(/^(Q_OBSERVE|Q_LISTEN|Q_INQUIRE|DISPLAY_Q)$/.test(r)||/\.(body|sign)\b/.test(p)||it.topics.includes('bodysign'))c.add('body');
+  if(r==='RITUAL_CARDS'||r==='PATTERN_ACTS'||/\.(fix|mirror)\b/.test(p))c.add('action');
+  if(!c.size&&it.topics.length)c.add('health');
+  it.cats=[...c];
+  it.disc=[...new Set(it.topics.flatMap(t=>TOPIC[t].disc))];
+  it.flags=[];
+  for(const rule of RULES){
+    if(rule.cats&&!rule.cats.some(x=>it.cats.includes(x)))continue;
+    const hit=rule.test?rule.test(it):(rule.re.test(it.zh)&&!(rule.ex&&rule.ex.test(it.zh)));
+    if(hit)it.flags.push(rule.id);
+  }
+  it.h=fnv(it.zh+'\u0001'+(it.en||''));
+  it.health=it.cats.length>0;
+  return it;
+}
+function reviewOf(it){
+  const r=S.reviews[it.key];
+  if(!r)return {st:'todo'};
+  if(r.h!==it.h)return Object.assign({},r,{st:'changed',prev:r.st});
+  return r;
+}
+function setReview(key,patch){
+  const it=S.byKey.get(key);if(!it)return;
+  const cur=S.reviews[key]||{};
+  S.reviews[key]=Object.assign({},cur,patch,{h:it.h,text:it.zh,by:$('#reviewer').value.trim()||cur.by||'',at:Date.now()});
+  store('reviews',S.reviews);
+}
+
+/* ================= 主流程：读取 → 分析 → 对比 → 渲染 ================= */
+async function checkAll(force){
+  if(S.busy)return;S.busy=true;setSync('busy','检查中…');
+  try{
+    const gCh=await refreshSource('game',force),bCh=await refreshSource('brief',force);await refreshSource('mirror',force);
+    if(gCh||(force&&S.src.game.text)){
+      try{const res=await runSandbox(S.src.game.text);S.game={data:res.data,errors:res.errors||[],runtime:res.runtime||[],src:S.src.game.text,items:harvestGame(res.data,S.src.game.text)};S.err=null;}
+      catch(e){S.err='读取游戏数据失败：'+e.message;}
+    }
+    if(bCh||(force&&S.src.brief.text)){S.brief=parseBrief(S.src.brief.text);}
+    if(gCh||bCh||force||!S.items.length)rebuild(gCh||bCh);
+    S.lastCheck=Date.now();
+    const bad=[S.src.game.err&&('游戏：'+S.src.game.err),S.err].filter(Boolean);
+    setSync(bad.length?'err':(intervalMs()?'live':'pause'),bad.length?bad.join('；'):(intervalMs()?'实时同步中':'已暂停'));
+  }catch(e){setSync('err',e.message);}
+  finally{S.busy=false;renderSrcInfo();schedule();}
+}
+function rebuild(changed){
+  const all=[...(S.game?S.game.items:[]),...(S.brief?S.brief.items:[])].map(analyzeItem);
+  // 同一路径重复时加序号，保证 key 唯一
+  const seen={};for(const it of all){if(seen[it.key]){seen[it.key]++;it.key+='#'+seen[it.key];}else seen[it.key]=1;}
+  const prev=S.snap||{},now={};all.forEach(it=>now[it.key]=it.h);
+  const hadPrev=Object.keys(prev).length>0;
+  const diff={t:Date.now(),added:[],removed:[],changed:[]};
+  if(hadPrev){
+    const prevText=store('snapText')||{};
+    for(const it of all){if(!(it.key in prev))diff.added.push({key:it.key,zh:it.zh});else if(prev[it.key]!==it.h)diff.changed.push({key:it.key,from:prevText[it.key]||'',to:it.zh});}
+    for(const k in prev)if(!(k in now))diff.removed.push({key:k,zh:(prevText[k]||'')});
+  }
+  S.items=all;S.byKey=new Map(all.map(it=>[it.key,it]));
+  if(diff.added.length||diff.removed.length||diff.changed.length){
+    S.fresh=new Set([...diff.added,...diff.changed].map(x=>x.key));
+    const ent={t:diff.t,label:S.ready?'实时检测到':'自上次打开本页以来',added:diff.added.slice(0,40),removed:diff.removed.slice(0,40),changed:diff.changed.slice(0,40),n:[diff.added.length,diff.changed.length,diff.removed.length]};
+    S.log.unshift(ent);S.log=S.log.slice(0,40);store('log',S.log);
+    toast(`检测到剧本更新：新增 ${diff.added.length} · 修改 ${diff.changed.length} · 删除 ${diff.removed.length}`);
+  }
+  S.snap=now;store('snap',now);
+  const txt={};all.forEach(it=>txt[it.key]=it.zh);store('snapText',txt);
+  S.checks=globalChecks();
+  S.corpus=norm(S.game?S.game.items.map(x=>x.zh).join('|'):'');
+  S.ready=true;
+  render();
+}
+function globalChecks(){
+  const g=S.game,src=g?g.src:'',d=g?g.data:{},gtext=g?g.items.map(x=>x.zh).join('\n'):'';
+  const out=[];
+  const add=(ok,n,detail,pend)=>out.push({ok,n,detail,pend});
+  if(!g){add(false,'读取游戏剧本数据',S.err||S.src.game.err||'尚未读取到 怪物夜未眠.html');return out;}
+  add(/这是故事，?不是诊断/.test(src),'免责声明"这是故事，不是诊断"','第 0 节要求在开场、日记等处保留。');
+  add(/医生|就医/.test(gtext+src),'就医提示（"不舒服请找医生"/就医信笺）','红旗触发时需给出就医指引。');
+  add(!!d.RED_FLAGS,'RED_FLAGS 红旗清单已在游戏中实现',d.RED_FLAGS?`${(d.RED_FLAGS.length||Object.keys(d.RED_FLAGS).length)} 条`:'任务书 4.4 / R6 待实现',!d.RED_FLAGS);
+  add(/心理援助|援助热线/.test(src),'情绪类红旗提示"当地心理援助热线"','R6 待实现时为未通过。',!/心理援助|援助热线/.test(src));
+  add(!!d.NOTEBOOK,'NOTEBOOK 夜游手札（14 张）已实现',d.NOTEBOOK?`${d.NOTEBOOK.length} 张`:'任务书 2.3 / R1 待实现',!d.NOTEBOOK);
+  add(!!d.MONSTERS,'MONSTERS（含 4.1b 体征字段）已实现',d.MONSTERS?`${Object.keys(d.MONSTERS).length} 个角色`:'任务书 4.1b / R1 待实现',!d.MONSTERS);
+  add(!g.runtime.length,'游戏脚本在沙箱中运行无报错',g.runtime.length?g.runtime.slice(0,5).join('；'):'—');
+  if(S.src.mirror.text!=null)add(S.src.mirror.hash===S.src.game.hash,'index.html 与 怪物夜未眠.html 内容一致','README 约定两份文件必须相同。');
+  const errN=S.items.filter(it=>it.src==='game'&&it.flags.some(f=>RULES.find(r=>r.id===f).level==='error')).length;
+  add(errN===0,'游戏文案无"底线"级规则问题',errN?`${errN} 条，见"规则检查"`:'—');
+  return out;
+}
+
+/* ================= 轮询调度 ================= */
+function isLocal(){return S.mode==='fs'||/^(localhost|127\.|\[?::1\]?|192\.168\.|10\.)/.test(location.hostname);}
+function intervalMs(){const v=$('#selInterval').value;if(v==='auto')return isLocal()?CONF.fastMs:CONF.slowMs;return +v;}
+function schedule(){clearTimeout(S.timer);const ms=intervalMs();if(!ms||S.mode==='none')return;S.timer=setTimeout(()=>checkAll(false),document.hidden?Math.max(ms*3,10000):ms);}
+
+/* ================= 本地文件夹（file:// 打开时） ================= */
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('mmReview',1);r.onupgradeneeded=()=>r.result.createObjectStore('h');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function idbGet(k){const db=await idb();return new Promise(res=>{const q=db.transaction('h').objectStore('h').get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>res(null);});}
+async function idbSet(k,v){const db=await idb();return new Promise(res=>{const tx=db.transaction('h','readwrite');tx.objectStore('h').put(v,k);tx.oncomplete=res;tx.onerror=res;});}
+async function connectDir(){
+  if(!window.showDirectoryPicker){alert('这个浏览器不支持读取本地文件夹。请用 Chrome / Edge，或通过 GitHub Pages / 本地服务器打开本页。');return;}
+  try{const d=await window.showDirectoryPicker({mode:'read'});await useDir(d);await idbSet('dir',d);}catch(e){if(e.name!=='AbortError')alert('连接失败：'+e.message);}
+}
+async function useDir(d){
+  await d.getFileHandle(CONF.game);
+  S.dir=d;S.mode='fs';Object.values(S.src).forEach(f=>{f.sig=null;f.hash=null;});S.src.brief.file=CONF.brief;
+  $('#btnConnect').textContent='已连接：'+d.name;checkAll(true);
+}
+async function restoreDir(){
+  try{const d=await idbGet('dir');if(!d)return false;
+    if((await d.queryPermission({mode:'read'}))==='granted'){await useDir(d);return true;}
+    const b=$('#btnConnect');b.textContent='重新授权：'+d.name;b.onclick=async()=>{if((await d.requestPermission({mode:'read'}))==='granted'){await useDir(d);b.onclick=connectDir;}};
+  }catch(e){}
+  return false;
+}
+/* ================= 界面：通用 ================= */
+const ST={todo:'未审',ok:'通过',fix:'需修改',discuss:'待讨论',changed:'已改动 · 待复审'};
+const TABS=[['overview','总览'],['queue','审阅队列'],['matrix','学科 × 剧情矩阵'],['chain','证据链'],['rules','规则检查'],['brief','任务书对照'],['refs','出处与原理'],['log','更新记录']];
+function setSync(state,text){const d=$('#syncDot');d.className='dot '+state;$('#syncText').textContent=text+(S.lastCheck?' · '+new Date(S.lastCheck).toLocaleTimeString('zh-CN',{hour12:false}):'');}
+function renderSrcInfo(){
+  $('#srcInfo').innerHTML=['game','brief','mirror'].map(k=>{const f=S.src[k];
+    if(f.err)return `<span class="src bad" title="${esc(f.err)}">${esc(f.file)} · ${esc(f.err)}</span>`;
+    if(!f.hash)return `<span class="src">${esc(f.file)} · 未读取</span>`;
+    return `<span class="src" title="指纹 ${f.hash}">${esc(f.file)}${/\.enc$/.test(f.file)?'（已加密）':''} · ${fmtKB(f.size)} · 改于 ${f.mtime?new Date(f.mtime).toLocaleString('zh-CN',{hour12:false}):'—'}</span>`;}).join('');
+}
+let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),4200);}
+const yearOf=r=>(/(\d{4})/.exec(r.j)||[])[1]||'';
+const shortRef=id=>{const r=REF[id];if(!r)return id;const au=r.a.replace(/[,，.].*$/,'').trim();return `${au} ${yearOf(r)}`;};
+const refLink=id=>{const r=REF[id];if(!r)return esc(id);const href=r.doi?'https://doi.org/'+r.doi:(r.pmid?'https://pubmed.ncbi.nlm.nih.gov/'+r.pmid+'/':'');
+  const txt=`[${REF_NO[id]}] ${esc(shortRef(id))}`;return href?`<a href="${href}" target="_blank" rel="noopener" title="${esc(r.t)}">${txt}</a>`:`<span title="${esc(r.t)}">${txt}</span>`;};
+const discChip=d=>`<span class="chip" style="border-color:${DISC[d].c};color:${DISC[d].c}">${DISC[d].n}</span>`;
+function topicBlock(id){const t=TOPIC[id];
+  return `<details class="topic" style="border-color:${DISC[t.disc[0]].c}"><summary><b>${esc(t.n)}</b> ${t.disc.map(discChip).join(' ')} <span class="cite">${t.refs.map(refLink).join(' ')}</span></summary>
+  <div class="why"><b>专业逻辑：</b>${esc(t.logic)}</div><div class="why"><b>剧情关联：</b>${esc(t.story)}</div><div class="care"><b>审阅注意：</b>${esc(t.caution)}</div></details>`;}
+const ruleOf=id=>RULES.find(r=>r.id===id);
+const flagChip=id=>{const r=ruleOf(id);return `<span class="chip lv-${r.level}" title="${esc(r.why)}">${LV[r.level].n} · ${esc(r.n)}</span>`;};
+function implState(it){if(it.src!=='brief'||!S.corpus)return null;const k=norm(it.zh).slice(0,10);if(k.length<4)return null;return S.corpus.includes(k);}
+function implChip(it){const s=implState(it);if(s===null)return '';return s?'<span class="chip impl-yes">游戏中已有</span>':'<span class="chip impl-no">游戏中尚未实现</span>';}
+function locOf(it){return `${it.src==='game'?CONF.game:CONF.brief}${it.line?':L'+it.line:''} · ${it.path}`;}
+function itemCard(it){
+  const rv=reviewOf(it),fresh=S.fresh.has(it.key);
+  return `<article class="item${fresh?' is-fresh':''}" data-key="${esc(it.key)}">
+  <div class="meta"><span class="chip src-${it.src}">${it.src==='game'?'游戏':'任务书'}</span>${it.cats.map(c=>`<span class="chip cat">${CATS[c].n}</span>`).join('')}<span class="chip ent">${esc(it.entity.name)}</span>${fresh?'<span class="chip fresh">刚更新</span>':''}${implChip(it)}<span class="st st-${rv.st}">${ST[rv.st]}</span><span class="loc">${esc(locOf(it))}</span></div>
+  <div class="zh">${esc(it.zh)}</div>${it.en?`<div class="en">${esc(it.en)}</div>`:''}${it.note?`<div class="en">${esc(it.note)}</div>`:''}
+  ${rv.st==='changed'?`<div class="old">审阅时的原文：<s>${esc(rv.text||'')}</s>（当时结论：${ST[rv.prev]||'—'}）</div>`:''}
+  ${it.flags.length?`<div class="sec"><span class="lab">规则提示</span>${it.flags.map(flagChip).join(' ')}</div>`:''}
+  <div class="sec"><span class="lab">专业关联</span>${it.topics.length?it.topics.map(topicBlock).join(''):'<span class="sub">没有匹配到专业主题（可能只是叙事）。如果需要关联，请在备注里写明。</span>'}</div>
+  <div class="revctl">${['todo','ok','fix','discuss'].map(s=>`<button type="button" class="s-${s}${rv.st===s?' on':''}" data-act="st" data-st="${s}">${ST[s]}</button>`).join('')}
+  <textarea data-act="note" rows="1" placeholder="审阅意见 / 修改建议 / 补充出处">${esc(rv.note||'')}</textarea>${rv.at?`<span class="who">${esc(rv.by||'')} · ${fmtT(rv.at)}</span>`:''}</div></article>`;
+}
+const healthItems=()=>S.items.filter(it=>it.health);
+function statCount(list){const c={todo:0,ok:0,fix:0,discuss:0,changed:0};list.forEach(it=>c[reviewOf(it).st]++);return c;}
+function stBar(c,total){const col={ok:'var(--ok)',fix:'var(--err)',discuss:'var(--warn)',changed:'var(--chg)'};
+  return `<div class="bar">${Object.keys(col).map(k=>c[k]?`<i style="width:${c[k]/total*100}%;background:${col[k]}" title="${ST[k]} ${c[k]}"></i>`:'').join('')}</div>`;}
+function renderTabs(){
+  const hi=healthItems();
+  const n={queue:hi.length,rules:hi.filter(it=>it.flags.length).length,log:S.log.length};
+  $('#tabs').innerHTML=TABS.map(([id,t])=>`<button type="button" data-tab="${id}" class="${S.ui.tab===id?'on':''}">${t}${n[id]!=null?`<span class="n">${n[id]}</span>`:''}</button>`).join('');
+}
+function render(){
+  const ae=document.activeElement;
+  if(ae&&ae.tagName==='TEXTAREA'&&$('#view').contains(ae)){S.pending=true;renderTabs();return;}
+  S.pending=false;renderTabs();
+  const v=$('#view');
+  if(!S.items.length&&S.mode==='none'){v.innerHTML=helpHTML();return;}
+  if(!S.items.length){v.innerHTML=`<div class="empty">${esc(S.err||S.src.game.err||'正在读取剧本…')}</div>`;return;}
+  const fn={overview:vOverview,queue:vQueue,matrix:vMatrix,chain:vChain,rules:vRules,brief:vBrief,refs:vRefs,log:vLog}[S.ui.tab]||vOverview;
+  v.innerHTML=fn();
+  if(S.ui.tab==='chain')wireChain();
+}
+function helpHTML(){return `<div class="help"><h3>需要读取源文件</h3>
+ <p>本页用 <code>file://</code> 打开时，浏览器不允许直接读取同目录文件。任选一种方式：</p>
+ <ol><li><b>Chrome / Edge：</b>点右上角"连接本地文件夹"，选择仓库文件夹 <code>monster-sleepless</code>。授权后会每 2 秒读取一次，保存即更新。</li>
+ <li><b>GitHub Pages：</b>打开线上地址 <code>…/monster-sleepless/review.html</code>。自动同步脚本推送后约 1 分钟生效，本页每 20 秒检查一次。</li>
+ <li><b>本地服务器：</b>在仓库目录运行任意静态服务器（例如 <code>python -m http.server 8765</code>），再打开 <code>http://localhost:8765/review.html</code>。</li></ol></div>`;}
+
+/* ================= 视图：总览 ================= */
+function vOverview(){
+  const hi=healthItems(),core=hi.filter(it=>it.cats.some(c=>CORE_CATS.includes(c))),c=statCount(core);
+  const lv={error:0,warn:0,info:0};hi.forEach(it=>it.flags.forEach(f=>lv[ruleOf(f).level]++));
+  const g=hi.filter(x=>x.src==='game').length,b=hi.filter(x=>x.src==='brief').length;
+  const kpi=(v,l,col)=>`<div class="box kpi"><b style="${col?'color:'+col:''}">${v}</b><span>${l}</span></div>`;
+  let h=`<div class="grid g4">
+   ${kpi(hi.length,`健康相关条目（游戏 ${g} · 任务书 ${b}）`)}
+   ${kpi(`${c.ok}/${core.length}`,'核心四类已通过（手札卡 / 红旗 / 睡眠窗口 / 体征）','var(--ok)')}
+   ${kpi(c.fix,'需修改','var(--err)')}${kpi(c.changed,'已改动 · 待复审','var(--chg)')}
+   ${kpi(`${lv.error} / ${lv.warn} / ${lv.info}`,'规则提示：底线 / 高风险 / 提示',lv.error?'var(--err)':'')}
+  </div><h2>审阅类别</h2><div class="grid g4">`;
+  for(const k of Object.keys(CATS)){const list=hi.filter(it=>it.cats.includes(k)),cc=statCount(list);
+    h+=`<div class="box"><div class="row"><b>${CATS[k].n}</b><span class="sub">${list.length} 条</span><button type="button" style="margin-left:auto" data-go="queue" data-q="${k}">去审阅 →</button></div><div class="sub" style="margin:4px 0 8px">${CATS[k].d}</div>${stBar(cc,list.length||1)}<div class="sub" style="margin-top:4px">通过 ${cc.ok} · 需修改 ${cc.fix} · 待讨论 ${cc.discuss} · 待复审 ${cc.changed} · 未审 ${cc.todo}</div></div>`;}
+  h+=`</div><div class="grid g2"><div><h2>学科覆盖</h2><div class="box">`;
+  const max=Math.max(1,...Object.keys(DISC).map(d=>hi.filter(it=>it.disc.includes(d)).length));
+  for(const d in DISC){const gg=hi.filter(it=>it.src==='game'&&it.disc.includes(d)).length,bb=hi.filter(it=>it.src==='brief'&&it.disc.includes(d)).length;
+    h+=`<div style="margin:6px 0"><div class="row"><span style="color:${DISC[d].c};font-weight:600">${DISC[d].n}</span><span class="sub" style="margin-left:auto">游戏 ${gg} · 任务书 ${bb}</span></div>
+    <div class="bar"><i style="width:${gg/max*100}%;background:${DISC[d].c}"></i><i style="width:${bb/max*100}%;background:${DISC[d].c};opacity:.4"></i></div></div>`;}
+  h+=`<div class="legend" style="margin-top:8px"><span><i style="background:#555"></i>游戏（实色）</span><span><i style="background:#555;opacity:.4"></i>任务书（浅色）</span></div></div></div>
+   <div><h2>全局安全检查</h2><div class="box">${checksHTML()}</div></div></div>`;
+  const last=S.log[0];
+  h+=`<h2>最近一次更新</h2><div class="box">${last?logEntryHTML(last):'<span class="sub">本页打开以来还没有检测到改动。保存 怪物夜未眠.html 或 lane-brief.md 后，这里会自动出现差异。</span>'}</div>`;
+  return h;
+}
+function checksHTML(){return S.checks.map(c=>`<div class="check"><span class="ic ${c.ok?'ok':(c.pend?'pend':'no')}">${c.ok?'✓':(c.pend?'…':'✗')}</span><div><b>${esc(c.n)}</b>${c.pend&&!c.ok?' <span class="chip lv-info">按任务书待实现</span>':''}<div class="sub">${esc(c.detail||'')}</div></div></div>`).join('');}
+
+/* ================= 视图：审阅队列 ================= */
+function filtered(){
+  const u=S.ui,q=u.text.trim().toLowerCase(),lvO=it=>Math.min(3,...it.flags.map(f=>LV[ruleOf(f).level].o));
+  return healthItems().filter(it=>(u.q==='all'||it.cats.includes(u.q))&&(u.srcF==='all'||it.src===u.srcF)&&(u.disc==='all'||it.disc.includes(u.disc))
+    &&(u.ent==='all'||it.entity.id===u.ent)&&(u.st==='all'||reviewOf(it).st===u.st)&&(!u.issues||it.flags.length)
+    &&(!q||(it.zh+' '+it.en+' '+it.path+' '+(it.note||'')+' '+it.entity.name).toLowerCase().includes(q)))
+   .sort((a,b)=>(S.fresh.has(b.key)-S.fresh.has(a.key))||((reviewOf(b).st==='changed')-(reviewOf(a).st==='changed'))||(lvO(a)-lvO(b))||(a.src<b.src?-1:a.src>b.src?1:0)||((a.line||0)-(b.line||0)));
+}
+function vQueue(){
+  const u=S.ui,hi=healthItems(),list=filtered();
+  const ents=[...new Map(hi.filter(it=>u.srcF==='all'||it.src===u.srcF).map(it=>[it.entity.id,it.entity.name])).entries()];
+  const opt=(v,t,cur)=>`<option value="${esc(v)}"${cur===v?' selected':''}>${esc(t)}</option>`;
+  let h=`<div class="qtabs">${[['all','全部']].concat(Object.keys(CATS).map(k=>[k,CATS[k].n])).map(([k,t])=>`<button type="button" data-q="${k}" class="${u.q===k?'on':''}">${t} <span class="sub">${k==='all'?hi.length:hi.filter(it=>it.cats.includes(k)).length}</span></button>`).join('')}</div>
+  <div class="filters">
+   <select data-f="srcF">${opt('all','来源：全部',u.srcF)}${opt('game','来源：游戏 怪物夜未眠.html',u.srcF)}${opt('brief','来源：任务书 lane-brief.md',u.srcF)}</select>
+   <select data-f="st">${opt('all','状态：全部',u.st)}${Object.keys(ST).map(k=>opt(k,'状态：'+ST[k],u.st)).join('')}</select>
+   <select data-f="disc">${opt('all','学科：全部',u.disc)}${Object.keys(DISC).map(k=>opt(k,'学科：'+DISC[k].n,u.disc)).join('')}</select>
+   <select data-f="ent">${opt('all','角色：全部',u.ent)}${ents.map(([id,n])=>opt(id,'角色：'+n,u.ent)).join('')}</select>
+   <input type="search" data-f="text" placeholder="搜索文案、路径、角色…" value="${esc(u.text)}">
+   <label class="row"><input type="checkbox" data-f="issues"${u.issues?' checked':''}>只看有规则提示的</label>
+   <span class="sub">${list.length} 条</span></div>
+  <div class="sub">${u.q==='all'?'':esc(CATS[u.q].d)}</div>`;
+  h+=list.slice(0,u.limit).map(itemCard).join('')||'<div class="empty">没有符合条件的条目。</div>';
+  if(list.length>u.limit)h+=`<div style="text-align:center"><button type="button" data-more="1">再显示 80 条（剩 ${list.length-u.limit} 条）</button></div>`;
+  return h;
+}
+/* ================= 视图：学科 × 剧情矩阵 ================= */
+function srcToggle(key,cur){return `<div class="qtabs">${[['game','游戏 怪物夜未眠.html'],['brief','任务书 lane-brief.md']].map(([k,t])=>`<button type="button" data-${key}="${k}" class="${cur===k?'on':''}">${t}</button>`).join('')}</div>`;}
+const autoSrc=v=>v==='auto'?((S.game&&S.game.data.MONSTERS)?'game':'brief'):v;
+function vMatrix(){
+  const src=autoSrc(S.ui.mxSrc),list=healthItems().filter(it=>it.src===src);
+  const ents=[...new Map(list.map(it=>[it.entity.id,it.entity.name])).entries()];
+  const cnt=(e,d)=>list.filter(it=>it.entity.id===e&&it.disc.includes(d)).length;
+  const max=Math.max(1,...ents.flatMap(([e])=>Object.keys(DISC).map(d=>cnt(e,d))));
+  let h=`<h2>学科 × 剧情矩阵</h2><p class="sub">每格数字是该角色（或剧情单元）下命中该学科主题的条目数，颜色越深越多。点格子可进入审阅队列查看对应条目。空格表示这一学科没有覆盖到，可能需要补充，也可能本来就不需要。</p>${srcToggle('mxsrc',src)}
+  <div style="overflow:auto;margin-top:10px"><table class="mx"><thead><tr><th>角色 / 剧情单元</th>${Object.keys(DISC).map(d=>`<th class="rot" style="color:${DISC[d].c}">${DISC[d].n}</th>`).join('')}<th>条目</th><th>核心四类</th><th>审阅进度</th></tr></thead><tbody>`;
+  for(const [e,n] of ents){const el=list.filter(it=>it.entity.id===e),core=el.filter(it=>it.cats.some(c=>CORE_CATS.includes(c))),cc=statCount(core);
+    h+=`<tr><th>${esc(n)}</th>${Object.keys(DISC).map(d=>{const v=cnt(e,d);return `<td class="c" data-mx="${esc(e)}|${d}|${src}" style="background:${v?hexA(DISC[d].c,.12+.6*v/max):'#fff'}">${v||''}</td>`;}).join('')}<td>${el.length}</td><td>${core.length}</td><td style="min-width:120px">${stBar(cc,core.length||1)}</td></tr>`;}
+  return h+'</tbody></table></div>';
+}
+function hexA(hex,a){const n=parseInt(hex.slice(1),16);return `rgba(${n>>16},${(n>>8)&255},${n&255},${a.toFixed(2)})`;}
+
+/* ================= 视图：证据链（出处 → 原理 → 剧情） ================= */
+function vChain(){
+  const src=autoSrc(S.ui.chSrc),list=healthItems().filter(it=>it.src===src);
+  const tops=TOPICS.filter(t=>list.some(it=>it.topics.includes(t.id)));
+  const refs=REFS.filter(r=>tops.some(t=>t.refs.includes(r.id)));
+  const ents=[...new Map(list.filter(it=>it.topics.length).map(it=>[it.entity.id,it.entity.name])).entries()];
+  const R=22,G=6,H=Math.max(refs.length,tops.length,ents.length)*(R+G)+40;
+  const X={r:10,t:400,e:760},W={r:300,t:250,e:230};
+  const yR={},yT={},yE={};const place=(arr,o,key)=>{const off=(H-arr.length*(R+G))/2;arr.forEach((x,i)=>o[key(x)]=off+i*(R+G));};
+  place(refs,yR,r=>r.id);place(tops,yT,t=>t.id);place(ents,yE,e=>e[0]);
+  let links='';
+  for(const t of tops){for(const rid of t.refs)if(yR[rid]!=null)links+=`<path class="lk" data-t="${t.id}" data-r="${rid}" stroke="${DISC[t.disc[0]].c}" stroke-width="1.6" d="M${X.r+W.r},${yR[rid]+R/2} C${X.t-40},${yR[rid]+R/2} ${X.r+W.r+40},${yT[t.id]+R/2} ${X.t},${yT[t.id]+R/2}"/>`;
+    for(const [e] of ents){const n=list.filter(it=>it.entity.id===e&&it.topics.includes(t.id)).length;if(!n)continue;
+      links+=`<path class="lk" data-t="${t.id}" data-e="${esc(e)}" stroke="${DISC[t.disc[0]].c}" stroke-width="${(1+Math.log2(n+1)*1.6).toFixed(1)}" d="M${X.t+W.t},${yT[t.id]+R/2} C${X.e-50},${yT[t.id]+R/2} ${X.t+W.t+50},${yE[e]+R/2} ${X.e},${yE[e]+R/2}"><title>${esc(t.n)} → ${n} 条</title></path>`;}}
+  const node=(x,y,w,label,fill,attr)=>`<g class="nd" ${attr}><rect x="${x}" y="${y}" width="${w}" height="${R}" fill="${fill}" stroke="#ddd"/><text x="${x+8}" y="${y+15}">${esc(label.length>34?label.slice(0,33)+'…':label)}</text></g>`;
+  let nodes=refs.map(r=>node(X.r,yR[r.id],W.r,`[${REF_NO[r.id]}] ${shortRef(r.id)} · ${r.type}`,'#fff',`data-r="${r.id}"`)).join('');
+  nodes+=tops.map(t=>node(X.t,yT[t.id],W.t,t.n,hexA(DISC[t.disc[0]].c,.14),`data-t="${t.id}"`)).join('');
+  nodes+=ents.map(([e,n])=>node(X.e,yE[e],W.e,n,'#f3f6fa',`data-e="${esc(e)}"`)).join('');
+  const sel=S.ui.topic&&TOPIC[S.ui.topic];
+  let h=`<h2>证据链：出处 → 专业原理 → 剧情</h2><p class="sub">左列是文献或典籍，中列是专业原理，右列是剧情里的角色或单元；线越粗，关联条目越多。悬停任一节点可高亮它的关联，点原理节点可在下方查看对应条目。</p>${srcToggle('chsrc',src)}
+  <div class="chain" style="margin-top:10px"><svg width="${X.e+W.e+10}" height="${H}" viewBox="0 0 ${X.e+W.e+10} ${H}"><text x="${X.r}" y="16" font-weight="600">出处</text><text x="${X.t}" y="16" font-weight="600">专业原理</text><text x="${X.e}" y="16" font-weight="600">剧情角色 / 单元</text>${links}${nodes}</svg></div>`;
+  if(sel){const its=list.filter(it=>it.topics.includes(sel.id));h+=`<h3>${esc(sel.n)} · ${its.length} 条</h3>${topicBlock(sel.id).replace('<details','<details open')}${its.slice(0,60).map(itemCard).join('')}`;}
+  return h;
+}
+function wireChain(){
+  const svg=$('.chain svg');if(!svg)return;
+  svg.addEventListener('mouseover',e=>{const g=e.target.closest('.nd');svg.querySelectorAll('.lk').forEach(l=>l.classList.remove('hi'));if(!g)return;
+    const a=g.dataset;svg.querySelectorAll('.lk').forEach(l=>{if((a.t&&l.dataset.t===a.t)||(a.r&&l.dataset.r===a.r)||(a.e&&l.dataset.e===a.e))l.classList.add('hi');});});
+  svg.addEventListener('click',e=>{const g=e.target.closest('.nd');if(g&&g.dataset.t){S.ui.topic=g.dataset.t;render();}});
+}
+
+/* ================= 视图：规则检查 ================= */
+function vRules(){
+  const hi=healthItems();
+  let h=`<h2>全局安全检查</h2><div class="box">${checksHTML()}</div><h2>逐条规则</h2><p class="sub">规则用正则自动扫描，只作提示："底线"对应第 0 节的硬性禁止项，"高风险"需要专业判断，"提示"请确认即可。错误选项（故意写错的想法卡）里出现的措辞，可以按剧情需要保留。</p>`;
+  for(const r of [...RULES].sort((a,b)=>LV[a.level].o-LV[b.level].o)){
+    const list=hi.filter(it=>it.flags.includes(r.id)),g=list.filter(x=>x.src==='game').length;
+    h+=`<details class="tp"${list.length&&r.level!=='info'?' open':''}><summary><span class="chip lv-${r.level}">${LV[r.level].n}</span> ${esc(r.n)} <span class="sub">游戏 ${g} · 任务书 ${list.length-g}</span></summary><div class="sub">${esc(r.why)}</div>
+    ${list.length?`<table style="margin-top:6px"><tr><th>文案</th><th>位置</th><th>审阅</th></tr>${list.slice(0,60).map(it=>`<tr><td>${esc(it.zh)}</td><td class="mono">${esc(locOf(it))}</td><td><span class="st st-${reviewOf(it).st}">${ST[reviewOf(it).st]}</span> <button type="button" data-find="${esc(it.key)}">查看</button></td></tr>`).join('')}</table>`:'<div class="sub">无。</div>'}</details>`;}
+  return h;
+}
+
+/* ================= 视图：任务书对照 ================= */
+function vBrief(){
+  if(!S.brief)return `<div class="empty">没有读取到 ${CONF.brief}（${esc(S.src.brief.err||'未找到')}）。这份文件只在本地或已推送时可用。</div>`;
+  const list=healthItems().filter(it=>it.src==='brief'&&it.cats.some(c=>CORE_CATS.includes(c)||c==='action'));
+  let h=`<h2>任务书 × 游戏实现对照</h2><p class="sub">按任务书条目的文字，判断游戏里是否已经有对应文案（比对前 10 个字，只作参考）。"尚未实现"属于正常的开发进度，审阅可以先在任务书阶段完成。</p>`;
+  for(const k of ['card','body','redflag','window','action']){const l=list.filter(it=>it.cats.includes(k));if(!l.length)continue;
+    const yes=l.filter(it=>implState(it)).length;
+    h+=`<h3>${CATS[k].n} <span class="sub">${l.length} 条 · 游戏中已有 ${yes}</span></h3><table><tr><th>角色</th><th>任务书条目</th><th>位置</th><th>实现</th><th>审阅</th></tr>
+    ${l.map(it=>`<tr><td>${esc(it.entity.name)}</td><td>${esc(it.zh)}${it.flags.length?'<br>'+it.flags.map(flagChip).join(' '):''}</td><td class="mono">${esc(locOf(it))}</td><td>${implChip(it)||'—'}</td><td><span class="st st-${reviewOf(it).st}">${ST[reviewOf(it).st]}</span> <button type="button" data-find="${esc(it.key)}">审阅</button></td></tr>`).join('')}</table>`;}
+  return h;
+}
+
+/* ================= 视图：出处与原理 ================= */
+function vRefs(){
+  const hi=healthItems();
+  let h=`<h2>专业原理（${TOPICS.length} 项）</h2><p class="sub">每项原理写明专业逻辑、在剧情里的落点、审阅注意事项和出处编号；数字是当前命中的条目数。</p>`;
+  for(const t of TOPICS){const l=hi.filter(it=>it.topics.includes(t.id)),g=l.filter(x=>x.src==='game').length;
+    const ents=[...new Set(l.map(it=>it.entity.name))];
+    h+=`<details class="tp"><summary>${esc(t.n)} ${t.disc.map(discChip).join(' ')} <span class="sub">游戏 ${g} · 任务书 ${l.length-g}</span></summary>
+    <p><b>专业逻辑：</b>${esc(t.logic)}</p><p><b>剧情关联：</b>${esc(t.story)}</p><p class="care" style="color:#8a5c00"><b>审阅注意：</b>${esc(t.caution)}</p>
+    <p><b>出处：</b>${t.refs.map(refLink).join('；')}</p><p class="sub">涉及：${esc(ents.join('、')||'—')}</p>
+    <p><button type="button" data-topic="${t.id}">在证据链中查看</button> <button type="button" data-qtext="" data-qtopic="${t.id}">在队列中筛选</button></p></details>`;}
+  h+=`<h2>参考文献（${REFS.length} 条）</h2><ol class="refs">`;
+  for(const r of REFS){const used=TOPICS.filter(t=>t.refs.includes(r.id)).map(t=>t.n);
+    const vc=/已核对/.test(r.v)?'v-ok':(/典籍|专著/.test(r.v)?'v-book':'v-todo');
+    h+=`<li id="ref-${r.id}">${esc(r.a)} ${esc(r.t)} <i>${esc(r.j)}</i>${r.doi?` doi:<a href="https://doi.org/${esc(r.doi)}" target="_blank" rel="noopener">${esc(r.doi)}</a>`:''}${r.pmid?` · PMID <a href="https://pubmed.ncbi.nlm.nih.gov/${esc(r.pmid)}/" target="_blank" rel="noopener">${esc(r.pmid)}</a>`:''}
+    <span class="vbadge ${vc}">${esc(r.v)}</span> <span class="chip">${esc(r.type)}</span><div class="sub">用于：${esc(used.join('、')||'—')}</div></li>`;}
+  return h+`</ol><p class="sub">核对说明：带 DOI 或 PMID 的条目已在 Crossref / PubMed 逐条核对（2026-11-08）；典籍只作志怪叙事，不作为循证证据；"待补"请中医背景审阅者补充。</p>`;
+}
+
+/* ================= 视图：更新记录 ================= */
+function logEntryHTML(e){
+  const li=(arr,f)=>arr.map(f).join('');
+  return `<div class="row"><b>${fmtT(e.t)}</b><span class="chip">${esc(e.label||'')}</span><span class="sub">新增 ${e.n[0]} · 修改 ${e.n[1]} · 删除 ${e.n[2]}</span></div><ul class="log">
+  ${li(e.changed,x=>`<li><span class="chip fresh">改</span> <span class="old" style="display:inline"><s>${esc(x.from)}</s></span> → ${esc(x.to)} <span class="mono sub">${esc(x.key.replace(/^(game|brief)\|/,''))}</span></li>`)}
+  ${li(e.added,x=>`<li><span class="chip impl-yes">增</span> ${esc(x.zh)} <span class="mono sub">${esc(x.key.replace(/^(game|brief)\|/,''))}</span></li>`)}
+  ${li(e.removed,x=>`<li><span class="chip lv-error">删</span> ${esc(x.zh)}</li>`)}</ul>`;
+}
+function vLog(){return `<h2>更新记录</h2><p class="sub">每次检测到 ${CONF.game} 或 ${CONF.brief} 的文案变化都会记一笔（保存在本浏览器，最多 40 次）。被修改的条目，原有审阅结论会自动转为"已改动 · 待复审"。</p>`
+  +(S.log.length?S.log.map(e=>`<div class="box" style="margin:10px 0">${logEntryHTML(e)}</div>`).join(''):'<div class="empty">还没有记录。</div>')
+  +`<p><button type="button" data-clearlog="1">清空更新记录</button></p>`;}
+
+/* ================= 导出 / 导入 ================= */
+function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);}
+const stamp=()=>new Date().toISOString().slice(0,16).replace(/[-:T]/g,'');
+function exportMd(){
+  const hi=healthItems(),who=$('#reviewer').value.trim();
+  let md=`# 《怪物夜未眠》专业学科与剧情审阅报告\n\n- 生成时间：${fmtT(Date.now())}\n- 审阅人：${who||'（未填写）'}\n- 游戏文件：${CONF.game}（指纹 ${S.src.game.hash||'—'}，修改于 ${fmtT(S.src.game.mtime)}）\n- 任务书：${CONF.brief}（指纹 ${S.src.brief.hash||'—'}，修改于 ${fmtT(S.src.brief.mtime)}）\n- 说明：自动归类和规则检查只作提示；中医内容只作"传统说法"叙事。\n\n## 全局安全检查\n\n`;
+  md+=S.checks.map(c=>`- [${c.ok?'x':' '}] ${c.n}${c.detail?`：${c.detail}`:''}`).join('\n')+'\n';
+  for(const k of ['card','redflag','window','body','action']){const l=hi.filter(it=>it.cats.includes(k));if(!l.length)continue;const cc=statCount(l);
+    md+=`\n## ${CATS[k].n}（${l.length} 条：通过 ${cc.ok} · 需修改 ${cc.fix} · 待讨论 ${cc.discuss} · 待复审 ${cc.changed} · 未审 ${cc.todo}）\n`;
+    for(const it of l){const rv=reviewOf(it);
+      md+=`\n### [${ST[rv.st]}] ${it.zh}\n\n- 位置：\`${locOf(it)}\`\n- 角色：${it.entity.name}${it.en?`\n- 英文：${it.en}`:''}\n`;
+      if(it.topics.length)md+=`- 专业原理：${it.topics.map(t=>TOPIC[t].n+' '+TOPIC[t].refs.map(r=>'['+REF_NO[r]+']').join('')).join('；')}\n`;
+      if(it.flags.length)md+=`- 规则提示：${it.flags.map(f=>LV[ruleOf(f).level].n+'·'+ruleOf(f).n).join('；')}\n`;
+      if(rv.note)md+=`- 审阅意见：${rv.note}${rv.by?`（${rv.by}，${fmtT(rv.at)}）`:''}\n`;
+      if(rv.st==='changed')md+=`- 审阅时原文：${rv.text}\n`;}}
+  md+=`\n## 参考文献\n\n`+REFS.map((r,i)=>`${i+1}. ${r.a} ${r.t} ${r.j}${r.doi?' doi:'+r.doi:''}${r.pmid?' PMID:'+r.pmid:''}（${r.v}）`).join('\n')+'\n';
+  download(`审阅报告-${stamp()}.md`,md,'text/markdown;charset=utf-8');
+}
+function exportJson(){download(`审阅记录-${stamp()}.json`,JSON.stringify({app:'monster-sleepless-review',v:1,exportedAt:new Date().toISOString(),reviewer:$('#reviewer').value.trim(),game:{hash:S.src.game.hash,mtime:S.src.game.mtime},brief:{hash:S.src.brief.hash},reviews:S.reviews},null,1),'application/json');}
+async function importJson(file){
+  try{const o=JSON.parse(await file.text());if(!o||!o.reviews)throw new Error('不是审阅记录文件');let n=0;
+    for(const k in o.reviews){const a=S.reviews[k],b=o.reviews[k];if(!a||(b.at||0)>(a.at||0)){S.reviews[k]=b;n++;}}
+    store('reviews',S.reviews);toast(`已合并 ${n} 条审阅记录（来自 ${o.reviewer||'未署名'}）`);render();}
+  catch(e){alert('导入失败：'+e.message);}
+}
+
+/* ================= 事件 ================= */
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(!b)return;S.ui.tab=b.dataset.tab;S.ui.limit=80;render();scrollTo(0,0);});
+$('#view').addEventListener('click',e=>{
+  const t=e.target,d=t.closest('button,td')?.dataset||{};
+  if(d.act==='st'){const k=t.closest('.item').dataset.key;setReview(k,{st:d.st});rerenderItem(k);return;}
+  if(d.go){S.ui.tab=d.go;if(d.q)S.ui.q=d.q;S.ui.limit=80;render();scrollTo(0,0);return;}
+  if(d.q&&t.closest('.qtabs')&&S.ui.tab==='queue'){S.ui.q=d.q;S.ui.limit=80;render();return;}
+  if(d.more){S.ui.limit+=80;render();return;}
+  if(d.mxsrc){S.ui.mxSrc=d.mxsrc;render();return;}
+  if(d.chsrc){S.ui.chSrc=d.chsrc;S.ui.topic=null;render();return;}
+  if(d.mx){const [ent,disc,src]=d.mx.split('|');Object.assign(S.ui,{tab:'queue',q:'all',ent,disc,srcF:src,st:'all',text:'',issues:false,limit:80});render();scrollTo(0,0);return;}
+  if(d.find){const it=S.byKey.get(d.find);if(!it)return;Object.assign(S.ui,{tab:'queue',q:'all',srcF:it.src,ent:'all',disc:'all',st:'all',issues:false,text:it.zh.slice(0,24),limit:80});render();scrollTo(0,0);return;}
+  if(d.topic){S.ui.tab='chain';S.ui.topic=d.topic;const it=healthItems().find(x=>x.topics.includes(d.topic));if(it)S.ui.chSrc=it.src;render();scrollTo(0,0);return;}
+  if(d.qtopic){const tp=TOPIC[d.qtopic];Object.assign(S.ui,{tab:'queue',q:'all',srcF:'all',ent:'all',disc:tp.disc[0],st:'all',issues:false,text:'',limit:80});render();scrollTo(0,0);return;}
+  if(d.clearlog){if(confirm('清空本浏览器里的更新记录？审阅结论不受影响。')){S.log=[];store('log',[]);render();}}
+});
+$('#view').addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset.act==='note'){const k=t.closest('.item').dataset.key;clearTimeout(t._t);t._t=setTimeout(()=>{setReview(k,{note:t.value});},400);return;}
+  const f=t.dataset.f;if(!f)return;
+  S.ui[f]=t.type==='checkbox'?t.checked:t.value;S.ui.limit=80;
+  if(f==='text'){clearTimeout(S._st);S._st=setTimeout(()=>{const pos=t.selectionStart;render();const n=$('#view [data-f="text"]');if(n){n.focus();n.setSelectionRange(pos,pos);}},250);}
+  else render();
+});
+$('#view').addEventListener('focusout',e=>{if(e.target.tagName==='TEXTAREA'&&S.pending)setTimeout(()=>{if(document.activeElement?.tagName!=='TEXTAREA')render();},50);});
+function rerenderItem(k){const it=S.byKey.get(k),el=$(`#view .item[data-key="${CSS.escape(k)}"]`);if(it&&el){el.outerHTML=itemCard(it);}renderTabs();}
+$('#btnRefresh').onclick=()=>{if(S.mode==='none'){connectDir();return;}Object.values(S.src).forEach(f=>f.sig=null);checkAll(true);};
+$('#btnConnect').onclick=connectDir;
+$('#btnMd').onclick=exportMd;$('#btnJson').onclick=exportJson;
+$('#fileImport').onchange=e=>{const f=e.target.files[0];if(f)importJson(f);e.target.value='';};
+$('#selInterval').onchange=()=>{store('interval',$('#selInterval').value);schedule();setSync(intervalMs()?'live':'pause',intervalMs()?'实时同步中':'已暂停');};
+$('#reviewer').oninput=e=>store('reviewer',e.target.value);
+$('#btnLock').onclick=()=>{try{sessionStorage.removeItem(PWK);localStorage.removeItem(PWK);}catch(e){}location.reload();};
+document.addEventListener('visibilitychange',()=>{if(S.unlocked&&!document.hidden&&S.mode!=='none')checkAll(false);});
+
+/* ================= 启动：先解锁，再开始读取与同步 ================= */
+async function start(){
+  S.unlocked=true;document.body.classList.remove('locked');$('#lock').remove();
+  $('#reviewer').value=store('reviewer')||'';
+  const iv=store('interval');if(iv)$('#selInterval').value=iv;
+  renderTabs();renderSrcInfo();
+  if(S.mode==='http'){checkAll(true);return;}
+  setSync('pause','未连接源文件');
+  if(!(await restoreDir()))render();
+}
+(async function init(){
+  const form=$('#lockForm'),err=$('#lockErr'),btn=$('#lockBtn');
+  if(!window.crypto||!crypto.subtle){err.textContent='这个浏览器（或非 https 地址）不支持页面加密功能，请用 https 线上地址或新版 Chrome / Edge 打开。';btn.disabled=true;return;}
+  let saved='';try{saved=sessionStorage.getItem(PWK)||localStorage.getItem(PWK)||'';}catch(e){}
+  if(saved&&await checkPw(saved).catch(()=>false)){S.pw=saved;return start();}
+  $('#lockPw').focus();
+  form.addEventListener('submit',async e=>{
+    e.preventDefault();const pw=$('#lockPw').value;if(!pw.trim())return;
+    btn.disabled=true;btn.textContent='验证中…';err.textContent='';
+    const ok=await checkPw(pw).catch(()=>false);
+    if(!ok){KEYS.clear();btn.disabled=false;btn.textContent='进入';err.textContent='密码不正确，请再试一次。';$('#lockPw').select();return;}
+    const norm=pw.trim().toUpperCase();S.pw=norm;
+    try{sessionStorage.setItem(PWK,norm);if($('#lockRemember').checked)localStorage.setItem(PWK,norm);}catch(e){}
+    start();
+  });
+})();
+</script>
+</body>
+</html>

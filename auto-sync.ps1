@@ -12,6 +12,8 @@ Set-Location $ROOT
 $TARGETS = @(
   'index.html',
   '怪物夜未眠.html',
+  'review.html',
+  'lane-brief.enc',
   'reference-figures.mp4',
   'README.md',
   'assets',
@@ -75,6 +77,24 @@ function Push-Changes {
   return $false
 }
 
+# 审阅台：lane-brief.md 一改动就重新加密成 lane-brief.enc（明文不提交；需要本地 review.key.json，见 review-lock.ps1）
+$LOCK_SCRIPT = Join-Path $ROOT 'review-lock.ps1'
+if (Test-Path -LiteralPath $LOCK_SCRIPT) { . $LOCK_SCRIPT -Root $ROOT }
+$script:BriefStamp = $null
+function Update-Brief {
+  if (-not (Get-Command Protect-Brief -ErrorAction SilentlyContinue)) { return }
+  $src = Join-Path $ROOT 'lane-brief.md'
+  if (-not (Test-Path -LiteralPath $src)) { return }
+  $stamp = (Get-Item -LiteralPath $src).LastWriteTimeUtc.Ticks
+  if ($stamp -eq $script:BriefStamp) { return }
+  $script:BriefStamp = $stamp
+  try {
+    if (Protect-Brief $ROOT) { Write-Host ("[{0}] 已重新加密任务书 → lane-brief.enc" -f (Stamp)) }
+  } catch {
+    Write-Host ("[{0}] 任务书加密失败：{1}" -f (Stamp), $_.Exception.Message) -ForegroundColor Red
+  }
+}
+
 function Sync {
   try {
     $t = @(Get-ExistingTargets)
@@ -106,6 +126,7 @@ Write-Host ''
 Write-Host '保持本窗口开启即可；按 Ctrl+C 停止。'
 Write-Host ''
 
+Update-Brief
 Sync  # 启动时若还有未提交 / 未推送的改动，先同步一次
 
 $lastSig = $null
@@ -113,6 +134,7 @@ $changedAt = $null
 $lastPushTry = Get-Date
 while ($true) {
   Start-Sleep -Seconds 1
+  Update-Brief
   $pending = Get-Pending
   if (-not $pending) {
     $lastSig = $null
