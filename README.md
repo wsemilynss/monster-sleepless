@@ -1,21 +1,54 @@
 # 怪物夜未眠 · Monster Sleepless
 
-一切从深夜开始：玩家陪一只睡不着的怪物度过一夜，之后每晚回来。
+一切从深夜开始：你陪一只睡不着的怪物熬过一夜，之后每晚回来。
 
 轻量交互游戏，游戏性第一。失眠与健康科普只是剧情——这里没有检查、没有治疗，也不输出诊断。
 
 > 这是故事，不是诊断；不舒服请找医生。
 
-## 来源
+**在线玩**：<https://wsemilynss.github.io/monster-sleepless/>　｜　本地单文件：[`怪物夜未眠.html`](怪物夜未眠.html)（与 `index.html` 内容相同，需与 `assets/` 放在同一目录）
 
-由 [wsemilynss/mad-medicine](https://github.com/wsemilynss/mad-medicine) 的提交 `fc5e3a4` 复制而来（`index.html`、`assets/` 与背景人物视频 `reference-figures.mp4`）。
-S0 阶段除 `<title>` 外代码零改动；S1 起按 `docs/audit.md` 中的清单逐步改造。
+## 玩法
+
+1. **午夜 0:00**：怪物敲门，睁着眼蹲在门口。给它起个名字，告诉它最怕什么（太亮 / 太吵 / 太冷 / 太热 / 太静）。
+2. **熬过四个时段**：子夜 → 深夜 → 凌晨 → 黎明。每个时段几枚光点，点按捕捉，听怪物说一句话；每章最多 5 个光点，可以「跳过本章」，没做完不惩罚。黎明是一段心跳节拍小游戏（连拍 8 下它就合眼）。
+3. **天快亮了**：日出过场，今晚来过的夜访客现形——灼热的影子 / 絮语者 / 饱胀的石头 / 冰凉的手 / 刺眼的光 / 隐形的重量；没有谁来则是山神。
+4. **怪物日记**：一屏读完——访客、它的脾气、3 张小行动卡（选 1 件今晚的小事）、一则寓言，可保存日记卡（本机生成 PNG）。
+5. **明晚再来**：再次打开显示「第 N 夜」。「今晚继续」是 2 分钟内的夜间小关：5 个光点 → 选 1 张哄睡卡 → 怪物回一句话 → 日记。「重新开始」从取名页完整再玩一夜（存档保留）。
+6. **图鉴 · 徽章 · 进化**：六位访客的三层图鉴（一句话 / 志怪小卡 / 寓言，出现过才解锁）；夜晚型徽章；累计 3 / 7 / 15 夜进化并收到一则寓言。
+
+## 存档（只在你的浏览器里）
+
+| localStorage 键 | 内容 |
+|---|---|
+| `mm_save` | `{v,name,fear,element,nights,calm,streak,last,evo,visitors:{id:次数},dex:[id],badges:{id:tier}}`；读取时逐字段校验，损坏/缺字段自动补默认；入口「清除存档」可清空 |
+| `mm_mute` | 音效开关 |
+| `mm_motion` | 减少动效开关（未设置时跟随系统 `prefers-reduced-motion`） |
+
+不上传任何数据，没有后端。旧版 `mm_night` 会自动迁移。
+
+## 调试参数
+
+| 参数 | 作用 |
+|---|---|
+| `?debugNight=N` | 假装现在是第 N 夜（虚拟存档：已熬过 N-1 夜，六位访客随夜数出现）；不读写真实存档。`N=3 / 7 / 15` 出日记时分别触发三次进化，`N=16` 图鉴全部解锁 |
+| `?debugVisitor=heat\|whisper\|stone\|cold\|glare\|weight` | 强制今晚的访客，用来逐一检查六位访客 |
+| `?lite=1` | 强制低配模式（DPR 1、少一路颗粒视频、关装饰层）；运行中持续掉帧也会自动进入 |
+
+## 无障碍与低配
+
+- 顶栏可关闭音效（♪）与动效（动效 ON/OFF）；跟随系统「减少动态效果」；关闭动效后光点不再漂移、镜头不再自转、不震动。
+- 键盘：光点可 Tab 聚焦、Enter 捕捉；有焦点环、「跳到内容」链接；弹窗带 `role="dialog"`。
+- 低端手机：手机/≤4 核默认只用 2 层颗粒视频；掉帧时自动切到 lite。
 
 ## 技术约束
 
-- 单文件 `index.html`，无框架、无后端、不上传数据
-- localStorage 键使用 `mm_` 前缀；调试参数 `?debugNight=N`（后续任务实现）
-- 部署：GitHub Pages
+- 单文件 `index.html`，无框架、无后端、零依赖；部署：GitHub Pages
+- `assets/` 存放插画与视频；`怪物夜未眠.html` 是同一份页面的命名副本（发布时与 `index.html` 保持一致）
+
+## 来源
+
+由 [wsemilynss/mad-medicine](https://github.com/wsemilynss/mad-medicine) 的提交 `fc5e3a4` 复制而来，按 S0–S7 逐步改造（见 `docs/`）。
 
 ## 本地运行
 
@@ -23,8 +56,11 @@ S0 阶段除 `<title>` 外代码零改动；S1 起按 `docs/audit.md` 中的清�
 python3 -m http.server 8765
 ```
 
-然后打开 <http://localhost:8765/>。
+打开 <http://localhost:8765/>。
 
 ## 文档
 
-- [docs/audit.md](docs/audit.md)：基线审计（屏幕流程、state、题库、证型→怪物映射、删/留清单）
+- [docs/audit.md](docs/audit.md)：S0 基线审计与 S1–S7 的改动记录
+- [docs/s2-click-test.md](docs/s2-click-test.md)：光点点击成功率测试方法与结果
+- [docs/qa-s7.md](docs/qa-s7.md)：S7 的检查清单与结果
+- `docs/screenshots/`：各阶段截图

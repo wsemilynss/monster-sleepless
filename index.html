@@ -20,7 +20,7 @@
   --bg:#090c15;
   --bg2:#12172a;
   --ink:#eae6d6;
-  --ink-dim:#9a94a8;
+  --ink-dim:#aaa4b8;
   --gold:#c99a52;
   --gold-bright:#eeca86;
   --teal:#6fae9e;
@@ -237,7 +237,6 @@ h2{font-family:var(--serif);font-size:28px;font-size:clamp(24px,3.4vw,34px);lett
   border:1px solid rgba(106,212,200,.4);color:var(--teal);font-size:12px;letter-spacing:.15em;
   padding:8px 14px;border-radius:2px;font-family:monospace;margin-right:10px}
 #btnLang:hover{background:rgba(106,212,200,.12)}
-
 /* ---------- 探案舞台 ---------- */
 #screen-stage{padding:0;justify-content:flex-start;overflow:hidden;cursor:grab}
 #screen-stage:active{cursor:grabbing}
@@ -925,7 +924,7 @@ input[type=range]{accent-color:var(--gold)}
 .btn:hover{box-shadow:0 6px 0 rgba(0,0,0,.42),0 14px 34px rgba(201,154,82,.34),inset 0 0 0 1px rgba(10,12,16,.35),inset 0 0 0 3px rgba(238,202,134,.3)}
 .btn:active{box-shadow:0 1px 0 rgba(0,0,0,.4),0 4px 14px rgba(201,154,82,.2),inset 0 0 0 1px rgba(10,12,16,.35)!important}
 .btn.ghost{background:transparent;box-shadow:none;border:1px solid var(--line);border-radius:5px}
-#clueToggle,#btnLang,#btnSound,#dockToggle{border-radius:4px}
+#clueToggle,#btnLang,#btnSound,#btnMotion,#dockToggle{border-radius:4px}
 /* 分隔线 → 笔锋：中段饱满、两端枯笔 */
 .divider{width:120px;height:3px;border-radius:2px;opacity:.75;
   background:linear-gradient(90deg,transparent,rgba(201,154,82,.25) 12%,var(--gold) 38% 62%,rgba(201,154,82,.25) 88%,transparent)}
@@ -936,11 +935,11 @@ h2{position:relative}
 /* 采访语 / 引文：改用楷体的手写话本气 */
 .interview,.msQuote{font-family:"Kaiti SC","STKaiti","KaiTi","Noto Serif SC",var(--serif)}
 /* 顶部音效钮 */
-#btnSound{pointer-events:auto;cursor:pointer;background:rgba(18,21,27,.7);border:1px solid var(--line);
+#btnSound,#btnMotion{pointer-events:auto;cursor:pointer;background:rgba(18,21,27,.7);border:1px solid var(--line);
   color:var(--gold);font-size:12px;padding:8px 12px;font-family:monospace;letter-spacing:.05em;margin-right:10px}
-#btnSound.off{color:var(--ink-dim);opacity:.7}
-#btnSound:hover{background:rgba(201,154,82,.12)}
-@media(max-width:700px){#btnSound{font-size:9px;padding:6px 8px}}
+#btnSound.off,#btnMotion.off{color:var(--ink-dim);opacity:.85}
+#btnSound:hover,#btnMotion:hover{background:rgba(201,154,82,.12)}
+@media(max-width:700px){#btnSound,#btnMotion{font-size:9px;padding:6px 6px;margin-right:4px}}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
@@ -1012,11 +1011,14 @@ body.stage-live #aurora{opacity:.5}
   background:linear-gradient(150deg,rgba(214,86,58,.2),rgba(214,86,58,.06));
   box-shadow:inset 0 0 0 2px rgba(214,86,58,.12),inset 0 0 12px rgba(214,86,58,.14),0 0 16px rgba(214,86,58,.16);
   text-shadow:0 0 8px rgba(214,86,58,.4)}
-.istep:nth-child(1) i::after{content:"挂";transform:rotate(-3deg)}
-.istep:nth-child(2) i::after{content:"寻";transform:rotate(2.5deg)}
-.istep:nth-child(3) i::after{content:"收";transform:rotate(-2deg)}
-.istep:nth-child(4) i::after{content:"鉴";transform:rotate(3deg)}
-@media(max-width:700px){.istep i{width:38px;height:38px}.istep i::after{font-size:17px;inset:1px}}
+.istep:nth-child(1) i::after{content:"子";transform:rotate(-3deg)}
+.istep:nth-child(2) i::after{content:"丑";transform:rotate(2.5deg)}
+.istep:nth-child(3) i::after{content:"寅";transform:rotate(-2deg)}
+.istep:nth-child(4) i::after{content:"卯";transform:rotate(3deg)}
+@media(max-width:700px){.istep i{width:38px;height:38px}.istep i::after{font-size:17px;inset:1px}
+  .introSteps{grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+  .istep{padding:8px 2px 7px;gap:3px}.istep i{width:30px;height:30px}.istep i::after{font-size:14px}.istep b{font-size:11px;letter-spacing:.16em}.istep span{display:none}
+  .newBlock .kicker{text-align:center}}
 /* 首页左席 · 九尾欲灵：与右席山神对望，一欲一守 */
 .heroSpirit{position:relative;flex:0 0 min(270px,24vw);pointer-events:none;user-select:none;margin-left:1vw;order:-1}
 .heroSpirit img{width:100%;display:block;opacity:.8;animation:heroFloat 9s ease-in-out infinite reverse}
@@ -1314,6 +1316,13 @@ body.returning .newBlock{display:none}
 .mParts i{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--c);box-shadow:0 0 8px 2px var(--c);opacity:0;
   animation:mPart 6s linear infinite;animation-delay:var(--d)}
 @keyframes mPart{0%{opacity:0;transform:translateY(10px)}20%{opacity:.85}100%{opacity:0;transform:translateY(-70px)}}
+/* 无障碍 / 低配：减少动效（跟随系统或手动）、键盘焦点、lite 模式 */
+body.calm *,body.calm *::before,body.calm *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+body.lite *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+body.lite #scanlines,body.lite #cloudSea,body.lite #aurora,body.lite #grain{display:none}
+:focus-visible{outline:2px solid var(--gold-bright);outline-offset:2px}
+.skipLink{position:absolute;left:8px;top:-60px;z-index:30;padding:8px 12px;background:#0a0b0e;color:var(--gold-bright);border:1px solid var(--gold)}
+.skipLink:focus{top:8px}
 /* 图鉴 */
 .dexPanel{max-width:560px;margin:0 auto;text-align:center}
 .dexMe{font:13px/1.8 var(--serif);letter-spacing:.1em;color:var(--gold-bright);margin-bottom:10px}
@@ -1460,13 +1469,15 @@ body:not(.sunrise) #screen-report .disclaimer{color:var(--ink-dim)}
 <div id="aurora"></div>
 <div id="scanlines"></div>
 <div id="grain"></div>
+<a class="skipLink" href="#app" data-zh="跳到内容" data-en="Skip to content">跳到内容</a>
 <div class="scrollTag l" aria-hidden="true">夜 深 了 <b>·</b> 它 还 醒 着</div>
 <div class="scrollTag r" aria-hidden="true">天 亮 之 前 <b>·</b> 陪 它 一 程</div>
 
 <div id="topbar">
   <div id="brand"><img class="brandArt inkArt" src="assets/img/keyao.jpg" alt="睡不着的怪物"><b data-zh="怪物夜未眠" data-en="MONSTER SLEEPLESS">怪物夜未眠</b></div>
   <div>
-    <button id="btnSound" aria-label="音效开关" title="音效开关">♪ ON</button>
+    <button id="btnSound" aria-label="音效开关" aria-pressed="true" title="音效开关">♪ ON</button>
+    <button id="btnMotion" aria-label="减少动效开关" aria-pressed="false" title="减少动效 · Reduce motion">动效 ON</button>
     <button id="btnLang">EN</button>
     <button id="clueToggle" data-zh="夜 记" data-en="NIGHT LOG">夜 记</button>
   </div>
@@ -1482,7 +1493,7 @@ body:not(.sunrise) #screen-report .disclaimer{color:var(--ink-dim)}
 <div id="nightClock" aria-live="off"><img class="inkArt" id="ncIcon" alt=""><span class="ncT" id="ncT">00:00</span><span class="ncN" id="ncN">子夜</span></div>
 <div id="monsterSay" role="status" aria-live="polite"><img class="inkArt" src="assets/img/keyao.jpg" alt=""><p id="monsterSayTxt"></p></div>
 <div id="sunrise" aria-hidden="true"><i class="sunSky"></i><i class="sunGlow"></i><i class="sunDisc"></i></div>
-<div id="app">
+<div id="app" role="main" tabindex="-1">
 
   <!-- 0 · 午夜敲门 -->
   <section class="screen" id="screen-intro">
@@ -1624,7 +1635,7 @@ body:not(.sunrise) #screen-report .disclaimer{color:var(--ink-dim)}
     </div>
     <div id="beatGame" style="display:none">
       <canvas id="pulseCanvas" width="680" height="200"></canvas>
-      <button type="button" id="beatPad"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 34C8 25 4 19 4 13a8 8 0 0 1 16-2 8 8 0 0 1 16 2c0 6-4 12-16 21z"/></svg><b id="beatCount"></b></button>
+      <button type="button" id="beatPad" aria-label="轻拍它的心口"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 34C8 25 4 19 4 13a8 8 0 0 1 16-2 8 8 0 0 1 16 2c0 6-4 12-16 21z"/></svg><b id="beatCount"></b></button>
       <div id="beatHint" class="beatHint"></div>
     </div>
     <div id="beatEnd" style="display:none;text-align:center">
@@ -1746,50 +1757,22 @@ body:not(.sunrise) #screen-report .disclaimer{color:var(--ink-dim)}
   addEventListener('pointerdown',kickGrains,{once:true});
   // 逸散联动余粒池（自两人身上飞向四周，与中心呼应）
   const ESC=72, escX=new Float32Array(ESC),escY=new Float32Array(ESC),escVX=new Float32Array(ESC),escVY=new Float32Array(ESC),escLife=new Float32Array(ESC),escHue=new Int8Array(ESC); let escSlot=0;
-  let W=0,H=0,DPR=1;
+  let W=0,H=0,DPR=1,slowN=0;
   function resize(){
-    DPR = Math.min(window.devicePixelRatio||1, 1.6);
+    DPR = window.__lite ? 1 : Math.min(window.devicePixelRatio||1, 1.6);
     W = cv.width = Math.floor(innerWidth*DPR);
     H = cv.height = Math.floor(innerHeight*DPR);
     window.__dpr = DPR;
   }
   addEventListener('resize', resize); resize();
+  /* 低配模式：?lite=1 强制开启，或运行中持续掉帧时自动开启 */
+  window.setLite=on=>{
+    window.__lite=!!on; document.body.classList.toggle('lite',!!on);
+    if(on) allGrains.slice(1).forEach(v=>{try{v.pause();}catch(e){} v.style.display='none';});
+    resize();
+  };
+  if(/[?&]lite=1/.test(location.search)) addEventListener('DOMContentLoaded',()=>window.setLite(true));
 
-  // ---- 体积化「跪坐对坐人形」点云（本地坐标，面朝 +X，额首相抵）----
-  function inBall(){ let x,y,z,d; do{x=Math.random()*2-1;y=Math.random()*2-1;z=Math.random()*2-1;d=x*x+y*y+z*z;}while(d>1); return [x,y,z]; }
-  function blob(c,r,n,out){ for(let i=0;i<n;i++){const u=inBall();out.push([c[0]+u[0]*r[0],c[1]+u[1]*r[1],c[2]+u[2]*r[2]]);} }
-  function limb(a,b,rad,n,out){ for(let i=0;i<n;i++){const t=Math.random(),u=inBall();out.push([a[0]+(b[0]-a[0])*t+u[0]*rad,a[1]+(b[1]-a[1])*t+u[1]*rad,a[2]+(b[2]-a[2])*t+u[2]*rad]);} }
-  const DENS=1.45; // 点云密度系数
-  function buildFigure(){
-    const p=[]; const N=x=>Math.round(x*DENS);
-    // 头（微垂，向对方额首相抵）
-    blob([0.26,0.82,0],[0.125,0.15,0.125],N(430),p);
-    // 颈
-    limb([0.20,0.70,0],[0.15,0.62,0],0.06,N(90),p);
-    // 躯干（前倾、肩宽）
-    blob([0.09,0.52,0],[0.15,0.20,0.19],N(1050),p);
-    // 髋（坐于足跟）
-    blob([0.00,0.30,0],[0.16,0.12,0.20],N(430),p);
-    // 上臂 + 前臂（双手前伸，几近相触）
-    for(let s=-1;s<=1;s+=2){
-      limb([0.13,0.60,0.17*s],[0.30,0.52,0.14*s],0.062,N(210),p);
-      limb([0.30,0.52,0.14*s],[0.40,0.62,0.05*s],0.05,N(180),p);
-    }
-    // 大腿（前伸至膝）+ 小腿/足（折于身下）
-    for(let s=-1;s<=1;s+=2){
-      limb([0.00,0.28,0.14*s],[0.42,0.20,0.16*s],0.11,N(340),p);
-      limb([0.42,0.20,0.16*s],[0.16,0.05,0.18*s],0.10,N(300),p);
-    }
-    return p;
-  }
-  // 为每个点写入：[3]显影序号 [4-6]消散方向(单位向量) [7]湍流相位 [8]消散半径
-  function decorate(fig){
-    fig.forEach(q=>{
-      let dx=Math.random()-.5, dy=Math.random()-.5, dz=Math.random()-.5;
-      const m=Math.hypot(dx,dy,dz)||1;
-      q.push(Math.random(), dx/m, dy/m, dz/m, Math.random()*6.283, 0.3+Math.random()*0.7);
-    });
-  }
   const GAP = 0.46; // 两人间距一半（额首相抵，与视频中两人接触点对齐）
 
   // ---- 意念流：额首之间的三条微光河 ----
@@ -1799,8 +1782,8 @@ body:not(.sunrise) #screen-report .disclaimer{color:var(--ink-dim)}
     for(let i=0;i<56;i++) pts.push({t:Math.random(), sp:0.0018+Math.random()*0.0022, ph:Math.random()*Math.PI*2});
     STREAMS.push({pts, off:(s-1)*0.06, hue:s});
   }
-  // 数据网络节点 + 全息读数（中医脏象 / 体征碎片）
-  const WORDS=['气','血','阴','阳','脉','望','闻','问','切','脾','肾','肝','心','肺','HR 72','36.5°C','SpO₂ 98','BP 118/76','ΔE 0.7','0x7F3A','0xA10C','三焦','命门','气海','关元','足三里'];
+  // 数据网络节点 + 夜里的漂浮字（更名、钟点、星月）
+  const WORDS=['月','星','梦','夜','灯','风','影','露','雾','钟','更','子','丑','寅','卯','三更','五更','夜半','拂晓','00:00','02:00','04:00','06:00','0x7F3A','0xA10C'];
   const NODES=[];
   for(let i=0;i<48;i++) NODES.push({p:[(Math.random()-.5)*5.8,0.3+Math.random()*2.4,(Math.random()-.5)*5.8], n:(Math.random()*9000+1000)|0, ph:Math.random()*7, label:WORDS[(Math.random()*WORDS.length)|0]});
   const LINKS=[];
@@ -1879,11 +1862,15 @@ body:not(.sunrise) #screen-report .disclaimer{color:var(--ink-dim)}
   const nightCur={tone:[11,16,32],dust:[170,190,235],stars:1};
   function frame(now){
     const t=(now-t0)/1000;
+    // 低端机自适应：连续掉帧（>34ms）就降到 lite：DPR 1、少一路颗粒视频、关掉装饰层
+    const raw=now-lastFrame;
+    if(raw>34) slowN++; else if(slowN>0) slowN--;
+    if(slowN>45&&!window.__lite) window.setLite(true);
     const dt=Math.min(.05,(now-lastFrame)/1000); lastFrame=now;
     // 指针靠近光点时（stageTick 算出 __orbSlow）：镜头自转与视差一起放慢，目标在屏幕上几乎停住
     const slow=window.__orbSlow==null?1:window.__orbSlow;
     vmx+=(mx-vmx)*Math.min(1,dt*4)*slow; vmy+=(my-vmy)*Math.min(1,dt*4)*slow;
-    if(!window.__stageFocus){autoAng+=dt*0.06*slow;lockedMx=vmx;lockedMy=vmy;}
+    if(!window.__stageFocus){if(!window.__calm)autoAng+=dt*0.06*slow;lockedMx=vmx;lockedMy=vmy;}
     if(Math.abs(focusDelta)>.001){const step=focusDelta*Math.min(1,dt*7);dragAng+=step;focusDelta-=step;}
     ctx.clearRect(0,0,W,H);
     // 底色渐变：随夜里的时段（NIGHT.phases[].tone）缓缓换色温
@@ -2247,86 +2234,10 @@ const Q_INQUIRE = [
    ['长期感到孤独或缺乏支持',{qi:1,yang:1,yu:1},'Lonely or unsupported for a long time']]}
 ];
 
-/* 问诊各组的采访式引导语（带参与者回到未被留意的身体记忆） */
-const Q_LEAD = {
- '寒热 · 体温的证词':['回想最近一个月的夜里。你把手脚伸出被子——是想取暖，还是想散热？清晨醒来时，后背有没有一层薄汗？','Think of recent nights. When your hands and feet leave the blanket — are you seeking warmth, or releasing heat? Any thin sweat on waking?'],
- '头面五官 · 上部线索':['现在注意你的头。不是此刻——是上周末下午、开完长会之后、或者熬夜第二天的那个头。它是什么感觉？','Now, your head. Not right now — but last weekend, after a long meeting, or the morning after staying up late. How did it feel?'],
- '胸腹 · 情志的战场':['这一组问题关于你的胸口和心事。最近有没有那么一个瞬间——你忽然想长长地叹一口气？想到了，就勾下来。','These are about your chest and your mind. Was there a moment lately when you suddenly needed a long, deep sigh? If so, tick it.'],
- '饮食消化 · 中焦报告':['想想你的胃昨天经历了什么。早餐吃了吗？吃完午饭的那个小时，你是清醒的，还是困的？','What did your stomach go through yesterday? Did you eat breakfast? In the hour after lunch — were you awake, or drowsy?'],
- '二便 · 下游出口':['这是采访里最不优雅、但最诚实的一组问题。身体最后的出口，从不说谎。','The least elegant but most honest questions of this interview. The body\'s exits never lie.'],
- '睡眠 · 夜间档案':['回到昨晚。关灯之后，你用了多久才睡着？夜里醒过吗？醒来时，窗外是几点？','Back to last night. After lights out, how long until sleep? Did you wake? What time was it outside?'],
- '精力 · 筋骨状态':['想象一块电池的电量条。下午三点的你，还剩百分之几？','Picture a battery bar. At 3 p.m., what percentage is left in you?'],
- '心神 · 心理状态':['这一组不问身体，问心。回答时不用评判自己——情绪也是信号，信号从不丢人。中医讲「心主神明」，心理学讲身心一体，说的是同一件事。','This set asks the mind, not the body. No judgment — emotions are signals too, and signals are never shameful. TCM says the heart houses the mind; psychology says body and mind are one.'],
-};
+
 </script>
 
 <script>
-/* ============================================================
-   证型知识库（后续改写为志怪口吻）
-   tcm 中医病机 | west 西医关联 | psy 心理侧写
-   ============================================================ */
-const PATTERNS = {
-qi:{name:'气虚',eng:'QI DEFICIENCY',organ:'脾肺',one:'气如电量：生成不足、消耗过度，身体进入低功耗模式。',
- tcm:'「气」是身体的动力系统，主推动、温煦、固摄。脾为气血生化之源，肺主一身之气。久病、过劳、饮食不节或久坐少动，都会耗伤脾肺之气，出现疲乏、自汗、气短、易感冒等「低电量」表现。',
- west:'对应现代医学的慢性疲劳状态、线粒体能量代谢效率下降、免疫功能偏低（反复上呼吸道感染）、低血压倾向、胃肠动力不足。需鉴别贫血、甲状腺功能减退、睡眠呼吸暂停等器质性问题。',
- psy:'心理画像常见「心有余而力不足」：动机尚存但启动困难，容易因疲惫而回避社交与决策。长期气虚者易发展出习得性无助，需要用小目标、小胜利重建效能感，而非打鸡血式自我逼迫。',
-},
-
-xue:{name:'血虚',eng:'BLOOD DEFICIENCY',organ:'心肝',one:'血是身体的营养运输网：血量不足，末端与神明先失养。',
- tcm:'血主濡养，藏神。肝藏血、心主血。失血、脾胃虚弱生化不足、长期熬夜或思虑过度均可耗血。血虚则面色无华、头晕眼花、心悸失眠、手足发麻、经量少色淡。「血不养神」则眠浅多梦。',
- west:'首要鉴别缺铁性贫血、维生素 B12 / 叶酸缺乏（尤其经期量多、素食、胃肠吸收差者）。也与低血容量、体位性低血压、末梢循环灌注不足相关。长期血虚状态可影响认知速度与情绪稳定性。',
- psy:'血虚者常见「背景性焦虑」：心神失养，像手机信号只有一格——容易慌、容易惊醒、注意力难以锚定。心理学上对应安全感不足的高警觉状态，需要稳定节律与身体安抚（如正念身体扫描）来「充值」。',
-},
-
-yin:{name:'阴虚',eng:'YIN DEFICIENCY',organ:'肾肺',one:'阴是身体的冷却与润滑系统：水少了，虚火就往上窜。',
- tcm:'阴主滋润、宁静、制约阳气。肾阴为一身阴液之本。长期熬夜、思虑过度、辛辣温燥、久病耗伤，都会让「水」亏「火」旺：手足心热、午后潮热、盗汗、口干咽燥、心烦失眠、舌红少苔。此为「虚热」，非实火。',
- west:'对应交感神经长期偏亢、基础代谢率偏高、慢性脱水倾向；女性需关注围绝经期激素波动，长期压力导致的皮质醇节律紊乱也呈类似表现。鉴别甲亢、糖尿病（口干多饮消瘦）等。',
- psy:'阴虚者的心理画像：内在「散热不良」——外表可以温和，内里烦躁、耐心阈值低、对声音光线敏感。高敏感人格（HSP）与此体质高度重叠。需要主动降噪、降刺激，给神经系统「物理降温」。',
-},
-
-yang:{name:'阳虚',eng:'YANG DEFICIENCY',organ:'肾脾',one:'阳是身体的炉膛：火力不足，全身进入「低温运行」。',
- tcm:'阳主温煦、推动、气化。肾阳为一身阳气之根。先天不足、久居寒湿、过食生冷、年老体衰均可伤阳。表现为畏寒肢冷、精神萎靡、腰膝冷痛、夜尿频多、大便稀溏、舌淡胖有齿痕。',
- west:'对应基础代谢率偏低、体温调节偏冷、循环偏慢；需鉴别甲状腺功能减退（怕冷+乏力+体重增加务必查甲功）、肾上腺疲劳样状态、低血压。女性痛经遇冷加重也属此类倾向。',
- psy:'阳虚者的心理画像：情绪「低功耗」——不是激烈的痛苦，而是淡淡的提不起劲、晨重暮轻、冬天更明显。与季节性情绪失调（SAD）、轻度抑郁状态有交集。光照、温热、社会连接是它的「柴火」。',
-},
-
-yu:{name:'肝郁气滞',eng:'QI STAGNATION',organ:'肝胆',one:'气该流动而不流动：情绪堵住的地方，身体最先知道。',
- tcm:'肝主疏泄，调畅气机与情志。长期情绪压抑、压力、久坐不动，使肝气郁结：胸闷、善太息（爱叹气）、胁胀、烦躁易怒、咽中如有物（梅核气）、女性经前胀痛。郁久可化火、克脾、成瘀。',
- west:'对应慢性压力下的 HPA 轴（下丘脑-垂体-肾上腺）持续激活、自主神经功能紊乱；与肠易激综合征（IBS）、紧张性头痛、经前综合征（PMS）、功能性消化不良高度相关。身心医学称之为「躯体化压力反应」。',
- psy:'这是最「心理」的一个证型。画像是：责任重、自我要求高、情绪不轻易示人，「我应该」多过「我想要」。认知行为视角下的反刍思维与情绪压抑是其核心。出路不是「想开点」，而是给情绪建立出口：表达、书写、身体释放。',
-},
-
-pi:{name:'脾虚湿盛',eng:'SPLEEN DEFICIENCY',organ:'脾胃',one:'脾是身体的中央厨房：火弱了，食物变成「湿气」堆积。',
- tcm:'脾主运化水谷与水湿。饮食不节、生冷甜腻、思虑过度、久坐伤脾，运化失职则水湿内停：食欲不振、腹胀、便溏黏腻、身体困重、头重如裹、舌胖有齿痕、苔腻。「脾为生痰之源」。',
- west:'对应胃肠动力不足、肠道菌群失衡倾向、餐后嗜睡（血糖波动大）、轻度胰岛素抵抗前期、组织间隙水液代谢偏慢（晨起浮肿）。与「肠脑轴」功能紊乱密切相关。',
- psy:'「思伤脾」——反刍思维、过度思虑者常见此证；反过来脾虚湿盛又带来脑雾、昏沉、决断力下降，形成「想得多→做得少→更焦虑」的循环。行为激活（先动起来再完善想法）是破解钥匙。',
-},
-
-tan:{name:'痰湿',eng:'PHLEGM-DAMPNESS',organ:'脾肺',one:'湿聚成痰：身体的「代谢库存」开始积压。',
- tcm:'痰湿是脾虚湿盛的进阶版——水湿停聚日久，凝结成「痰」（广义的痰，包括无形之痰）。表现为形体肥胖松软、胸闷痰多、头昏沉、嗜睡、口黏、苔厚腻、大便黏。痰湿上泛则晕，阻络则麻，蒙蔽清窍则困。',
- west:'直接对应代谢综合征谱系：中心性肥胖、血脂异常、脂肪肝倾向、血糖调节受损、睡眠呼吸暂停（OSA）风险。现代医学视之为慢性低度炎症与能量正平衡状态。',
- psy:'痰湿者心理画像：动机「黏滞」——明知该动却启动困难，昏沉感让一切显得费力。这不是懒惰，是生理性的低唤醒。策略是「先身体后意志」：用外部节律（固定课表、运动搭子）替代内在驱动力。',
-},
-
-re:{name:'湿热',eng:'DAMP-HEAT',organ:'脾胃肝胆',one:'湿与热勾结：身体像一间又闷又潮还开着暖气的屋子。',
- tcm:'湿与热合，如油入面，难解难分。过食肥甘酒酪、辛辣厚味，或外感湿热，蕴结体内：口苦口黏、面油多易长痘、小便黄赤、大便黏臭、阴部潮湿、苔黄腻、身重困倦却烦躁。在肝胆则胁痛目赤，在膀胱则淋浊，在肌肤则疮疹。',
- west:'对应慢性低度炎症状态：痤疮（尤其成人痘）、脂溢性皮炎、肠易激/肠道菌群失调、泌尿生殖系统反复感染倾向、高尿酸风险。酒精与高果糖摄入是现代医学确认的两大推手。',
- psy:'湿热者的心理画像：烦躁与黏滞并存——心里有一团散不掉的闷火，急但提不起效率。对环境的杂乱、闷热、噪音耐受度低。清爽的环境、断舍离式的整理，对这个证型有切实的心理疗效。',
-},
-
-yux:{name:'血瘀',eng:'BLOOD STASIS',organ:'心肝',one:'血行不畅：身体的河流出现了淤塞段。',
- tcm:'「不通则痛」。气滞、寒凝、气虚、外伤均可致血瘀：固定刺痛（夜间加重）、面色晦暗、唇甲色暗、舌紫有瘀点、痛经血块、肌肤甲错、某些部位麻木。瘀阻在哪里，问题就出在哪里。',
- west:'对应微循环障碍、慢性疼痛（肌筋膜疼痛综合征）、静脉曲张倾向、纤维肌痛的部分表型；女性子宫内膜异位症/腺肌症常以血瘀表现就诊。久坐导致的局部循环淤滞是最常见的现代诱因。',
- psy:'血瘀的心理画像常与「卡住」有关：一段没有处理完的过往、长期紧绷的身体记忆。身心医学发现慢性疼痛患者常伴情绪压抑史。身体层面的「通」（按摩、热敷、运动）常能松动心理层面的「结」。',
-},
-
-huo:{name:'心火亢盛',eng:'HEART FIRE',organ:'心',one:'心神这盏灯烧得太旺：亮了别人，耗了自己。',
- tcm:'心主神明。思虑劳心过度、情志化火、或过食温燥，使心火内炽：心烦失眠、入睡困难、多梦易醒、口舌生疮、面红目赤、小便短赤、舌尖红。心火亢则神不守舍——脑子停不下来，是此证的核心体验。',
- west:'对应交感神经持续兴奋、入睡潜伏期延长、睡眠结构浅化（深睡比例低）、高觉醒状态（hyperarousal）——慢性失眠的现代医学模型。咖啡因/尼古丁摄入、睡前蓝光暴露、反刍思维是确认的放大器。',
- psy:'画像：高速运转的大脑，停不下来的内心独白，「躺下即开会」。常与广泛性焦虑、高压职业状态并存。认知层面需要「心理下班」仪式；生理层面需要降低核心体温、减少交感输入。CBT-I（失眠认知行为疗法）是循证首选。',
-}
-};
-
 /* 六维雷达的含义说明 */
 const DIMS = [
  ['气血能量','身体的总电量与输送能力'],
@@ -2341,60 +2252,6 @@ const DIMS = [
 const EL_EN={'木':'Wood','火':'Fire','土':'Earth','金':'Metal','水':'Water'};
 const DIMS_EN=[['Vitality','Total energy & delivery'],['Digestion','Metabolic conversion'],['Emotion','Stress metabolism'],['Sleep','Nightly repair'],['Detox','Waste clearance'],['Mobility','Circulation & flexibility']];
 
-/* ---------- 证型英文版（精炼） ---------- */
-const PATTERNS_EN = {
-qi:{name:'Qi Deficiency',organ:'Spleen & Lung',one:'Qi is battery charge: under-produced and over-drained, the body runs on low-power mode.',
- tcm:'Qi drives, warms and protects. Overwork, irregular meals and prolonged sitting weaken Spleen and Lung qi, causing fatigue, spontaneous sweating, shortness of breath and frequent colds.',
- west:'Maps to chronic fatigue states, low mitochondrial efficiency, weakened immunity and low gastrointestinal motility. Rule out anemia, hypothyroidism and sleep apnea.',
- psy:'Motivation exists but ignition fails. Long-term low qi breeds learned helplessness — rebuild self-efficacy with small wins, not self-pressure.',
-},
-xue:{name:'Blood Deficiency',organ:'Heart & Liver',one:'Blood is the delivery network: when volume drops, the periphery and the mind go unfed.',
- tcm:'Blood nourishes and houses the mind. Poor production, blood loss, late nights and overthinking drain it — causing dizziness, palpitations, light sleep and scanty pale periods.',
- west:'First rule out iron/B12/folate deficiency anemia, low circulating volume and orthostatic hypotension. Chronic deficiency slows cognition and destabilizes mood.',
- psy:'A background hum of anxiety — the mind under-nourished feels like a phone on one bar of signal. Stability and rhythm are the recharge.',
-},
-yin:{name:'Yin Deficiency',organ:'Kidney & Lung',one:'Yin is the cooling system: when fluid runs low, empty heat flares upward.',
- tcm:'Yin moistens, calms and anchors yang. Late nights, worry and spicy food deplete it — hot palms, afternoon flushing, night sweats, dry mouth, vexed insomnia.',
- west:'Maps to sympathetic overdrive, perimenopausal fluctuation and cortisol rhythm disruption. Rule out hyperthyroidism and diabetes.',
- psy:'Poor internal heat dissipation: gentle outside, irritable inside, low threshold for noise and light. Overlaps with high sensitivity (HSP).',
-},
-yang:{name:'Yang Deficiency',organ:'Kidney & Spleen',one:'Yang is the furnace: low fire, and the whole body runs cold.',
- tcm:'Yang warms, moves and transforms. Its root is kidney yang. Cold environments, raw cold food and aging weaken it — chilliness, low spirit, cold back and knees, frequent night urination.',
- west:'Low basal metabolism and slow circulation; rule out hypothyroidism (cold + fatigue + weight gain = check thyroid) and low blood pressure.',
- psy:'Low-power mood: not sharp pain but flatness, worse in mornings and winter. Overlaps with seasonal affective patterns. Light, warmth and people are its firewood.',
-},
-yu:{name:'Qi Stagnation',organ:'Liver & Gallbladder',one:'Qi must flow: where emotions jam, the body keeps the score.',
- tcm:'The liver governs free flow of qi and emotion. Suppressed feelings and sitting stiffen it — chest tightness, sighing, rib-side distension, irritability, plum-pit throat.',
- west:'Maps to chronic HPA-axis activation and autonomic dysregulation; strongly linked with IBS, tension headaches, PMS and functional dyspepsia.',
- psy:'The most psychological pattern: high duty, high self-demand, feelings rarely shown. The exit is not "think positive" but channels of expression.',
-},
-pi:{name:'Spleen Deficiency with Dampness',organ:'Spleen & Stomach',one:'The spleen is the central kitchen: low fire turns food into damp sludge.',
- tcm:'The spleen transforms food and fluids. Rich cold food, worry and sitting impair it — poor appetite, bloating, sticky loose stools, heaviness, scalloped tongue.',
- west:'Low gut motility, dysbiosis tendency, post-meal glucose dips, early insulin resistance, morning puffiness. Tied to gut-brain axis dysfunction.',
- psy:'Rumination injures the spleen; dampness then fogs thinking, feeding the loop. Behavioral activation — move first, refine later — breaks it.',
-},
-tan:{name:'Phlegm-Dampness',organ:'Spleen & Lung',one:'Dampness condenses into phlegm: the body\'s metabolic inventory piles up.',
- tcm:'The advanced stage of dampness — visible as soft central obesity, chest stuffiness, heavy head, sleepiness, sticky mouth, thick greasy coating.',
- west:'The metabolic syndrome spectrum: central obesity, dyslipidemia, fatty liver tendency, impaired glucose regulation, OSA risk. A state of chronic low-grade inflammation.',
- psy:'Motivation turns viscous — knowing without starting is physiological low arousal, not laziness. External rhythm beats inner willpower.',
-},
-re:{name:'Damp-Heat',organ:'Spleen, Liver & Gallbladder',one:'Damp plus heat: a room that is humid, stuffy, with the heater left on.',
- tcm:'Dampness bound with heat — bitter sticky mouth, oily acne-prone skin, dark urine, sticky stools, yellow greasy coating, restless heaviness.',
- west:'Chronic low-grade inflammation: adult acne, seborrheic dermatitis, gut dysbiosis, recurrent urogenital irritation, high uric acid risk. Alcohol and fructose are proven drivers.',
- psy:'Irritable yet stuck — a smothered fire. Low tolerance for clutter, heat and noise. A clean, cool, decluttered space is real medicine here.',
-},
-yux:{name:'Blood Stasis',organ:'Heart & Liver',one:'Blood flow jams: silted sections in the body\'s rivers.',
- tcm:'"No flow, then pain." Stagnant qi, cold, deficiency or injury cause stasis — fixed stabbing pain worse at night, dark complexion, purple spotted tongue, clotted cramps.',
- west:'Microcirculation impairment, myofascial pain, varicose tendency; prolonged sitting is the most common modern driver.',
- psy:'Often paired with something "stuck" — unprocessed pasts held in a tense body. Loosening the body can loosen the knot.',
-},
-huo:{name:'Heart Fire',organ:'Heart',one:'The mind\'s lamp burns too bright: lighting others, draining itself.',
- tcm:'The heart houses the mind. Overthinking and worry kindle heart fire — vexed insomnia, racing dreams, mouth ulcers, red face, scanty dark urine, red tongue tip.',
- west:'Sympathetic overdrive, prolonged sleep latency, shallow sleep architecture — the hyperarousal model of chronic insomnia. Caffeine, late screens and rumination amplify it.',
- psy:'A high-speed brain that won\'t stop narrating — "lie down and the meeting starts". Needs a psychological clock-out ritual plus physiological cooling. CBT-I is the evidence base.',
-}
-};
-for(const k in PATTERNS_EN){ PATTERNS[k].en = PATTERNS_EN[k]; }
 </script>
 
 <script>
@@ -2529,7 +2386,7 @@ function updateLive(){
    音色参照手机独立游戏：木鱼点按 · 古筝捕捉 · 磬锣通关 · 风铃揭晓
    宫调五声音阶，连击沿音阶爬升
    ============================================================ */
-const buzz=p=>{try{if(navigator.vibrate&&!matchMedia('(prefers-reduced-motion:reduce)').matches)navigator.vibrate(p);}catch(e){}};
+const buzz=p=>{try{if(navigator.vibrate&&!window.__calm&&!matchMedia('(prefers-reduced-motion:reduce)').matches)navigator.vibrate(p);}catch(e){}};
 const FX=(()=>{
   let ac=null,master=null;
   let muted=localStorage.getItem('mm_mute')==='1';
@@ -2680,7 +2537,7 @@ const FX=(()=>{
   },{capture:true,passive:true});
   document.addEventListener('DOMContentLoaded',()=>{
     const b=document.getElementById('btnSound');if(!b)return;
-    const paint=()=>{b.textContent=muted?'♪ OFF':'♪ ON';b.classList.toggle('off',muted);};
+    const paint=()=>{b.textContent=muted?'♪ OFF':'♪ ON';b.classList.toggle('off',muted);b.setAttribute('aria-pressed',String(!muted));};
     paint();
     b.addEventListener('click',()=>{api.toggle();paint();if(!muted)api.tap();});
   });
@@ -2884,7 +2741,7 @@ $('#clueToggle').onclick=()=>$('#clueBook').classList.toggle('open');
 let LANG='zh';
 const L=(zh,en)=>LANG==='en'?en:zh;
 const EL=e=>LANG==='en'?(EL_EN[e]||e):e;
-const pName=k=>LANG==='en'&&PATTERNS[k].en?PATTERNS[k].en.name:PATTERNS[k].name;
+
 function applyLang(){
   document.querySelectorAll('[data-zh]').forEach(el=>{
     const v=el.dataset[LANG]; if(v!=null) el.innerHTML=v;
@@ -2894,6 +2751,7 @@ function applyLang(){
   if(ORBS.length){ buildDock(); renderChapters(); renderBadges(); ORBS.forEach(o=>{const em=o.el&&o.el.querySelector('em'); if(em) em.textContent=L(CATS[o.cat].zh,CATS[o.cat].en)+' '+String(o.order+1).padStart(2,'0');}); }
   if(orbTotal) updateHUD();
   refreshClock();
+  paintMotion();
   closePanel();
   if(document.body.classList.contains('returning')) showReturn();
   if($('#screen-dex').classList.contains('active')) renderDex();
@@ -3023,44 +2881,6 @@ function nextPhase(){
 
 /* ---------- 题目渲染（中英双语） ---------- */
 function optText(o){ return LANG==='en' ? (o[2]||o[0]) : o[0]; }
-function renderOptsSingle(container,g){
-  const og=document.createElement('div'); og.className='optGroup';
-  g.opts.forEach(opt=>{
-    const o=document.createElement('div'); o.className='opt'; o.textContent=optText(opt);
-    if(g._sel && g._sel.opt===opt) o.classList.add('sel');
-    o.onclick=()=>{
-      og.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel'));
-      o.classList.add('sel');
-      g._sel={opt, w:opt[1]};
-    };
-    og.appendChild(o);
-  });
-  container.appendChild(og);
-}
-function renderOptsMulti(container,g){
-  const og=document.createElement('div'); og.className='optGroup';
-  g.items.forEach(item=>{
-    const o=document.createElement('div'); o.className='opt'; o.textContent=optText(item);
-    if(o._on){o.classList.add('sel','multi');}
-    o.onclick=()=>{ o._on=!o._on; o.classList.toggle('sel'); o.classList.toggle('multi'); };
-    o._item=item; og.appendChild(o);
-  });
-  g._og=og; container.appendChild(og);
-}
-function collectSingle(groups, srcName){
-  groups.forEach(g=>{
-    if(g._sel) addClue(srcName, (LANG==='en'?(g.qe||g.q):g.q.split('（')[0])+' — '+optText(g._sel.opt), g._sel.w);
-  });
-}
-function collectMulti(groups, srcName){
-  groups.forEach(g=>{
-    if(!g._og) return;
-    g._og.querySelectorAll('.opt').forEach(o=>{
-      if(o._on) addClue(srcName, (LANG==='en'?g.ge:g.g.split(' ')[0])+' · '+optText(o._item), o._item[1]);
-    });
-  });
-}
-
 /* ---------- 探案舞台：光圈环绕 ---------- */
 const CATS={
  observe:{zh:NIGHT.phases[0].zh,en:NIGHT.phases[0].en.toUpperCase(),col:'#c99a52'},
@@ -3233,6 +3053,8 @@ function buildStage(list){
     const d=document.createElement('div');
     d.className='orb cat-'+o.cat;
     d.innerHTML='<b></b><i></i><em></em>';
+    d.setAttribute('role','button'); d.tabIndex=0; d.setAttribute('aria-label',orbLabel(o));
+    d.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); captureOrb(o); } });
     d.querySelector('em').textContent=L(CATS[o.cat].zh,CATS[o.cat].en)+' '+String(i+1).padStart(2,'0');
     d.addEventListener('click',e=>{e.stopPropagation();
       // 76px 命中框会互相重叠：重叠区按“离点击点最近的光点”算，而不是 DOM 顺序
@@ -3369,7 +3191,7 @@ function buildDock(){
   });
   updateDockProgress();
 }
-function openDock(){ $('#clueDock').classList.add('open'); }
+
 function collapseDock(){ $('#clueDock').classList.remove('open'); }
 function skipOrb(o){
   if(!o||o.done||o._completing) return;
@@ -3439,12 +3261,12 @@ window.stageTick=function(project){
   if(!on||!ORBS.length){ window.__orbSlow=1; return; }
   const now=performance.now(), dt=Math.min(.05,(now-_tickT)/1000); _tickT=now;
   const slow=orbSlowFactor(); window.__orbSlow=slow;
-  const dpr=window.__dpr||1, drift=curOrb?0:slow;
+  const dpr=window.__dpr||1, drift=curOrb||window.__calm?0:slow;
   let best=null,bestD=0;
   ORBS.forEach(o=>{
     if(o===curOrb){o.el.style.opacity='0';return;}
     if(!o.done&&!o._locking){
-      o.a0+=o.spd*dt*drift; o.bob+=dt*0.9*slow;
+      o.a0+=o.spd*dt*drift; o.bob+=window.__calm?0:dt*0.9*slow;
       o.wx=Math.cos(o.a0)*o.r; o.wz=Math.sin(o.a0)*o.r; o.wy=o.wy0+Math.sin(o.bob)*0.07;
     }
     const p=project(o.wx,o.wy,o.wz);
@@ -4025,9 +3847,6 @@ function applyIntakeWeights(){
 }
 
 /* ---------- 阶段侧写奖励：由章节通关（checkChapters）驱动 ---------- */
-function topPatterns(n){
-  return PATTERN_KEYS.map(k=>[k,state.weights[k]]).filter(a=>a[1]>0).sort((a,b)=>b[1]-a[1]).slice(0,n);
-}
 function openMilestone(kicker,title,bodyHTML,btnText,onBtn){
   $('#msKicker').textContent=kicker;
   $('#msTitle').textContent=title;
@@ -4588,48 +4407,6 @@ function drawRadar(cv, vals, S, mini, k=1, t=0){
     ctx.fillStyle='#d4af6a'; ctx.shadowColor='#d4af6a'; ctx.shadowBlur=8; ctx.fill(); ctx.shadowBlur=0;
   });
 }
-function drawWheel(cv, els, S, k=1, t=0){
-  const ctx=cv.getContext('2d'), cx=S/2, cy=S/2;
-  const COL={'木':'#4caf7d','火':'#d4706a','土':'#d4af6a','金':'#cfd6dd','水':'#5b8fd4'};
-  const ORG={'木':['肝','Liver'],'火':['心','Heart'],'土':['脾','Spleen'],'金':['肺','Lung'],'水':['肾','Kidney']};
-  const EN={'木':'Wood','火':'Fire','土':'Earth','金':'Metal','水':'Water'};
-  const KEYS=['木','火','土','金','水'];
-  const max=Math.max(1,...Object.values(els));
-  ctx.clearRect(0,0,S,S);
-  // 外圈刻度缓慢自转
-  ctx.save(); ctx.translate(cx,cy); ctx.rotate(t*0.08);
-  ctx.strokeStyle='rgba(233,228,214,.14)'; ctx.lineWidth=1; ctx.setLineDash([2,6]);
-  ctx.beginPath(); ctx.arc(0,0,S*0.47,0,7); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
-  KEYS.forEach((e,i)=>{
-    const span=Math.PI*2/5-0.09, a0=-Math.PI/2+i*Math.PI*2/5, a1=a0+span*k;
-    const r=S*0.16+S*0.24*(els[e]/max)*(t>0?1+0.012*Math.sin(t*1.9+i):1);
-    ctx.beginPath(); ctx.arc(cx,cy,r,a0,a1);
-    ctx.strokeStyle=COL[e]; ctx.lineWidth=S*0.075; ctx.globalAlpha=0.85;
-    ctx.shadowColor=COL[e]; ctx.shadowBlur=10; ctx.stroke(); ctx.shadowBlur=0;
-    ctx.globalAlpha=1;
-    const am=(a0+a0+span)/2, lr=S*0.44;
-    ctx.fillStyle=`rgba(233,228,214,${.85*k})`; ctx.font=(S<260?'12px':'14px')+' serif';
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(LANG==='en'?`${EN[e]}·${ORG[e][1]}`:`${e}·${ORG[e][0]}`, cx+Math.cos(am)*lr, cy+Math.sin(am)*lr);
-    ctx.fillStyle=COL[e]; ctx.globalAlpha=k; ctx.font='11px monospace';
-    ctx.fillText(String(els[e]), cx+Math.cos(am)*lr, cy+Math.sin(am)*lr+17); ctx.globalAlpha=1;
-  });
-  // 相生之流：一点金光沿内环巡行
-  if(t>0){
-    const a=-Math.PI/2+t*0.55, r=S*0.12;
-    for(let j=0;j<6;j++){
-      const aa=a-j*0.12, al=(1-j/6)*.9;
-      ctx.fillStyle=`rgba(240,207,142,${al})`;
-      ctx.beginPath(); ctx.arc(cx+Math.cos(aa)*r,cy+Math.sin(aa)*r,2.4-j*.3,0,7); ctx.fill();
-    }
-  }
-  // 中心生命核：随呼吸胀缩
-  const cr=Math.max(.1,S*0.055*(1+0.1*Math.sin(t*2.4))*k);
-  const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,cr*2.2);
-  cg.addColorStop(0,'rgba(240,207,142,.9)'); cg.addColorStop(.45,'rgba(212,175,106,.35)'); cg.addColorStop(1,'rgba(212,175,106,0)');
-  ctx.fillStyle=cg; ctx.beginPath(); ctx.arc(cx,cy,cr*2.2,0,7); ctx.fill();
-}
-
 /* ---------- 怪物日记（结局一屏） ---------- */
 const escHTML=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 /* 小行动卡：每个证型 4 类（life 起居 / nutri 饮食 / move 活动 / habit 小习惯），每条 ≤20 字，只是故事里的小事，不是建议处方 */
@@ -5163,6 +4940,21 @@ $('#btnEvoDone').onclick=()=>{
   if(SAVE&&!DBG.get('debugNight')){ SAVE.evo=Math.max(SAVE.evo||0,state.evoStage||0); writeSave(); }
   const s=state.nightSave||activeSave(); if(s) applyMonsterLook(s);
 };
+
+/* ---------- 无障碍：减少动效（默认跟随系统，可手动切换，记在 mm_motion；音效另有 ♪ 开关 mm_mute） ---------- */
+function paintMotion(){
+  const b=$('#btnMotion'); if(!b) return; const on=!!window.__calm;
+  b.textContent=on?L('动效 OFF','MOTION OFF'):L('动效 ON','MOTION ON');
+  b.classList.toggle('off',on); b.setAttribute('aria-pressed',String(on));
+}
+function setCalm(on,persist){
+  window.__calm=!!on; document.body.classList.toggle('calm',!!on);
+  if(persist){ try{ localStorage.setItem('mm_motion',on?'0':'1'); }catch(e){} }
+  paintMotion();
+}
+$('#btnMotion').onclick=()=>setCalm(!window.__calm,true);
+{ let st=null; try{ st=localStorage.getItem('mm_motion'); }catch(e){}
+  setCalm(st==null?matchMedia('(prefers-reduced-motion:reduce)').matches:st==='0',false); }
 
 /* ---------- 启动 ---------- */
 window.__clarity=0.55; // 开场即半虚粒子态，点明「由虚到实」
