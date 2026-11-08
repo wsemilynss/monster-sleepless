@@ -1314,6 +1314,59 @@ body.returning .newBlock{display:none}
 .mParts i{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--c);box-shadow:0 0 8px 2px var(--c);opacity:0;
   animation:mPart 6s linear infinite;animation-delay:var(--d)}
 @keyframes mPart{0%{opacity:0;transform:translateY(10px)}20%{opacity:.85}100%{opacity:0;transform:translateY(-70px)}}
+/* 图鉴 */
+.dexPanel{max-width:560px;margin:0 auto;text-align:center}
+.dexMe{font:13px/1.8 var(--serif);letter-spacing:.1em;color:var(--gold-bright);margin-bottom:10px}
+.dexMe small{display:block;font:10.5px/1.6 monospace;letter-spacing:.2em;color:var(--ink-dim)}
+.dexGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.dexGrid .dc{position:relative;padding:6px 4px 8px;border:1px solid rgba(233,228,214,.16);border-radius:8px;background:rgba(13,15,19,.55);cursor:pointer;color:var(--ink);font:11.5px/1.4 var(--serif);letter-spacing:.06em;min-height:44px}
+.dexGrid .dc img{display:block;width:100%;height:92px;object-fit:contain;background:#e9e1c8;border-radius:4px;margin-bottom:5px}
+.dexGrid .dc.lock img{filter:brightness(0);opacity:.55;background:#6d6650}
+.dexGrid .dc.lock{color:var(--ink-dim)}
+.dexGrid .dc.on{border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,106,.35)}
+.dexGrid .dc b{position:absolute;right:6px;top:6px;font:600 10px/1 monospace;color:#2b2415;background:rgba(240,207,142,.92);border-radius:8px;padding:2px 5px}
+.dexGrid.gifts .dc img{height:64px}
+.dexDetail{text-align:left;margin:0 auto 14px;padding:12px 14px;border:1px solid rgba(212,175,106,.3);border-radius:10px;background:rgba(13,15,19,.6)}
+.dexDetail h4{margin:0 0 6px;font:16px/1.5 var(--serif);letter-spacing:.14em;color:var(--gold-bright)}
+.dexDetail .tier{margin:8px 0 0;font:13px/1.85 var(--serif);color:var(--ink)}
+.dexDetail .tier small{display:inline-block;margin-right:8px;font:10.5px/1.6 monospace;letter-spacing:.16em;color:var(--teal)}
+.dexDetail .tier.t3{border-left:2px solid var(--cinnabar);padding-left:10px;color:var(--ink-dim)}
+.dexDetail .lockMsg{font:italic 14px/1.8 var(--serif);color:var(--ink-dim)}
+.dexSub{font:10.5px/1.5 monospace;letter-spacing:.2em;color:var(--ink-dim);margin:6px 0}
+.badgeWall{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.badgeWall .bw{padding:8px 4px;border:1px solid rgba(233,228,214,.14);border-radius:8px;color:var(--ink-dim);font:11px/1.5 var(--serif);opacity:.6}
+.badgeWall .bw i{display:block;width:24px;height:24px;margin:0 auto 4px}
+.badgeWall .bw small{display:block;font-size:10px;color:var(--ink-dim)}
+.badgeWall .bw.on{opacity:1;color:var(--gold-bright);border-color:var(--gold);box-shadow:0 0 10px rgba(212,175,106,.3)}
+.badgeWall .bw.on.silver{color:#cfd6dd;border-color:rgba(207,214,221,.6)}
+#screen-dex{justify-content:flex-start}
+/* 进化：阶段改变怪物的大小与光环 */
+.monsterDoor[data-st="1"] .monsterFig{width:158px}
+.monsterDoor[data-st="2"] .monsterFig{width:166px}
+.monsterDoor[data-st="3"] .monsterFig{width:176px}
+.monsterFig::after{content:"";position:absolute;inset:-6% -16%;border:1px solid rgba(240,207,142,.4);border-radius:50%;opacity:0;pointer-events:none;transition:opacity 1.4s}
+.monsterDoor[data-st="1"] .monsterFig::after{opacity:.5}
+.monsterDoor[data-st="2"] .monsterFig::after{opacity:.8;box-shadow:0 0 0 7px rgba(240,207,142,.08),0 0 16px rgba(240,207,142,.3)}
+.monsterDoor[data-st="3"] .monsterFig::after{opacity:1;border-style:dotted;box-shadow:0 0 0 9px rgba(240,207,142,.1),0 0 26px rgba(240,207,142,.45);animation:evoSpin 18s linear infinite}
+@keyframes evoSpin{to{transform:rotate(360deg)}}
+@media(max-width:700px){
+  .monsterDoor[data-st="1"] .monsterFig{width:118px}.monsterDoor[data-st="2"] .monsterFig{width:124px}.monsterDoor[data-st="3"] .monsterFig{width:132px}
+}
+#evoModal{position:fixed;inset:0;z-index:17;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(6,8,14,.82);backdrop-filter:blur(5px)}
+#evoModal.show{display:flex}
+.evoBox{width:min(440px,100%);max-height:94vh;overflow-y:auto;text-align:center;padding:16px;border:1px solid var(--gold);border-radius:12px;background:rgba(13,15,19,.94);box-shadow:0 0 40px rgba(212,175,106,.25)}
+.evoFig{position:relative;width:120px;height:150px;margin:26px auto 10px}
+.evoFig img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;animation:evoGrow 2.2s ease-out both}
+.evoRing{position:absolute;left:50%;top:50%;width:100%;height:100%;border:2px solid rgba(240,207,142,.7);border-radius:50%;transform:translate(-50%,-50%) scale(.4);opacity:0;animation:evoRing 2.4s ease-out .3s infinite}
+.evoRing.r2{animation-delay:1.1s}
+@keyframes evoRing{0%{opacity:.9;transform:translate(-50%,-50%) scale(.4)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.9)}}
+@keyframes evoGrow{0%{transform:scale(.8);filter:brightness(3)}60%{transform:scale(1.14)}100%{transform:scale(1)}}
+#evoTitle{margin:6px 0 2px;font:20px/1.5 var(--serif);letter-spacing:.2em;color:var(--gold-bright)}
+.evoSay{margin:0 0 10px;font:italic 15px/1.8 var(--serif);color:var(--ink)}
+.evoGift{text-align:left;margin:0 0 12px;padding:10px 12px;border-left:2px solid var(--cinnabar);background:rgba(214,86,58,.06);font:12.5px/1.85 var(--serif);color:var(--ink)}
+.evoGift small{display:block;font:10.5px/1.5 monospace;letter-spacing:.2em;color:var(--ink-dim)}
+.evoGift b{color:var(--gold-bright);font-weight:400;letter-spacing:.14em}
+.evoGift p{margin:2px 0 0;color:var(--ink-dim)}
 /* 哄睡 */
 #ritualModal{position:fixed;inset:0;z-index:15;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(6,8,14,.72);backdrop-filter:blur(4px)}
 #ritualModal.show{display:flex}
@@ -1473,6 +1526,7 @@ body:not(.sunrise) #screen-report .disclaimer{color:var(--ink-dim)}
           </div>
           <button class="linkBtn" id="btnClearSave" data-zh="清除存档" data-en="Erase save">清除存档</button>
         </div>
+        <button class="linkBtn" id="btnDex" data-zh="图 鉴" data-en="Dex">图 鉴</button>
         <p class="disclaimer" data-zh="这是故事，不是诊断；不舒服请找医生。" data-en="This is a story, not a diagnosis. If you feel unwell, please see a doctor.">这是故事，不是诊断；不舒服请找医生。</p>
       </div>
     </div>
@@ -1602,10 +1656,38 @@ body:not(.sunrise) #screen-report .disclaimer{color:var(--ink-dim)}
     <div class="btnRow" style="margin:26px 0 20px">
       <button class="btn" id="btnRestart" data-zh="再 玩 一 夜" data-en="P L A Y · A N O T H E R · N I G H T">再 玩 一 夜</button>
       <button class="btn ghost" id="btnSaveCard" data-zh="分 享 日 记 卡" data-en="S H A R E · D I A R Y · C A R D">分 享 日 记 卡</button>
+      <button class="btn ghost" id="btnDexReport" data-zh="图 鉴" data-en="D E X">图 鉴</button>
     </div>
     <p class="disclaimer" data-zh="这是故事，不是诊断；不舒服请找医生。" data-en="This is a story, not a diagnosis. If you feel unwell, please see a doctor.">这是故事，不是诊断；不舒服请找医生。</p>
   </section>
 
+  <!-- 8 · 图鉴 -->
+  <section class="screen" id="screen-dex">
+    <div class="kicker" data-zh="图 鉴 · 夜 访 客" data-en="DEX · NIGHT VISITORS">图 鉴 · 夜 访 客</div>
+    <div class="panel dexPanel">
+      <div class="dexMe" id="dexMe"></div>
+      <div class="dexGrid" id="dexGrid"></div>
+      <div class="dexDetail" id="dexDetail"></div>
+      <div class="dexSub" data-zh="夜 礼 · 进 化 时 收 到 的 寓 言" data-en="GIFTS · FABLES FROM EVOLVING">夜 礼 · 进 化 时 收 到 的 寓 言</div>
+      <div class="dexGrid gifts" id="dexGifts"></div>
+      <div class="dexSub" data-zh="徽 章" data-en="BADGES">徽 章</div>
+      <div class="badgeWall" id="badgeWall"></div>
+      <div class="btnRow"><button class="btn ghost" id="btnDexBack" data-zh="返 回" data-en="B A C K">返 回</button></div>
+      <p class="disclaimer" data-zh="这是故事，不是诊断；不舒服请找医生。" data-en="This is a story, not a diagnosis. If you feel unwell, please see a doctor.">这是故事，不是诊断；不舒服请找医生。</p>
+    </div>
+  </section>
+
+</div>
+
+<div id="evoModal" role="dialog" aria-modal="true" aria-labelledby="evoTitle">
+  <div class="evoBox">
+    <div class="kicker" data-zh="进 化" data-en="EVOLVE">进 化</div>
+    <div class="evoFig"><i class="evoRing"></i><i class="evoRing r2"></i><img class="inkArt" src="assets/img/keyao.jpg" alt=""></div>
+    <h3 id="evoTitle"></h3>
+    <p class="evoSay" id="evoSay"></p>
+    <div class="evoGift"><small id="evoGiftK"></small><b id="evoGiftName"></b><p id="evoGiftText"></p></div>
+    <button class="btn" id="btnEvoDone" data-zh="收 下" data-en="A C C E P T">收 下</button>
+  </div>
 </div>
 
 <div id="ritualModal" role="dialog" aria-modal="true" aria-labelledby="ritualLead">
@@ -2814,6 +2896,7 @@ function applyLang(){
   refreshClock();
   closePanel();
   if(document.body.classList.contains('returning')) showReturn();
+  if($('#screen-dex').classList.contains('active')) renderDex();
   if(window.__guideRefresh) window.__guideRefresh();
 }
 
@@ -2836,7 +2919,7 @@ function show(id){
 const STEP_ICON={'screen-intake':'file','screen-stage':'orb','screen-deduce':'detail','screen-report':'gift'};
 function renderProgress(id){
   const inner=$('#progressInner'); inner.innerHTML='';
-  inner.parentElement.style.display=id==='screen-report'?'none':'';   // 日记页一屏读完，不让进度条压住按钮
+  inner.parentElement.style.display=id==='screen-report'||id==='screen-dex'?'none':'';   // 日记/图鉴页不让进度条压住按钮
   const steps=Object.keys(STEP_LABEL);
   const idx=FLOW.indexOf(id);
   steps.forEach(sid=>{
@@ -3978,7 +4061,13 @@ const GLYPH={
   combo3:ico('<path d="M22 3L9 23h10l-2 14 14-20H21z" fill="currentColor" fill-opacity=".25"/>'),
   detail:ico('<circle cx="17" cy="17" r="10"/><path d="M25 25l10 10M12 17a5 5 0 0 1 5-5"/>'),
   pulseAce:ico('<path d="M20 4l3.5 8 8.5.8-6.5 5.7 2 8.5L20 22.6 12.5 27l2-8.5L8 12.8l8.5-.8z" fill="currentColor" fill-opacity=".25"/><path d="M4 34h8l2-4 3 7 3-6 2 3h14"/>'),
-  flawless:ico('<path d="M8 15l6-8h12l6 8-12 18z"/><path d="M8 15h24M14 7l6 26 6-26"/>')
+  flawless:ico('<path d="M8 15l6-8h12l6 8-12 18z"/><path d="M8 15h24M14 7l6 26 6-26"/>'),
+  sunrise1:ico('<path d="M5 28h30M10 28a10 10 0 0 1 20 0"/><path d="M20 8v6M8 15l4 4M32 15l-4 4"/>'),
+  streak3:ico('<path d="M10 8a9 9 0 1 0 0 14 7 7 0 0 1 0-14z"/><path d="M26 10a6 6 0 1 0 0 10 5 5 0 0 1 0-10z" opacity=".7"/><path d="M34 26a4 4 0 1 0 0 7 3 3 0 0 1 0-7z" opacity=".5"/>'),
+  collect3:ico('<circle cx="20" cy="9" r="5"/><circle cx="9" cy="29" r="5"/><circle cx="31" cy="29" r="5"/><path d="M17 13l-6 12M23 13l6 12M14 29h12" opacity=".5"/>'),
+  collect6:ico('<path d="M20 4l14 8v16l-14 8-14-8V12z"/><circle cx="20" cy="20" r="4" fill="currentColor" fill-opacity=".4"/><path d="M20 4v12M34 12L24 18M34 28L24 22M20 36V24M6 28l10-6M6 12l10 6" opacity=".6"/>'),
+  evolve1:ico('<path d="M20 34V14M20 14c-8 0-10-6-10-10 6 0 10 3 10 10zM20 20c6 0 10-4 10-9-6 0-10 3-10 9z"/>'),
+  evolve3:ico('<path d="M20 4l4 9 10 1-7.5 6.5 2.5 10L20 25l-9 5.5 2.5-10L6 14l10-1z" fill="currentColor" fill-opacity=".25"/><circle cx="20" cy="20" r="17" stroke-dasharray="2 4" opacity=".5"/>')
 };
 /* 问诊分组图标：按分组名首词匹配 */
 const GROUP_GLYPH=[
@@ -4158,13 +4247,20 @@ const BADGES=[
   {id:'combo3',zh:'连击 ×3',en:'COMBO ×3'},
   {id:'detail',zh:'细察入微',en:'FINE DETAIL'},
   {id:'pulseAce',zh:'指下有神',en:'PULSE ACE'},
-  {id:'flawless',zh:'明察秋毫',en:'FLAWLESS'}
+  {id:'flawless',zh:'明察秋毫',en:'FLAWLESS'},
+  // 夜晚型：只看存档（夜数、连续天数、访客），在图鉴里展示，不占舞台上的徽章架
+  {id:'sunrise1',night:true,zh:'第一次日出',en:'FIRST SUNRISE',hint:['陪它熬到天亮','Stay with it until dawn']},
+  {id:'streak3',night:true,zh:'连着三晚',en:'THREE NIGHTS RUNNING',hint:['连续三天都来看它','Visit three days in a row']},
+  {id:'collect3',night:true,zh:'三位访客',en:'THREE VISITORS',hint:['见过三位不同的夜访客','Meet three different visitors']},
+  {id:'collect6',night:true,zh:'集齐六位',en:'ALL SIX VISITORS',hint:['见过全部六位夜访客','Meet all six visitors']},
+  {id:'evolve1',night:true,zh:'长大了一点',en:'A LITTLE GROWN',hint:['累计陪它 3 夜','Keep it company for 3 nights']},
+  {id:'evolve3',night:true,zh:'夜曲灵',en:'NIGHT SPIRIT',hint:['累计陪它 15 夜','Keep it company for 15 nights']}
 ];
 const badgeName=b=>L(b.zh,b.en);
 function renderBadges(){
   const shelf=document.getElementById('badgeShelf'); if(!shelf) return;
   shelf.innerHTML='';
-  BADGES.forEach(b=>{
+  BADGES.filter(b=>!b.night).forEach(b=>{
     const s=document.createElement('span'); s.className='bSlot'; s.dataset.id=b.id; s.dataset.tip=badgeName(b);
     s.innerHTML=`<i>${GLYPH[b.id]}</i>`;
     const got=state.badges&&state.badges[b.id];
@@ -4767,6 +4863,7 @@ function sanitizeSave(o){
   if(!isObj(o)) return null;
   const s={v:1,name:typeof o.name==='string'?o.name.slice(0,12):'',fear:FEARS[o.fear]?o.fear:null,
     element:ELEMS.includes(o.element)?o.element:null,nights:intIn(o.nights,9999),calm:intIn(o.calm,9999),
+    streak:intIn(o.streak,9999),last:typeof o.last==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(o.last)?o.last:null,evo:intIn(o.evo,3),
     visitors:{},dex:[],badges:{}};
   const vs=isObj(o.visitors)?o.visitors:{};
   DEX_IDS.forEach(k=>{const c=intIn(vs[k],9999); if(c) s.visitors[k]=c;});
@@ -4788,11 +4885,11 @@ function loadSave(){
 }
 function writeSave(){ try{ localStorage.setItem(SAVE_KEY,JSON.stringify(SAVE)); }catch(e){} }
 function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); localStorage.removeItem('mm_night'); }catch(e){} SAVE=null; }
-/* ?debugNight=N：假装已经熬过 N-1 夜（访客次数按固定规则铺开），不读写真实存档 */
+/* ?debugNight=N：假装已经熬过 N-1 夜（访客次数按固定规则铺开，每晚都来过，进化阶段停在第 N-1 夜），不读写真实存档 */
 function activeSave(){
   const d=parseInt(DBG.get('debugNight'),10);
   if(!(d>0)) return SAVE;
-  const s=Object.assign({},SAVE||sanitizeSave({}),{nights:d-1});
+  const s=Object.assign({},SAVE||sanitizeSave({}),{nights:d-1,streak:d-1,last:d>1?localDate(-1):null,evo:stageOf(d-1)});
   if(!SAVE||!Object.keys(SAVE.visitors).length){
     const ids=Object.keys(NIGHT.visitors); s.visitors={};
     for(let i=0;i<d-1;i++){ const k=ids[i%3===2?(1+Math.floor(i/3))%ids.length:0]; s.visitors[k]=(s.visitors[k]||0)+1; }
@@ -4800,21 +4897,35 @@ function activeSave(){
   }
   return s;
 }
-/* 日记出来的那一刻写入存档：夜数 +1、访客计数 +1、图鉴、五行、徽章 */
+const localDate=off=>{ const t=new Date(); t.setDate(t.getDate()+(off||0)); return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`; };
+/* 过完一夜后的存档（纯函数，不写盘）：夜数 +1、访客 +1、图鉴、连续天数（同一天多玩不重复算） */
+function advanceSave(s,v){
+  const n=JSON.parse(JSON.stringify(s)), today=localDate(0);
+  n.nights=Math.min(9999,s.nights+1);
+  const id=v||'god'; n.visitors[id]=(n.visitors[id]||0)+1; if(!n.dex.includes(id)) n.dex.push(id);
+  if(s.last!==today) n.streak=s.last===localDate(-1)?s.streak+1:1;
+  n.last=today;
+  return n;
+}
+/* 日记出来的那一刻：夜数/访客/图鉴/连续天数/五行/徽章；真实存档才写盘，?debugNight 只在内存里算 */
 function commitNight(d){
-  if(state.committed||DBG.get('debugNight')) return;
+  if(state.committed) return;
   state.committed=true;
-  const s=SAVE||sanitizeSave({});
+  const debug=!!DBG.get('debugNight'), prev=activeSave()||sanitizeSave({});
+  const s=advanceSave(prev,d.v);
   computeResults();
   if(state.intake&&state.intake.name) s.name=state.intake.name;
   if(state.intake&&state.intake.fear) s.fear=state.intake.fear;
-  s.nights=d.n;
-  const id=d.v||'god'; s.visitors[id]=(s.visitors[id]||0)+1; if(!s.dex.includes(id)) s.dex.push(id);
   const el=ELEMS.slice().sort((a,b)=>(state.elements[b]||0)-(state.elements[a]||0))[0];
   if((state.elements[el]||0)>0) s.element=el;
-  const bd=state.badges||{}; Object.keys(bd).forEach(k=>{ if(!s.badges[k]||bd[k]==='gold') s.badges[k]=bd[k]||'gold'; });
   if(state.ritual&&state.ritual.matched) s.calm=Math.min(9999,s.calm+1);
-  SAVE=s; writeSave();
+  // 夜晚型徽章：这一夜新达成的才弹出
+  const had=new Set([...nightBadges(prev),...Object.keys(prev.badges)]);
+  nightBadges(s).filter(id=>!had.has(id)).forEach(id=>awardBadge(id));
+  const bd=state.badges||{}; Object.keys(bd).forEach(k=>{ if(!s.badges[k]||bd[k]==='gold') s.badges[k]=bd[k]||'gold'; });
+  state.nightSave=s;
+  if(!debug){ SAVE=s; writeSave(); }
+  setTimeout(()=>maybeEvolve(s),1600);
 }
 
 /* ---------- 怪物外观：夜数与访客计数 → 连续变化的颜色、光晕、黑眼圈、粒子 ---------- */
@@ -4827,10 +4938,11 @@ function monsterLook(s){
   const parts=Math.min(14,Math.round(tot*1.4)+(n>0?2:0));
   const keys=Object.keys(s.visitors).sort(), colors=[];
   for(let i=0;i<parts;i++){ let t=(i+.5)/parts*tot,k=keys[0]; for(const kk of keys){ if(t<s.visitors[kk]){k=kk;break;} t-=s.visitors[kk]; } colors.push(VCOLOR[k]||'#f0cf8e'); }
-  return {glow,tint,bag,parts,colors};
+  return {glow,tint,bag,parts,colors,stage:stageOf(n)};
 }
 function applyMonsterLook(s){
   const el=$('#monsterDoor'), K=monsterLook(s), P=$('#mParts');
+  el.dataset.st=K.stage;
   const set=()=>{ el.style.setProperty('--mGlow',K.glow.toFixed(3)); el.style.setProperty('--mTint',K.tint); el.style.setProperty('--mBag',K.bag.toFixed(3)); };
   if(!el._looked){ el.style.setProperty('--mGlow',0); el.style.setProperty('--mBag',.06); setTimeout(set,120); el._looked=true; } else set();   // 先从素颜起步，让变化看得见
   P.innerHTML=K.colors.map((c,i)=>`<i style="--c:${c};--d:${(-i*0.93).toFixed(2)}s;left:${(((i*.618)%1)*100).toFixed(1)}%;top:${(34+((i*.37)%1)*58).toFixed(1)}%"></i>`).join('');
@@ -4856,6 +4968,7 @@ function showReturn(){
     return `<div class="dexCell${c?' seen':''}" title="${escHTML(c?nm:'？')}"><img src="${img}" alt="">${c?`<b>×${c}</b>`:''}</div>`;
   }).join('');
   applyMonsterLook(s);
+  setTimeout(()=>{ if(document.body.classList.contains('returning')&&$('#screen-intro').classList.contains('active')) maybeEvolve(activeSave()); },900);   // 上次没收下的进化礼物，这次补上
   return true;
 }
 $('#btnContinue').onclick=()=>{ if(window.__loadGrains) window.__loadGrains(); FX.knock(); startNightRun(); };
@@ -4940,6 +5053,115 @@ $('#btnRitualDone').onclick=()=>{
   $('#ritualModal').classList.remove('show');
   state.runMs=Math.round(performance.now()-state.runT0);
   document.body.classList.add('sunrise'); enterPhase('dawn'); renderDiary();
+};
+
+/* ============================================================
+   S6：图鉴（三层）· 夜晚型徽章 · 进化（累计 3 / 7 / 15 夜）
+   全部由存档（夜数、访客计数、连续天数）推出来，所以刷新不丢，?debugNight=N 也能快进
+   ============================================================ */
+const EVO=[3,7,15];
+const stageOf=n=>EVO.filter(t=>n>=t).length;
+const STAGES=[{zh:'睡不着的小怪',en:'Sleepless Little One'},{zh:'夜行小妖',en:'Night Prowler'},{zh:'守夜精',en:'Night Keeper'},{zh:'夜曲灵',en:'Nocturne Spirit'}];
+const EVO_GIFT=['qi','xue','re'];        // 进化赠送的寓言：用掉还没做夜访客的三只志怪
+const EVO_SAY=[['我……好像长高了一点。','I… think I grew a little.'],['今晚，换我来替你守夜。','Tonight, I\'ll keep the watch for you.'],['谢谢你，陪了我这么多夜。','Thank you for all these nights.']];
+function nightBadges(s){
+  const got=Object.keys(NIGHT.visitors).filter(k=>(s.visitors[k]||0)>0).length, out=[];
+  if(s.nights>=1) out.push('sunrise1');
+  if(s.streak>=3) out.push('streak3');
+  if(got>=3) out.push('collect3');
+  if(got>=6) out.push('collect6');
+  if(s.nights>=EVO[0]) out.push('evolve1');
+  if(s.nights>=EVO[2]) out.push('evolve3');
+  return out;
+}
+/* 图鉴第二层：多学科小卡（志怪 / 现代说法 / 心里话）。只是故事里的说法，不是检查结论，也不给建议 */
+const VISITOR_CARDS={
+  heat:{myth:['北阙井里的蟾背着半轮凉月，井水一浅，夜就燥。','The toad of the north well carries half a cool moon; when the well sinks, the night turns dry.'],
+        sci:['夜里体温本该慢慢降下来，睡前太热，入睡就慢一点。','Body temperature should ease down at night; too warm before bed makes sleep come slower.'],
+        mind:['心里烧着没说的事，也会让人觉得热。','Words left unsaid can make a body feel warm too.']},
+  whisper:{myth:['东郊老树一肚子结，没说出口的话，一句一个结。','The old tree in the east grove ties a knot for every unsaid word.'],
+        sci:['睡前脑子还在回放白天的事，很常见；写下来，常常能慢一点。','Replaying the day in bed is very common; getting it onto paper can slow it down.'],
+        mind:['越想“快点睡着”，脑子越清醒。','The harder you try to sleep, the more awake the mind gets.']},
+  stone:{myth:['九座粮仓里的小官贪凉嗜甜，夜里还在拨算盘。','The little steward of the nine granaries loves cold and sweet, and still clicks his abacus at night.'],
+        sci:['吃得晚、吃得满，胃夜里还在忙，睡眠会变浅。','Eating late and full keeps the stomach busy, and sleep runs shallow.'],
+        mind:['有时候“撑”的不只是肚子，还有一整天的情绪。','Sometimes it isn\'t only the belly that is full — it\'s the whole day.']},
+  cold:{myth:['王城地底的灶兽一困，灶火就暗，手脚先凉。','When the hearth beast under the city dozes, the fire dims and hands and feet turn cold first.'],
+        sci:['手脚偏凉时身体不容易放松；暖和一些，困意来得顺些。','Cold hands and feet make it hard to relax; a little warmth lets drowsiness arrive.'],
+        mind:['觉得冷，有时也是觉得没人陪。','Feeling cold can sometimes mean feeling alone.']},
+  glare:{myth:['千灯之海的赤鸦，灯油不尽，便飞个不停。','The red crow of the sea of lamps flies for as long as the oil lasts.'],
+        sci:['夜里的亮光和屏幕会让身体以为还是白天，困意就来得晚。','Night light and screens tell the body it is still day, so sleepiness comes late.'],
+        mind:['停不下来的刷屏，有时是在躲开安静。','Endless scrolling is sometimes a way to dodge the quiet.']},
+  weight:{myth:['十二孔古桥下，石头长进老人的皮肤，河水沉沉回旋。','Under the twelve-arch bridge stone grows into an old man\'s skin, and the river turns heavy.'],
+        sci:['坐得太久、压力攒着，胸口和肩颈容易发紧，躺下也放不开。','Long sitting and piled-up stress tighten the chest and shoulders, even lying down.'],
+        mind:['“压着东西”的感觉，常来自还没放下的责任。','The feeling of being pressed often comes from duties not yet set down.']}
+};
+const fableOf=k=>LANG==='en'&&FABLES_EN[k]?FABLES_EN[k]:FABLES[k];
+let dexSel=null, dexFrom='screen-intro';
+function renderDex(sel){
+  const s=activeSave()||sanitizeSave({}), ids=Object.keys(NIGHT.visitors);
+  const open=k=>(s.visitors[k]||0)>0||s.dex.includes(k);
+  if(sel) dexSel=sel;
+  if(!dexSel||!(ids.includes(dexSel)||/^gift:/.test(dexSel))) dexSel=ids.find(open)||ids[0];
+  const st=stageOf(s.nights);
+  $('#dexMe').innerHTML=`${escHTML(s.name||L('小夜','Nightling'))} · ${escHTML(L(STAGES[st].zh,STAGES[st].en))}<small>${escHTML(L(`已陪它 ${s.nights} 夜`,`${s.nights} NIGHTS TOGETHER`))}</small>`;
+  $('#dexGrid').innerHTML=ids.map(k=>{
+    const c=s.visitors[k]||0, o=open(k);
+    return `<div class="dc${o?'':' lock'}${k===dexSel?' on':''}" data-k="${k}"><img src="${nightImg(k)}" alt="">${c?`<b>×${c}</b>`:''}${o?escHTML(visitorName(k)):'？？？'}</div>`;
+  }).join('');
+  $('#dexGifts').innerHTML=EVO_GIFT.map((k,i)=>{
+    const o=s.nights>=EVO[i], key='gift:'+k;
+    return `<div class="dc${o?'':' lock'}${key===dexSel?' on':''}" data-k="${key}"><img src="assets/img/${BEASTS[k].img}.jpg" alt="">${o?escHTML(fableOf(k).n):escHTML(L(`累计 ${EVO[i]} 夜`,`${EVO[i]} nights`))}</div>`;
+  }).join('');
+  const T=(cls,lab,txt)=>`<p class="tier ${cls}"><small>${escHTML(lab)}</small>${escHTML(txt)}</p>`;
+  let html;
+  if(/^gift:/.test(dexSel)){
+    const k=dexSel.slice(5), i=EVO_GIFT.indexOf(k), f=fableOf(k);
+    html=s.nights>=EVO[i]
+      ? `<h4>${escHTML(f.n)}</h4>`+T('t2',L('它的样子','LOOK'),f.form||'')+T('t3',L('寓言','FABLE'),(f.say||'')+' '+(f.moral||''))
+      : `<p class="lockMsg">${escHTML(L(`累计陪它 ${EVO[i]} 夜，进化时会收到这则寓言。`,`Keep it company for ${EVO[i]} nights and this fable arrives when it evolves.`))}</p>`;
+  }else if(open(dexSel)){
+    const k=dexSel, C=VISITOR_CARDS[k], V=NIGHT_LINES.visitors[k], f=fableOf(NIGHT.visitors[k].beast);
+    html=`<h4>${escHTML(visitorName(k))}</h4>`
+      +T('t1',L('一句话','ONE LINE'),'“'+pl(V.line)+'” '+pl(V.lore))
+      +T('t2',L('志怪','LORE'),pl(C.myth))+T('t2',L('现代说法','MODERN'),pl(C.sci))+T('t2',L('心里话','INNER'),pl(C.mind))
+      +T('t3',L('寓言 · ','FABLE · ')+f.n,(f.say||'')+' '+(f.moral||''));
+  }else html=`<p class="lockMsg">${escHTML(L('它还没来过。陪怪物熬过一夜，也许会遇见它。','It hasn\'t come yet. Stay up with the monster for a night and you may meet it.'))}</p>`;
+  $('#dexDetail').innerHTML=html;
+  $('#badgeWall').innerHTML=BADGES.map(b=>{
+    const got=s.badges[b.id]||(b.night&&nightBadges(s).includes(b.id)), cls=got==='silver'?' silver':'';
+    return `<div class="bw${got?' on':''}${cls}"><i>${GLYPH[b.id]}</i>${escHTML(badgeName(b))}${!got&&b.hint?`<small>${escHTML(L(b.hint[0],b.hint[1]))}</small>`:''}</div>`;
+  }).join('');
+}
+function showDex(from){ dexFrom=from; show('screen-dex'); renderDex(); }
+document.addEventListener('click',e=>{
+  const c=e.target.closest('#screen-dex .dc'); if(c) renderDex(c.dataset.k);
+});
+$('#btnDex').onclick=()=>showDex('screen-intro');
+$('#btnDexReport').onclick=()=>showDex('screen-report');
+$('#btnDexBack').onclick=()=>show(dexFrom);
+
+/* 进化：演出（光环 + 音效 + 粒子）+ 赠送一则寓言；收下后记进存档，错过了下次打开还会补上 */
+function maybeEvolve(s){
+  if(!s) return;
+  const st=stageOf(s.nights); if(st>(s.evo||0)) showEvo(st);
+}
+function showEvo(st){
+  const m=$('#evoModal'); if(m.classList.contains('show')) return;
+  const k=EVO_GIFT[st-1], f=fableOf(k);
+  state.evoStage=st;
+  $('#evoTitle').textContent=L(STAGES[st].zh,STAGES[st].en);
+  $('#evoSay').textContent='“'+pl(EVO_SAY[st-1])+'”';
+  $('#evoGiftK').textContent=L('夜礼 · 一则寓言','A GIFT · ONE FABLE');
+  $('#evoGiftName').textContent=f.n;
+  $('#evoGiftText').textContent=((f.say||'')+' '+(f.moral||'')).trim();
+  m.classList.add('show');
+  FX.chapter(); setTimeout(()=>FX.sunrise&&FX.sunrise(),400); buzz([30,50,30,50,80]);
+  burst(innerWidth*.5,innerHeight*.35,'#f0cf8e',36);
+}
+$('#btnEvoDone').onclick=()=>{
+  $('#evoModal').classList.remove('show');
+  if(SAVE&&!DBG.get('debugNight')){ SAVE.evo=Math.max(SAVE.evo||0,state.evoStage||0); writeSave(); }
+  const s=state.nightSave||activeSave(); if(s) applyMonsterLook(s);
 };
 
 /* ---------- 启动 ---------- */

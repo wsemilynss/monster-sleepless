@@ -140,3 +140,10 @@ state = { intake:{}, clues:[], weights:{}, pulseTruth:null, pulseAnswered:0,
 - 每章最多 `CHAPTER_MAX = 5` 个光点；问诊取 `INQ_CORE` 5 组（总数 18 → 15）。
 - `skipChapter(cat)` + 线索板「跳过本章」按钮；`skipRest()` 保留。
 - 点击成功率测试方法与结果见 [s2-click-test.md](s2-click-test.md)。
+## S6 · 图鉴、徽章、进化（`feat/dex-evolve`，叠在 S5 之上）
+
+- 图鉴 `renderDex()`：六位访客三层——一句话（台词 + lore）/ 多学科志怪小卡 `VISITOR_CARDS`（志怪、现代说法、心里话）/ 寓言（`FABLES`）；出现过才解锁，未出现显示剪影与“？？？”。入口：开场页“图鉴”、日记页“图鉴”。
+- 徽章：舞台上的 9 枚保留；新增夜晚型（`BADGES[].night`）：第一次日出、连着三晚、三位访客、集齐六位、长大了一点（3 夜）、夜曲灵（15 夜），由 `nightBadges(save)` 从存档推出，在图鉴徽章墙展示；达成当晚 `commitNight()` 弹出徽章。
+- 存档新增 `streak/last/evo`：`advanceSave()` 按本地日期算连续天数（同一天多玩不重复算）。
+- 进化：`EVO=[3,7,15]`，`stageOf(夜数)`；`maybeEvolve()/showEvo()` 演出（光环、音效、粒子）并赠送一则寓言（谷风雀 / 赤河鲤 / 蒸岚蟒，即还没做访客的三只志怪）；收下后写 `evo`，错过了下次打开补上；怪物阶段改变大小与光环。
+- `?debugNight=N`：虚拟存档（已熬过 N-1 夜，每晚都来过，六位访客随夜数出现，进化阶段停在 N-1）。`N=3/7/15` 在日记出现时分别触发三次进化，`N=16` 的图鉴全部解锁。
