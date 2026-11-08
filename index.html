@@ -1338,6 +1338,23 @@ body.sunrise .deduceSpirit{opacity:.5}
   font:13px/1.9 var(--serif);color:var(--ink);background:rgba(214,86,58,.05)}
 .diaryFable small{display:block;font:10.5px/1.5 monospace;letter-spacing:.2em;color:var(--ink-dim);margin-bottom:4px}
 .diaryFable b{color:var(--gold-bright);font-weight:400;letter-spacing:.14em}
+.diaryTop{display:flex;gap:14px;align-items:center;max-width:520px;margin:0 auto 10px;text-align:left}
+.diaryTop .diaryBeast{flex:0 0 92px;width:92px;padding:4px}
+.diaryTop .diaryBeast .bImg,.diaryTop .diaryBeast.shan .bImg{height:104px}
+.diaryTxt{flex:1;min-width:0}
+.diaryTxt .diaryQuote{margin:0 0 6px;font-size:15px;line-height:1.7}
+.diaryTxt .diaryTemper{margin:0;font-size:12.5px;line-height:1.8;color:var(--ink-dim)}
+.diaryLine{margin:0 0 8px;font-size:13.5px}
+.diaryActsT{font:11px/1.5 monospace;letter-spacing:.2em;color:var(--ink-dim);margin-bottom:6px}
+.diaryCard .actCards{gap:6px;margin-bottom:8px}
+.diaryCard .actCard{min-height:44px;padding:4px 14px;font-size:13px;line-height:1.5}
+.diaryCard .diaryFable{margin:2px auto 0;padding:6px 12px;font-size:11.5px;line-height:1.6}
+.diaryCard .diaryFable small{display:inline;margin-right:8px}
+#screen-report .btnRow{margin:12px 0 8px!important}
+#screen-report .btn.ghost{background:rgba(13,15,19,.72);color:var(--gold-bright)}
+#screen-report .disclaimer{color:#2b2415;font-weight:500}
+body:not(.sunrise) #screen-report .disclaimer{color:var(--ink-dim)}
+#screen-report .reportWrap{margin-bottom:0}
 .diaryOutro{font:italic 15px/1.8 var(--serif);letter-spacing:.1em;color:var(--gold-bright);margin-top:14px}
 .diaryBeast.silhouette img{filter:brightness(0)}
 /* 章节弹窗里的夜访客影子 */
@@ -1541,8 +1558,8 @@ body.sunrise .deduceSpirit{opacity:.5}
     <div class="kicker" data-zh="天 亮 了 · 怪 物 日 记" data-en="MORNING · THE MONSTER'S DIARY">天 亮 了 · 怪 物 日 记</div>
     <div class="reportWrap" id="reportWrap"></div>
     <div class="btnRow" style="margin:26px 0 20px">
-      <button class="btn" id="btnRestart" data-zh="明 晚 再 来" data-en="C O M E · B A C K · T O M O R R O W">明 晚 再 来</button>
-      <button class="btn ghost" id="btnSaveCard" data-zh="保 存 日 记 卡" data-en="S A V E · D I A R Y · C A R D">保 存 日 记 卡</button>
+      <button class="btn" id="btnRestart" data-zh="再 玩 一 夜" data-en="P L A Y · A N O T H E R · N I G H T">再 玩 一 夜</button>
+      <button class="btn ghost" id="btnSaveCard" data-zh="分 享 日 记 卡" data-en="S H A R E · D I A R Y · C A R D">分 享 日 记 卡</button>
     </div>
     <p class="disclaimer" data-zh="这是故事，不是诊断；不舒服请找医生。" data-en="This is a story, not a diagnosis. If you feel unwell, please see a doctor.">这是故事，不是诊断；不舒服请找医生。</p>
   </section>
@@ -2766,6 +2783,7 @@ function show(id){
 const STEP_ICON={'screen-intake':'file','screen-stage':'orb','screen-deduce':'detail','screen-report':'gift'};
 function renderProgress(id){
   const inner=$('#progressInner'); inner.innerHTML='';
+  inner.parentElement.style.display=id==='screen-report'?'none':'';   // 日记页一屏读完，不让进度条压住按钮
   const steps=Object.keys(STEP_LABEL);
   const idx=FLOW.indexOf(id);
   steps.forEach(sid=>{
@@ -4455,6 +4473,29 @@ function drawWheel(cv, els, S, k=1, t=0){
 
 /* ---------- 怪物日记（结局一屏） ---------- */
 const escHTML=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* 小行动卡：每个证型 4 类（life 起居 / nutri 饮食 / move 活动 / habit 小习惯），每条 ≤20 字，只是故事里的小事，不是建议处方 */
+const PATTERN_ACTS={
+ qi:{life:['今晚早一刻熄灯。','Lights out a little earlier.'],nutri:['晚饭吃到七分暖。','Stop at a warm, gentle fullness.'],move:['慢慢走一小圈再回屋。','Stroll one slow lap.'],habit:['累了就坐下歇一歇。','Sit when you are tired.']},
+ xue:{life:['被窝提前焐一焐。','Warm the bed a bit early.'],nutri:['晚饭留一口颜色深的。','Add something deep-colored to dinner.'],move:['伸个懒腰，转转手腕。','Stretch and roll your wrists.'],habit:['睡前把担心写在纸上。','Write the worries on paper.']},
+ yin:{life:['把房间里的灯调暗些。','Dim the lights in the room.'],nutri:['夜里少吃辣的。','Go easy on spicy food tonight.'],move:['睡前慢慢呼气五次。','Breathe out slowly five times.'],habit:['十点后少看屏幕。','Fewer screens late at night.']},
+ yang:{life:['脚边添一件软袜子。','Soft socks for the feet.'],nutri:['喝点温的，慢慢喝。','Sip something warm, slowly.'],move:['白天晒十分钟太阳。','Ten minutes of daylight today.'],habit:['睡前泡一泡脚。','Soak the feet before bed.']},
+ yu:{life:['窗边坐一会儿，不说话。','Sit quietly by the window.'],nutri:['晚饭细嚼慢咽。','Chew dinner slowly.'],move:['出门走到第一棵树。','Walk out to the first tree.'],habit:['把没说完的话写下来。','Write down what went unsaid.']},
+ pi:{life:['饭后别急着躺下。','Do not lie down right after eating.'],nutri:['晚饭早半个钟头。','Eat dinner half an hour earlier.'],move:['饭后站着溜达一刻钟。','A fifteen-minute stroll after dinner.'],habit:['夜宵留给明天。','Leave the midnight snack for tomorrow.']},
+ tan:{life:['屋里开窗透透气。','Open a window and air the room.'],nutri:['甜食今晚少一块。','One less sweet tonight.'],move:['动到微微出汗就好。','Move until just a little warm.'],habit:['睡前把桌面收一收。','Tidy the desk before bed.']},
+ re:{life:['被子薄一点，凉快些。','A lighter blanket, a cooler room.'],nutri:['晚饭清淡些。','Keep dinner light.'],move:['傍晚散散步，别太累。','An easy evening walk.'],habit:['睡前用凉水洗把脸。','Splash cool water on your face.']},
+ huo:{life:['睡前把灯一盏盏关掉。','Switch the lamps off one by one.'],nutri:['夜里的咖啡留给白天。','Save the coffee for daytime.'],move:['睡前伸展一下肩颈。','Stretch your neck and shoulders.'],habit:['手机放到够不着的地方。','Put the phone out of reach.']},
+ yux:{life:['久坐了就站起来走走。','Stand up when you have sat long.'],nutri:['喝水别一口气喝完。','Sip water through the day.'],move:['慢慢转肩，每边十下。','Roll each shoulder ten times.'],habit:['今晚先做一件小事。','Do just one small thing tonight.']}
+};
+const ACT_FIELDS=['life','nutri','move','habit'];
+/* 访客组内权重最高的证型 → 3 张行动卡；四类按第 N 夜轮流少一类，每晚回来都不完全一样 */
+function diaryActs(v,n){
+  const grp=Object.keys(NIGHT.visitorOfKey).filter(k=>NIGHT.visitorOfKey[k]===v);
+  const top=grp.sort((a,b)=>(state.weights[b]||0)-(state.weights[a]||0))[0];
+  const A=PATTERN_ACTS[top];
+  if(!v||!A) return NIGHT_LINES.diary.acts;
+  const skip=(n||1)%4;
+  return ACT_FIELDS.filter((_,i)=>i!==skip).map(f=>A[f]);
+}
 function diaryData(){
   const v=state.visitor===undefined?pickVisitor(state.weights):state.visitor;
   const vis=v?NIGHT.visitors[v]:null, bk=vis?vis.beast:null, vl=v?NIGHT_LINES.visitors[v]:null;
@@ -4471,21 +4512,22 @@ function renderDiary(){
         who=d.v?visitorName(d.v):L(SHAN_GOD.zh,SHAN_GOD.en);
   const lead=d.v?escHTML(fillLine(L(D.visitor.zh,D.visitor.en),{visitor:'\u0001'})).replace('\u0001','<b>'+escHTML(who)+'</b>')
                :escHTML(fillLine(L(D.calm.zh,D.calm.en)));
-  const temper=d.v?pl(d.vl.temper):L(SHAN_GOD.classic,SHAN_GOD.classicEN);
-  const fableHTML=d.f?`<div class="diaryFable"><small>${L(D.fable.zh,D.fable.en)}</small><b>${escHTML(d.f.n)}</b>：${escHTML(d.f.say||'')}<br>${escHTML(d.f.moral||'')}</div>`:'';
+  const temper=d.v?pl(d.vl.temper):L(SHAN_GOD.zh,SHAN_GOD.en);
+  const acts=state.acts=diaryActs(d.v,d.n);
+  const fableHTML=d.f?`<div class="diaryFable"><small>${L(D.fable.zh,D.fable.en)}</small><b>${escHTML(d.f.n)}</b>：${escHTML(d.f.moral||'')}</div>`:'';
   $('#reportWrap').innerHTML=`<div class="rCard diaryCard">
     <h3>${title}</h3>
     <p class="diaryLine">${lead}</p>
-    <div class="beastCard${d.v?'':' shan'} diaryBeast"><span class="seal bSeal">${L('昨夜','LAST NIGHT')}</span>
-      <img class="bImg paperArt" src="${img}" alt="${escHTML(who)}">
-      <div class="bName">${escHTML(who)}</div></div>
-    ${d.v?`<p class="diaryQuote">“${escHTML(pl(d.vl.line))}”</p>`:''}
-    <p class="diaryTemper">${escHTML(temper)}</p>
-    ${d.v?`<p class="diaryLore">${escHTML(pl(d.vl.lore))}</p>`:''}
+    <div class="diaryTop">
+      <div class="beastCard${d.v?'':' shan'} diaryBeast"><img class="bImg paperArt" src="${img}" alt="${escHTML(who)}"></div>
+      <div class="diaryTxt">
+        ${d.v?`<p class="diaryQuote">“${escHTML(pl(d.vl.line))}”</p>`:''}
+        <p class="diaryTemper">${escHTML(temper)}</p>
+      </div>
+    </div>
     <div class="diaryActsT">${L(D.pick.zh,D.pick.en)}</div>
-    <div class="actCards">${D.acts.map((a,i)=>`<button type="button" class="actCard" data-i="${i}">${escHTML(L(a[0],a[1]))}</button>`).join('')}</div>
+    <div class="actCards">${acts.map((a,i)=>`<button type="button" class="actCard" data-i="${i}">${escHTML(L(a[0],a[1]))}</button>`).join('')}</div>
     ${fableHTML}
-    <p class="diaryOutro">${escHTML(fillLine(L(D.outro.zh,D.outro.en)))}</p>
   </div>`;
   $('#reportWrap').querySelector('.actCards').addEventListener('click',e=>{
     const b=e.target.closest('.actCard'); if(!b) return;
@@ -4507,9 +4549,13 @@ $('#btnSaveCard').onclick=async()=>{
   x.fillStyle='#2b2415'; x.font='600 36px serif'; x.fillText(who,W/2,668);
   x.font='italic 26px serif'; x.fillStyle='#94422c'; wrap(d.v?pl(d.vl.line):pl(['山河清晏。','All is calm.']),W/2,716,W-150,38);
   x.font='22px serif'; x.fillStyle='#3a3222'; let y=wrap(d.v?pl(d.vl.temper):L(SHAN_GOD.zh,SHAN_GOD.en),W/2,780,W-150,34);
-  if(state.pickedAct!=null){ x.font='24px serif'; x.fillStyle='#2b2415'; y=wrap('✓ '+L(D.acts[state.pickedAct][0],D.acts[state.pickedAct][1]),W/2,y+16,W-150,34); }
+  if(state.pickedAct!=null && state.acts){ x.font='24px serif'; x.fillStyle='#2b2415'; y=wrap('✓ '+L(state.acts[state.pickedAct][0],state.acts[state.pickedAct][1]),W/2,y+16,W-150,34); }
   x.font='18px serif'; x.fillStyle='rgba(60,45,20,.7)'; x.fillText(L(D.disclaimer.zh,D.disclaimer.en),W/2,H-62);
   const a=document.createElement('a'); a.download=`monster-sleepless-night${d.n}.png`;
+  try{
+    const blob=await new Promise(r=>c.toBlob(r,'image/png')), file=new File([blob],a.download,{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){ await navigator.share({files:[file]}); return; }
+  }catch(e){ if(e&&e.name==='AbortError') return; }
   try{ a.href=c.toDataURL('image/png'); a.click(); }catch(e){ showSignal(L('这个环境不允许保存图片','Saving images is not allowed here')); }
 };
 

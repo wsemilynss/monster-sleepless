@@ -84,6 +84,25 @@ state = { intake:{}, clues:[], weights:{}, pulseTruth:null, pulseAnswered:0,
 - 五行雷达（`ELEMENT_OF`、`dims/elements`）
 - `PATTERNS` 的知识字段（`name / eng / organ / one / tcm / west / psy`），改写为志怪口吻后复用
 - 中英双语机制（`LANG`、`L()`、`data-zh/data-en`）
+
+## S3 · 深夜叙事换皮（`feat/night-narrative`，叠在 S2 之上）
+
+- 常量（换图/换词只改这里）：`NIGHT`（怪物图、4 个时段的底图/色温/星点、6 位访客与证型分组）、`NIGHT_LINES`（开场、每章台词、日出、日记、访客）、`DISPLAY_Q`（题目 → 对怪物提问的 displayText）。
+- 引擎：`setPhase/enterPhase`（时钟 + 色温 + 星点）、`say/pumpSay`（怪物台词队列，答题面板关闭后再说）、`reactToOrb`（每个光点一句台词）、`pickVisitor`（权重按组求和，≥3 取最高，否则山神）。
+- 开场「午夜 0:00，一只睡不着的怪物敲门」，怪物睁眼；四章 = 子夜/深夜/凌晨/黎明。
+- 心跳小游戏连拍 8 下合眼，不写权重（`state.weights` 前后一致）。
+- `startDeduce` 改为日出过场（`FX.sunrise`、`body.sunrise`），`renderDiary` 为访客日记（可保存本地 PNG 卡片）。
+- 调试：`?debugNight=N`、`?debugVisitor=heat|whisper|stone|cold|glare|weight`。
+- 体积/行数：S2 后 → S3 后 330,801 B / 4,574 行。
+- 节奏估算：15 个光点 × 约 15 s ≈ 3.8 min，加开场/建档 ≈ 0.7 min、心跳 ≈ 0.5 min、日出 + 日记 ≈ 1 min，合计约 6 分钟（模型估算，非实测）。
+
+## S4 · 怪物日记（结局）（`feat/diary`，叠在 S3 之上）
+
+- 一屏结局：访客（权重最高证型 → 六位夜访客，没有明显证型则山神）、它的脾气（一句话）、3 张小行动卡、1 则寓言（`FABLES[beast].moral`）、免责声明；首屏与日记底部都有免责声明。
+- `PATTERN_ACTS`：10 证型 × life/nutri/move/habit，每条 ≤20 字；`diaryActs(v,n)` 取访客组内权重最高的证型，按第 N 夜轮流少一类。
+- 按钮：「再玩一夜」（重新加载，`mm_night` 记数）、「分享日记卡」（本机 canvas 画 PNG，支持 Web Share 则分享，否则下载）。
+- 测试六类访客：`?debugVisitor=heat|whisper|stone|cold|glare|weight`，配合 `?debugNight=N`；控制台执行 `state.weights={};renderDiary()`。
+- 日记页隐藏底部进度条，避免压住按钮。
 - 音效开关 `mm_mute`
 - 免责声明：“这是故事，不是诊断；不舒服请找医生。”（S0 不改动代码，后续 PR 加入）
 
