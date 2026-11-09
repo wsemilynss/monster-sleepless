@@ -198,6 +198,7 @@ const DISC={
   psy:{n:'心理 / 情绪',c:'#8a4fb3'},
   nutri:{n:'营养与物质',c:'#5f8a1f'},
   tcm:{n:'中医传统说法',c:'#a33b3b'},
+  social:{n:'社会环境 / 职业学业',c:'#54707c'},
   safety:{n:'安全与就医（红旗）',c:'#d1342f'}
 };
 const CATS={
@@ -279,12 +280,15 @@ const TOPICS=[
  {id:'chronic',n:'红旗：慢性失眠与共病就医',disc:['safety'],re:/三个月|3 个月|就医|看医生|找医生|医生|信笺|药物|轮班|怀孕|慢性疼痛/,refs:['icsd3','riemann2023','qaseem2016','cn2017'],
   logic:'失眠每周至少 3 晚、持续至少 3 个月并影响日间功能，符合慢性失眠障碍的诊断标准（ICSD-3），应寻求专业评估。轮班、妊娠、慢性疼痛等情况需要个体化处理。',
   story:'4.4 红旗；免责声明"不舒服请找医生"。',caution:'不提及任何药物名称或剂量。'},
- {id:'tcm',n:'中医传统说法（志怪叙事）',disc:['tcm'],re:/心火|肝郁|气滞|脾虚|脾胃|胃不和|阳不入阴|阴虚|火旺|痰湿|痰扰|湿热|气虚|血虚|血瘀|心肾不交|神不守舍|神不入舍|心神|证型|五行|传统说法/,refs:['suwen34','lingshu80','lingshu28','tcm_todo','cn2017'],
-  logic:'中医用"阳不入阴""胃不和则卧不安"等解释不寐。本作只借用它们作为角色体质和志怪叙事。',
-  story:'4.1b 体质标签；图鉴"志怪录"；跨学科四格的"志怪"一格。',caution:'界面上必须标注"传统说法"；不写成疗效结论或诊断，不与现代机制混为一谈。'},
- {id:'bodysign',n:'体征描写（望闻问 → 角色造型）',disc:['tcm','phys'],re:/舌|苔|面色|脸色|眼白|血丝|黑眼圈|手脚冰|手足|盗汗|潮热|出汗|细汗|口干|口苦|口臭|口黏|齿痕|心悸|心慌|耳鸣|头晕|头重|夜尿|大便|小便|二便|浮肿|鼾|腹胀|嗳气|反酸/,refs:['suwen34','lingshu80'],
-  logic:'v4 起，体征只作为怪物造型和第一幕的"观察线索"，用来讲述"素质"，不作自测依据。旧问诊题库只留给"揭下面具"后的镜子题。',
-  story:'4.1b：望 / 闻 / 醒着态 / 睡着态 / 体征线索★。',caution:'不对玩家的身体发问；不暗示"有这个体征就是某证、某病"；红旗体征只出现在黑泪斯基身上。'}
+ {id:'tcm',n:'中医传统说法（志怪叙事）',disc:['tcm'],re:/心火|肝郁|气滞|脾虚|脾胃|胃不和|阳不入阴|阴虚|火旺|痰湿|痰扰|湿热|气虚|血虚|血瘀|心肾不交|神不守舍|神不入舍|心神|证型|五行|传统说法/,refs:['suwen34','lingshu80','lingshu28','tcm_diag2016','tcm_internal2017','tcm_todo'],
+  logic:'中医以四诊合参和“不寐”等传统语境组织观察；本作只将其作为角色经历和志怪叙事，不把传统术语当作现代生物标志物。',
+  story:'v5 第 4 节半山医馆；第 5.3 节传统来源与边界。',caution:'界面上必须标注"传统说法"；不写成疗效结论或诊断，不与现代机制混为一谈。'},
+ {id:'bodysign',n:'身体观察与四诊动画',disc:['tcm','phys'],re:/舌|苔|脉|四诊|望舌|闻声|面色|脸色|眼白|血丝|黑眼圈|手脚冰|手足|盗汗|潮热|出汗|细汗|口干|口苦|口臭|口黏|齿痕|心悸|心慌|耳鸣|头晕|头重|夜尿|大便|小便|二便|浮肿|鼾|腹胀|嗳气|反酸/,refs:['suwen34','lingshu80','tcm_diag2016'],
+  logic:'舌、脉、闻声只观察怪物并服务人生叙事；传统四诊需合参，现代医学知识另列来源。任何单一体征都不能在本工具中确立诊断。',
+  story:'v5 望舌镜、脉象河、闻声灯、问经历卷轴和就医信笺；旧版 4.1b 条目仍可兼容分析。',caution:'不检查玩家、不读取麦克风/摄像头；不用舌脉映射心理疾病或现代检验指标；红旗不得被动画延误。'},
+ {id:'context',n:'现实环境与社会处境',disc:['social'],re:/职场|工作|零工|轮班|夜场|学业|考核|备考|租约|房租|拆迁|搬家|迁居|异乡|漂泊|退休|照护|宿舍|合租|收入|经营|失业|歇业|居住|孤立|孤独/,refs:[],
+  logic:'这是叙事生态审查，不把职业、学业、迁徙或居住困境自动解释为临床病因；重点检查剧本是否承认客观限制和可获得的现实支持。',
+  story:'v5 每只怪物的环境层、外部动作、公共时间线与关系网。',caution:'不能把所有问题都归为个体认知或自律；虚构经历不得外推成某群体的必然命运。'}
 ];
 const TOPIC=Object.fromEntries(TOPICS.map(t=>[t.id,t]));
 
@@ -320,9 +324,15 @@ const REFS=[
  {id:'baron2017',a:'Baron KG, Abbott S, Jao N, Manalo N, Mullen R.',t:'Orthosomnia: are some patients taking the quantified self too far?',j:'J Clin Sleep Med. 2017;13(2):351–354.',doi:'10.5664/jcsm.6472',type:'病例报告 / 评论',pmid:'27855744',v:'Crossref/PubMed 已核对'},
  {id:'kapur2017',a:'Kapur VK, Auckley DH, Chowdhuri S, et al.',t:'Clinical practice guideline for diagnostic testing for adult obstructive sleep apnea: an American Academy of Sleep Medicine clinical practice guideline.',j:'J Clin Sleep Med. 2017;13(3):479–504.',doi:'10.5664/jcsm.6506',type:'临床指南',pmid:'28162150',v:'Crossref/PubMed 已核对'},
  {id:'allen2014',a:'Allen RP, Picchietti DL, Garcia-Borreguero D, et al.',t:'Restless legs syndrome/Willis–Ekbom disease diagnostic criteria: updated International Restless Legs Syndrome Study Group (IRLSSG) consensus criteria.',j:'Sleep Med. 2014;15(8):860–873.',doi:'10.1016/j.sleep.2014.03.025',type:'共识标准',pmid:'25023924',v:'Crossref/PubMed 已核对'},
+ {id:'brown2022',a:'Brown TM, Brainard GC, Cajochen C, et al.',t:'Recommendations for daytime, evening, and nighttime indoor light exposure to best support physiology, sleep, and wakefulness in healthy adults.',j:'PLoS Biol. 2022;20(3):e3001571.',doi:'10.1371/journal.pbio.3001571',type:'专家共识 / 建议',pmid:'35298459',v:'Crossref/PubMed 已核对'},
+ {id:'borbely2016',a:'Borbély AA, Daan S, Wirz-Justice A, Deboer T.',t:'The two-process model of sleep regulation: a reappraisal.',j:'J Sleep Res. 2016;25(2):131–143.',doi:'10.1111/jsr.12371',type:'理论回顾',v:'Crossref 已核对'},
+ {id:'katz2022',a:'Katz PO, Dunbar KB, Schnoll-Sussman FH, et al.',t:'ACG Clinical Guideline: Guidelines for the Diagnosis and Management of Gastroesophageal Reflux Disease.',j:'Am J Gastroenterol. 2022;117(1):27–56.',doi:'10.14309/ajg.0000000000001538',type:'临床指南',v:'Crossref 已核对'},
+ {id:'mindell2018',a:'Mindell JA, Williamson AA.',t:'Benefits of a bedtime routine in young children: Sleep, development, and beyond.',j:'Sleep Med Rev. 2018;40:93–108.',doi:'10.1016/j.smrv.2017.10.007',type:'综述',v:'Crossref 已核对'},
  {id:'suwen34',a:'《黄帝内经·素问》',t:'逆调论篇第三十四："胃不和则卧不安。"',j:'中医典籍。本作只作志怪叙事，不作为循证证据。',type:'典籍',v:'典籍'},
  {id:'lingshu80',a:'《黄帝内经·灵枢》',t:'大惑论第八十："卫气不得入于阴，常留于阳……故目不瞑矣。"',j:'中医典籍。本作只作志怪叙事，不作为循证证据。',type:'典籍',v:'典籍'},
  {id:'lingshu28',a:'《黄帝内经·灵枢》',t:'口问第二十八："阳气尽，阴气盛，则目瞑；阴气尽而阳气盛，则寤矣。"',j:'中医典籍。本作只作志怪叙事，不作为循证证据。',type:'典籍',v:'典籍'},
+ {id:'tcm_diag2016',a:'李灿东 主编.',t:'中医诊断学（第 10 版）.',j:'中国中医药出版社，2016。用于四诊、舌诊、脉诊及四诊合参的传统教学语境；具体页码待审阅者核对。',type:'规范教材',v:'书目已列，原文页码待核对'},
+ {id:'tcm_internal2017',a:'张伯礼, 吴勉华 主编.',t:'中医内科学.',j:'中国中医药出版社，2017。用于“不寐”等传统病证语境；不直接转化为现代诊断或疗效承诺。',type:'规范教材',v:'书目已列，原文页码待核对'},
  {id:'tcm_todo',a:'（待补）',t:'"心肾不交""心火扰神""痰扰心神""神不入舍"等后世证型的出处。',j:'请中医背景审阅者补充具体文献与原文。',type:'待补',v:'待补'}
 ];
 const REF=Object.fromEntries(REFS.map(r=>[r.id,r]));
@@ -663,26 +673,21 @@ function textSimilarity(a,b){
 }
 function diffBriefVersions(a,b){
   if(!a||!b)return null;
-  const A=a.items,B=b.items,used=new Set(),changes=[];let unchanged=0,moved=0;
-  const pair=(x,y)=>{used.add(y);if(x.h===y.h){if(x.path===y.path)unchanged++;else moved++;return;}
+  const A=a.items,B=b.items,used=new Set(),matchedA=new Set(),changes=[];let unchanged=0,moved=0;
+  const pair=(x,y)=>{matchedA.add(x);used.add(y);if(x.h===y.h){if(x.path===y.path)unchanged++;else moved++;return;}
     changes.push({kind:x.path===y.path?'changed':'rewritten',before:x,after:y,path:y.path||x.path});};
   for(const x of A){
     let y=B.find(z=>!used.has(z)&&z.path===x.path);
     if(!y)y=B.find(z=>!used.has(z)&&norm(z.zh)===norm(x.zh));
     if(y)pair(x,y);
   }
-  for(const x of A){if(changes.some(c=>c.before===x)||used.has(x)&&A.includes(x))continue;
-    if(B.includes(x))continue;
-  }
-  const pairedA=new Set(changes.map(c=>c.before));
-  for(const x of A){if(pairedA.has(x)||B.some(y=>used.has(y)&&y.h===x.h&&norm(y.zh)===norm(x.zh)))continue;
+  for(const x of A){if(matchedA.has(x))continue;
     const left=B.filter(y=>!used.has(y));let best=null,score=0;
     for(const y of left){if(x.entity.id!==y.entity.id&&x.entity.id!=='b:全局'&&y.entity.id!=='b:全局')continue;const s=textSimilarity(x.zh,y.zh);if(s>score){score=s;best=y;}}
     if(best&&score>=.42){pair(x,best);changes[changes.length-1].kind='rewritten';changes[changes.length-1].inferred=true;changes[changes.length-1].similarity=score;}
   }
-  const pairedAfter=new Set(changes.map(c=>c.after));
-  for(const x of A){if(pairedA.has(x)||B.some(y=>used.has(y)&&y.h===x.h&&norm(y.zh)===norm(x.zh)))continue;changes.push({kind:'removed',before:x,after:null,path:x.path});}
-  for(const y of B)if(!used.has(y)&&!pairedAfter.has(y))changes.push({kind:'added',before:null,after:y,path:y.path});
+  for(const x of A)if(!matchedA.has(x))changes.push({kind:'removed',before:x,after:null,path:x.path});
+  for(const y of B)if(!used.has(y))changes.push({kind:'added',before:null,after:y,path:y.path});
   const count=(items,key)=>{const o={};items.forEach(it=>it[key].forEach(x=>o[x]=(o[x]||0)+1));return o;};
   const byDisc={};for(const d in DISC)byDisc[d]={a:A.filter(it=>it.disc.includes(d)).length,b:B.filter(it=>it.disc.includes(d)).length};
   const byTopic={};for(const t of TOPICS)byTopic[t.id]={a:A.filter(it=>it.topics.includes(t.id)).length,b:B.filter(it=>it.topics.includes(t.id)).length};
@@ -991,6 +996,52 @@ function vBrief(){
   return h;
 }
 
+/* ================= 视图：任务书双版本专业对比 ================= */
+const DIFF_KIND={changed:'同位置修改',rewritten:'跨章节改写',added:'专业内容新增',removed:'专业内容删除'};
+function cmpOptions(cur){const curV=currentBriefVersion(),all=[];
+  if(curV)all.push({id:'current',label:`当前实时版 · ${curV.version} · ${curV.hash.slice(0,8)}`});
+  for(const v of S.briefVersions)all.push({id:v.id,label:`${v.imported?'导入':'快照'} · ${v.name} · ${v.label} · ${v.hash.slice(0,8)} · ${fmtT(v.seen||v.t)}`});
+  return all.filter((v,i)=>all.findIndex(x=>x.id===v.id)===i).map(v=>`<option value="${esc(v.id)}"${cur===v.id?' selected':''}>${esc(v.label)}</option>`).join('');
+}
+function versionCard(v,sum,label,current){if(!v)return `<div class="box version-card"><b>${label}</b><div class="empty">请选择一个版本或导入 Markdown。</div></div>`;
+  return `<div class="box version-card${current?' current':''}"><div class="sub">${label}${current?' · 实时同步':''}</div><div class="version-title">${esc(v.title)}</div>
+  <div class="version-meta">${esc(v.name||CONF.brief)} · ${esc(v.version)}<br>指纹 ${esc(v.hash)} · ${fmtT(v.mtime||v.t)}</div>
+  ${sum?`<div class="row" style="margin-top:8px"><span class="chip">${sum.items} 条专业/叙事条目</span><span class="chip">${sum.topics} 个主题</span><span class="chip">来源标注 ${sum.citedPct}%</span></div>`:''}</div>`;
+}
+function diffChangeCard(c){
+  const a=c.before,b=c.after,entity=(b||a).entity,at=a?a.topics:[],bt=b?b.topics:[];
+  const topicAdd=bt.filter(t=>!at.includes(t)),topicDel=at.filter(t=>!bt.includes(t));
+  const af=a?a.flags:[],bf=b?b.flags:[],flagAdd=bf.filter(f=>!af.includes(f)),flagDel=af.filter(f=>!bf.includes(f));
+  const evA=a?a.evidence:[],evB=b?b.evidence:[];
+  return `<article class="diff-card ${c.kind}"><div class="meta row"><span class="chip fresh">${DIFF_KIND[c.kind]}</span><span class="chip ent">${esc(entity.name)}</span><span class="loc">${esc(c.path)}</span>${c.inferred?`<span class="chip lv-info">推断配对 · 相似度 ${Math.round(c.similarity*100)}%</span>`:''}</div>
+  <div class="diff-cols"><div class="diff-text${a?'':' empty'}"><span class="lab">版本 A${a?' · L'+a.line:''}</span><br>${a?esc(a.zh):'（此版无对应条目）'}</div><div class="diff-text after${b?'':' empty'}"><span class="lab">版本 B${b?' · L'+b.line:''}</span><br>${b?esc(b.zh):'（此版无对应条目）'}</div></div>
+  <div class="diff-deltas">${topicAdd.map(t=>`<span class="chip impl-yes">新增主题：${esc(TOPIC[t].n)}</span>`).join('')}${topicDel.map(t=>`<span class="chip impl-no">移除主题：${esc(TOPIC[t].n)}</span>`).join('')}${flagAdd.map(f=>`<span class="chip lv-error">新增提示：${esc(ruleOf(f).n)}</span>`).join('')}${flagDel.map(f=>`<span class="chip impl-yes">解除提示：${esc(ruleOf(f).n)}</span>`).join('')}${evidenceChips([...new Set([...evA,...evB])])}</div>
+  ${b&&S.byKey.has(b.key)?`<div style="margin-top:8px"><button type="button" data-find="${esc(b.key)}">在当前审阅队列打开</button></div>`:''}</article>`;
+}
+function vCompare(){
+  const current=currentBriefVersion();if(!current)return `<div class="empty">尚未读取到任务书，无法建立版本对比。</div>`;
+  if(!S.ui.cmpA){const prev=S.briefVersions.find(v=>v.hash!==current.hash);if(prev)S.ui.cmpA=prev.id;}
+  if(S.ui.cmpB!=='current'&&!getCmpVersion(S.ui.cmpB))S.ui.cmpB='current';
+  const a=getCmpVersion(S.ui.cmpA),b=getCmpVersion(S.ui.cmpB)||current;
+  let h=`<h2>任务书双版本专业对比</h2><p class="sub">每次 ${CONF.brief} 内容变化都会自动保存快照，并重新计算专业主题、学科、风险和来源标注。快照仅存于此浏览器，不上传；最多保留 10 个版本，存储空间不足时会减少历史数量。</p>
+  <div class="filters"><select data-ver="cmpA" aria-label="基准版本 A"><option value="">基准版 A：请选择</option>${cmpOptions(S.ui.cmpA)}</select><select data-ver="cmpB" aria-label="对比版本 B">${cmpOptions(S.ui.cmpB)}</select>
+  <label class="btn">导入旧版 A<input type="file" data-briefimport="cmpA" accept=".md,.txt,text/markdown,text/plain" hidden></label><label class="btn">导入版本 B<input type="file" data-briefimport="cmpB" accept=".md,.txt,text/markdown,text/plain" hidden></label>
+  <button type="button" data-latestcmp="1">上一快照 → 当前实时版</button><button type="button" data-exportdiff="1">导出专业对比</button></div>
+  <div class="history-note">灰色为基准版 A，金色为对比版 B。显式来源覆盖率只统计 E/T 编号是否写出，<b>不代表文献真实支持该句，也不代表专业审校已完成</b>。跨章节改写使用文本相似度推断，请人工确认。</div>`;
+  if(!a){return h+'<div class="help"><h3>还没有可比较的旧版本</h3><p>下一次保存任务书后会自动形成历史快照；也可以点“导入旧版 A”选择一份已有 Markdown。当前游戏审阅和任务书实时分析不受影响。</p></div>';}
+  const d=diffBriefVersions(a,b),kpi=(v,l,col)=>`<div class="box kpi"><b style="${col?'color:'+col:''}">${v}</b><span>${l}</span></div>`;
+  h+=`<div class="version-grid">${versionCard(a,d.sa,'基准版 A',false)}<div class="version-arrow">→</div>${versionCard(b,d.sb,'对比版 B',b.hash===current.hash)}</div>
+  <div class="grid g4">${kpi(d.sb.items-d.sa.items>=0?'+'+(d.sb.items-d.sa.items):d.sb.items-d.sa.items,'专业/叙事条目净变化')}${kpi(`${d.sa.topics} → ${d.sb.topics}`,'专业主题覆盖')}${kpi(`${d.sa.citedPct}% → ${d.sb.citedPct}%`,'显式 E/T 来源标注')}${kpi(d.newRisks.length,'新增规则提示条目',d.newRisks.length?'var(--err)':'')}${kpi(d.resolvedRisks.length,'解除规则提示条目','var(--ok)')}${kpi(`${d.changes.filter(c=>c.kind==='added').length} / ${d.changes.filter(c=>['changed','rewritten'].includes(c.kind)).length} / ${d.changes.filter(c=>c.kind==='removed').length}`,'新增 / 修改 / 删除')}</div>`;
+  const max=Math.max(1,...Object.values(d.byDisc).flatMap(x=>[x.a,x.b]));
+  h+=`<div class="grid g2"><div class="box"><h3>学科覆盖变化</h3><div class="cmp-bars">${Object.keys(DISC).map(k=>{const x=d.byDisc[k],delta=x.b-x.a;return `<div class="cmp-bar"><span style="color:${DISC[k].c}">${DISC[k].n}<span class="sub"> ${x.a} → ${x.b}</span></span><div class="cmp-track"><i class="a" style="width:${x.a/max*48}%"></i><i class="b" style="width:${x.b/max*48}%"></i></div><span class="delta ${delta>0?'up':delta<0?'down':''}">${delta>0?'+':''}${delta}</span></div>`;}).join('')}</div></div>
+  <div class="box"><h3>专业主题变化（变化最大的 8 项）</h3>${TOPICS.map(t=>({t,x:d.byTopic[t.id]})).filter(x=>x.x.a!==x.x.b).sort((x,y)=>Math.abs(y.x.b-y.x.a)-Math.abs(x.x.b-x.x.a)).slice(0,8).map(({t,x})=>`<div class="row" style="margin:6px 0"><span>${esc(t.n)}</span><span class="sub" style="margin-left:auto">${x.a} → ${x.b} <b>${x.b-x.a>0?'+':''}${x.b-x.a}</b></span></div>`).join('')||'<div class="empty">主题覆盖无变化。</div>'}</div></div>`;
+  h+=`<div class="grid g2"><div class="box"><h3>新增规则提示</h3>${d.newRisks.slice(0,12).map(x=>`<div class="check"><span class="ic no">!</span><div>${x.flags.map(flagChip).join(' ')}<div class="sub">${esc(x.change.path)}</div></div></div>`).join('')||'<span class="sub">没有新增规则提示。</span>'}</div><div class="box"><h3>解除规则提示</h3>${d.resolvedRisks.slice(0,12).map(x=>`<div class="check"><span class="ic ok">✓</span><div>${x.flags.map(flagChip).join(' ')}<div class="sub">${esc(x.change.path)}</div></div></div>`).join('')||'<span class="sub">没有解除的规则提示。</span>'}</div></div>`;
+  const q=S.ui.cmpText.trim().toLowerCase(),list=d.changes.filter(c=>(S.ui.cmpKind==='all'||c.kind===S.ui.cmpKind)&&(!q||(c.path+' '+(c.before?c.before.zh:'')+' '+(c.after?c.after.zh:'')).toLowerCase().includes(q)));
+  h+=`<h2>逐条专业向区别</h2><div class="filters"><select data-cmpkind><option value="all">全部变化</option>${Object.keys(DIFF_KIND).map(k=>`<option value="${k}"${S.ui.cmpKind===k?' selected':''}>${DIFF_KIND[k]}</option>`).join('')}</select><input type="search" data-cmptext placeholder="搜索前后文案、角色、章节…" value="${esc(S.ui.cmpText)}"><span class="sub">${list.length} 条变化 · 内容相同 ${d.unchanged} · 仅移动 ${d.moved}</span></div>
+  <div class="diff-list">${list.slice(0,120).map(diffChangeCard).join('')||'<div class="empty">两个版本没有符合筛选条件的变化。</div>'}</div>${list.length>120?'<p class="sub">仅显示前 120 条；请用筛选缩小范围，或导出完整对比。</p>':''}`;
+  return h;
+}
+
 /* ================= 视图：出处与原理 ================= */
 function vRefs(){
   const hi=healthItems();
@@ -1012,12 +1063,13 @@ function vRefs(){
 /* ================= 视图：更新记录 ================= */
 function logEntryHTML(e){
   const li=(arr,f)=>arr.map(f).join('');
-  return `<div class="row"><b>${fmtT(e.t)}</b><span class="chip">${esc(e.label||'')}</span><span class="sub">新增 ${e.n[0]} · 修改 ${e.n[1]} · 删除 ${e.n[2]}</span></div><ul class="log">
+  return `<div class="row"><b>${fmtT(e.t)}</b><span class="chip">${esc(e.label||'')}</span>${e.sources&&e.sources.brief?'<span class="chip src-brief">任务书专业分析已同步</span>':''}${e.sources&&e.sources.game?'<span class="chip src-game">游戏分析已同步</span>':''}<span class="sub">新增 ${e.n[0]} · 修改 ${e.n[1]} · 删除 ${e.n[2]}</span></div>
+  ${e.brief?`<div class="history-note" style="margin:8px 0">当前任务书：${e.brief.items} 条 · ${e.brief.topics} 个专业主题 · 显式来源 ${e.brief.cited}/${e.brief.need}（${e.brief.citedPct}%） <button type="button" data-go="compare">打开双版本专业对比</button></div>`:''}<ul class="log">
   ${li(e.changed,x=>`<li><span class="chip fresh">改</span> <span class="old" style="display:inline"><s>${esc(x.from)}</s></span> → ${esc(x.to)} <span class="mono sub">${esc(x.key.replace(/^(game|brief)\|/,''))}</span></li>`)}
   ${li(e.added,x=>`<li><span class="chip impl-yes">增</span> ${esc(x.zh)} <span class="mono sub">${esc(x.key.replace(/^(game|brief)\|/,''))}</span></li>`)}
   ${li(e.removed,x=>`<li><span class="chip lv-error">删</span> ${esc(x.zh)}</li>`)}</ul>`;
 }
-function vLog(){return `<h2>更新记录</h2><p class="sub">每次检测到 ${CONF.game} 或 ${CONF.brief} 的文案变化都会记一笔（保存在本浏览器，最多 40 次）。被修改的条目，原有审阅结论会自动转为"已改动 · 待复审"。</p>`
+function vLog(){return `<h2>更新记录</h2><p class="sub">每次检测到 ${CONF.game} 或 ${CONF.brief} 的文案变化都会记一笔（保存在本浏览器，最多 40 次）。任务书还会保存完整版本快照，供双版本专业对比；被修改条目的原审阅结论会自动转为“已改动 · 待复审”。</p>`
   +(S.log.length?S.log.map(e=>`<div class="box" style="margin:10px 0">${logEntryHTML(e)}</div>`).join(''):'<div class="empty">还没有记录。</div>')
   +`<p><button type="button" data-clearlog="1">清空更新记录</button></p>`;}
 
@@ -1028,11 +1080,12 @@ function exportMd(){
   const hi=healthItems(),who=$('#reviewer').value.trim();
   let md=`# 《怪物夜未眠》专业学科与剧情审阅报告\n\n- 生成时间：${fmtT(Date.now())}\n- 审阅人：${who||'（未填写）'}\n- 游戏文件：${CONF.game}（指纹 ${S.src.game.hash||'—'}，修改于 ${fmtT(S.src.game.mtime)}）\n- 任务书：${CONF.brief}（指纹 ${S.src.brief.hash||'—'}，修改于 ${fmtT(S.src.brief.mtime)}）\n- 说明：自动归类和规则检查只作提示；中医内容只作"传统说法"叙事。\n\n## 全局安全检查\n\n`;
   md+=S.checks.map(c=>`- [${c.ok?'x':' '}] ${c.n}${c.detail?`：${c.detail}`:''}`).join('\n')+'\n';
-  for(const k of ['card','redflag','window','body','action']){const l=hi.filter(it=>it.cats.includes(k));if(!l.length)continue;const cc=statCount(l);
+  for(const k of Object.keys(CATS)){const l=hi.filter(it=>it.cats.includes(k));if(!l.length)continue;const cc=statCount(l);
     md+=`\n## ${CATS[k].n}（${l.length} 条：通过 ${cc.ok} · 需修改 ${cc.fix} · 待讨论 ${cc.discuss} · 待复审 ${cc.changed} · 未审 ${cc.todo}）\n`;
     for(const it of l){const rv=reviewOf(it);
       md+=`\n### [${ST[rv.st]}] ${it.zh}\n\n- 位置：\`${locOf(it)}\`\n- 角色：${it.entity.name}${it.en?`\n- 英文：${it.en}`:''}\n`;
       if(it.topics.length)md+=`- 专业原理：${it.topics.map(t=>TOPIC[t].n+' '+TOPIC[t].refs.map(r=>'['+REF_NO[r]+']').join('')).join('；')}\n`;
+      if(it.evidence&&it.evidence.length)md+=`- 任务书来源编号：${it.evidence.join('、')}（仍须核验原文与审校状态）\n`;
       if(it.flags.length)md+=`- 规则提示：${it.flags.map(f=>LV[ruleOf(f).level].n+'·'+ruleOf(f).n).join('；')}\n`;
       if(rv.note)md+=`- 审阅意见：${rv.note}${rv.by?`（${rv.by}，${fmtT(rv.at)}）`:''}\n`;
       if(rv.st==='changed')md+=`- 审阅时原文：${rv.text}\n`;}}
@@ -1040,6 +1093,14 @@ function exportMd(){
   download(`审阅报告-${stamp()}.md`,md,'text/markdown;charset=utf-8');
 }
 function exportJson(){download(`审阅记录-${stamp()}.json`,JSON.stringify({app:'monster-sleepless-review',v:1,exportedAt:new Date().toISOString(),reviewer:$('#reviewer').value.trim(),game:{hash:S.src.game.hash,mtime:S.src.game.mtime},brief:{hash:S.src.brief.hash},reviews:S.reviews},null,1),'application/json');}
+function exportBriefDiff(){
+  const a=getCmpVersion(S.ui.cmpA),b=getCmpVersion(S.ui.cmpB)||currentBriefVersion();if(!a||!b){alert('请先选择或导入两个任务书版本。');return;}
+  const d=diffBriefVersions(a,b);let md=`# lane-brief.md 双版本专业对比\n\n- 生成时间：${fmtT(Date.now())}\n- 基准版 A：${a.title}（${a.hash}）\n- 对比版 B：${b.title}（${b.hash}）\n- 说明：自动主题、风险和来源覆盖仅作审阅导航；跨章节改写为相似度推断配对，须人工确认。\n\n## 总览\n\n- 专业/叙事条目：${d.sa.items} → ${d.sb.items}\n- 专业主题：${d.sa.topics} → ${d.sb.topics}\n- 显式 E/T 来源标注：${d.sa.cited}/${d.sa.need}（${d.sa.citedPct}%）→ ${d.sb.cited}/${d.sb.need}（${d.sb.citedPct}%）\n- 新增规则提示：${d.newRisks.length}；解除规则提示：${d.resolvedRisks.length}\n\n## 学科覆盖\n\n${Object.keys(DISC).map(k=>`- ${DISC[k].n}：${d.byDisc[k].a} → ${d.byDisc[k].b}`).join('\n')}\n\n## 逐条变化\n\n`;
+  for(const c of d.changes){md+=`### ${DIFF_KIND[c.kind]} · ${c.path}\n\n- 角色：${esc((c.after||c.before).entity.name)}${c.inferred?`\n- 推断配对相似度：${Math.round(c.similarity*100)}%`:''}\n`;
+    if(c.before)md+=`\n**A（L${c.before.line}）**\n\n${c.before.zh}\n`;if(c.after)md+=`\n**B（L${c.after.line}）**\n\n${c.after.zh}\n`;
+    const ids=[...new Set([...(c.before?c.before.evidence:[]),...(c.after?c.after.evidence:[])])];if(ids.length)md+=`\n来源编号：${ids.join('、')}\n`;md+='\n';}
+  download(`任务书专业对比-${stamp()}.md`,md,'text/markdown;charset=utf-8');
+}
 async function importJson(file){
   try{const o=JSON.parse(await file.text());if(!o||!o.reviews)throw new Error('不是审阅记录文件');let n=0;
     for(const k in o.reviews){const a=S.reviews[k],b=o.reviews[k];if(!a||(b.at||0)>(a.at||0)){S.reviews[k]=b;n++;}}
@@ -1061,15 +1122,25 @@ $('#view').addEventListener('click',e=>{
   if(d.find){const it=S.byKey.get(d.find);if(!it)return;Object.assign(S.ui,{tab:'queue',q:'all',srcF:it.src,ent:'all',disc:'all',st:'all',issues:false,text:it.zh.slice(0,24),limit:80});render();scrollTo(0,0);return;}
   if(d.topic){S.ui.tab='chain';S.ui.topic=d.topic;const it=healthItems().find(x=>x.topics.includes(d.topic));if(it)S.ui.chSrc=it.src;render();scrollTo(0,0);return;}
   if(d.qtopic){const tp=TOPIC[d.qtopic];Object.assign(S.ui,{tab:'queue',q:'all',srcF:'all',ent:'all',disc:tp.disc[0],st:'all',issues:false,text:'',limit:80});render();scrollTo(0,0);return;}
+  if(d.latestcmp){const cur=currentBriefVersion(),prev=S.briefVersions.find(v=>!cur||v.hash!==cur.hash);if(!prev){toast('还没有上一版快照，请先导入旧版 A。');return;}S.ui.cmpA=prev.id;S.ui.cmpB='current';render();return;}
+  if(d.exportdiff){exportBriefDiff();return;}
   if(d.clearlog){if(confirm('清空本浏览器里的更新记录？审阅结论不受影响。')){S.log=[];store('log',[]);render();}}
 });
 $('#view').addEventListener('input',e=>{
   const t=e.target;
+  if(t.hasAttribute('data-cmptext')){clearTimeout(S._ct);const pos=t.selectionStart;S.ui.cmpText=t.value;S._ct=setTimeout(()=>{render();const n=$('#view [data-cmptext]');if(n){n.focus();n.setSelectionRange(pos,pos);}},250);return;}
   if(t.dataset.act==='note'){const k=t.closest('.item').dataset.key;clearTimeout(t._t);t._t=setTimeout(()=>{setReview(k,{note:t.value});},400);return;}
   const f=t.dataset.f;if(!f)return;
   S.ui[f]=t.type==='checkbox'?t.checked:t.value;S.ui.limit=80;
   if(f==='text'){clearTimeout(S._st);S._st=setTimeout(()=>{const pos=t.selectionStart;render();const n=$('#view [data-f="text"]');if(n){n.focus();n.setSelectionRange(pos,pos);}},250);}
   else render();
+});
+$('#view').addEventListener('change',async e=>{
+  const t=e.target;
+  if(t.dataset.ver){S.ui[t.dataset.ver]=t.value;render();return;}
+  if(t.hasAttribute('data-cmpkind')){S.ui.cmpKind=t.value;render();return;}
+  const side=t.dataset.briefimport,file=t.files&&t.files[0];if(!side||!file)return;
+  try{const text=await file.text(),entry=rememberBrief(text,{name:file.name,imported:true});S.ui[side]=entry.id;S.ui.tab='compare';render();toast(`已导入 ${file.name}，专业分析已更新。`);}catch(err){alert('读取版本失败：'+err.message);}
 });
 $('#view').addEventListener('focusout',e=>{if(e.target.tagName==='TEXTAREA'&&S.pending)setTimeout(()=>{if(document.activeElement?.tagName!=='TEXTAREA')render();},50);});
 function rerenderItem(k){const it=S.byKey.get(k),el=$(`#view .item[data-key="${CSS.escape(k)}"]`);if(it&&el){el.outerHTML=itemCard(it);}renderTabs();}
