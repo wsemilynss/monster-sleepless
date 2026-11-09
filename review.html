@@ -349,7 +349,7 @@ const RULES=[
  {id:'score',level:'info',n:'分数 / 百分比',re:/\d+\s*%|健康分|\d+\s*分(?!钟)/,why:'不显示健康分数或百分比；剧情数字需注明不是玩家分数。'},
  {id:'stigma',level:'warn',n:'可能污名化的措辞',re:/酒鬼|你就是懒|就是懒|不够自律|胖子|没用|管不住/,why:'这类措辞如果是"错误选项"，可以保留，但请确认怪物的回应没有羞辱意味。'},
  {id:'len',level:'info',n:'台词超过 20 字',test:it=>it.dialog&&cjkLen(it.zh)>20,why:'台词每句 ≤ 20 字（第 0 节）。'},
- {id:'tcmlabel',level:'info',n:'中医说法需标"传统说法"',test:it=>it.topics.includes('tcm')&&it.cats.some(c=>c==='card'||c==='body'),why:'中医内容在界面上需标注为"传统说法"。'},
+ {id:'tcmlabel',level:'info',n:'中医说法需标"传统说法"',test:it=>it.topics.includes('tcm')&&it.cats.some(c=>c==='card'||c==='body')&&!/传统说法|传统语境|中医典籍|志怪/.test(it.zh),why:'中医内容在界面上需标注为"传统说法"。'},
  {id:'swpro',level:'warn',n:'睡眠窗口缺少"专业指导"提示',test:it=>/睡眠窗口|睡眠限制|躺得比睡得久/.test(it.zh)&&!/专业|医生/.test(it.zh)&&(it.src==='game'||it.cats.includes('card')),why:'睡眠窗口须提示"和专业的人一起调整"。'},
  {id:'osaself',level:'warn',n:'呼吸暂停相关却暗示自我处理',test:it=>it.topics.includes('osa')&&/侧睡|侧卧|垫高|枕头|止鼾/.test(it.zh)&&!/医生|就医|信笺|安抚|不说成治疗/.test(it.zh),why:'疑似呼吸暂停只能引导就医，不暗示体位或枕头可以治疗。'}
 ];
