@@ -160,7 +160,7 @@ body.locked>.top,body.locked>.notice,body.locked>.tabs,body.locked>main{visibili
   </form>
 </div>
 <header class="top" id="top">
-  <div class="brand"><b>专业学科与剧情分析</b><span>《怪物夜未眠》审阅台 · 供睡眠医学 / 心理背景审阅者使用</span></div>
+  <div class="brand"><b>专业学科与剧情分析</b><span>游戏 + 任务书实时审阅 · 睡眠医学 / 心理 / 中医 / 社会环境</span></div>
   <div class="sync">
     <span class="pill"><i class="dot" id="syncDot"></i><span id="syncText">准备中…</span></span>
     <select id="selInterval" title="检查间隔">
@@ -180,7 +180,7 @@ body.locked>.top,body.locked>.notice,body.locked>.tabs,body.locked>main{visibili
     <label class="btn">导入记录<input type="file" id="fileImport" accept=".json,application/json" hidden></label>
   </div>
 </header>
-<div class="notice">本页是内部审阅工具。它会实时读取 <b>怪物夜未眠.html</b>（游戏剧本数据）和 <b>lane-brief.md</b>（v4 任务书），按文本内容和数据路径自动归类，并标出专业原理和出处。自动归类与规则检查只作提示，以审阅者判断为准；条目原文被修改后，审阅状态会自动变成"已改动 · 待复审"。</div>
+<div class="notice">本页实时读取 <b>怪物夜未眠.html</b> 与 <b>lane-brief.md</b>（兼容旧版及 v5 结构），同步更新游戏与任务书的专业分析；任务书每次变化都会保存本地版本快照，可在“版本专业对比”中查看任意两版的学科、主题、风险和来源差异，也可导入旧版。自动归类、相似度配对与规则检查只作提示，以专业审阅者判断为准；条目修改后自动转为“已改动 · 待复审”。</div>
 <nav class="tabs" id="tabs"></nav>
 <main id="view"><div class="empty">正在读取剧本…</div></main>
 <div class="toast" id="toast"></div>
