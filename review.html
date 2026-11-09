@@ -882,7 +882,7 @@ function vOverview(){
   const kpi=(v,l,col)=>`<div class="box kpi"><b style="${col?'color:'+col:''}">${v}</b><span>${l}</span></div>`;
   let h=`<div class="grid g4">
    ${kpi(hi.length,`健康相关条目（游戏 ${g} · 任务书 ${b}）`)}
-   ${kpi(`${c.ok}/${core.length}`,'核心四类已通过（手札卡 / 红旗 / 睡眠窗口 / 体征）','var(--ok)')}
+   ${kpi(`${c.ok}/${core.length}`,'核心审阅已通过（知识卡 / 红旗 / 窗口 / 身体观察 / 证据）','var(--ok)')}
    ${kpi(c.fix,'需修改','var(--err)')}${kpi(c.changed,'已改动 · 待复审','var(--chg)')}
    ${kpi(`${lv.error} / ${lv.warn} / ${lv.info}`,'规则提示：底线 / 高风险 / 提示',lv.error?'var(--err)':'')}
   </div><h2>审阅类别</h2><div class="grid g4">`;
