@@ -384,7 +384,8 @@ const S={
   src:{game:{file:CONF.game},brief:{file:CONF.brief,alt:CONF.briefEnc},mirror:{file:CONF.mirror}},
   game:null, brief:null, items:[], byKey:new Map(), fresh:new Set(), log:store('log')||[],
   reviews:store('reviews')||{}, snap:store('snap')||{}, checks:[], busy:false, timer:null, lastCheck:0, err:null,
-  ui:{tab:'overview',q:'card',srcF:'all',st:'all',disc:'all',ent:'all',text:'',issues:false,limit:80,mxSrc:'auto',chSrc:'auto',topic:null}
+  briefVersions:store('briefVersions')||[], versionCache:new Map(),
+  ui:{tab:'overview',q:'card',srcF:'all',st:'all',disc:'all',ent:'all',text:'',issues:false,limit:80,mxSrc:'auto',chSrc:'auto',topic:null,cmpA:'',cmpB:'current',cmpKind:'all',cmpText:''}
 };
 async function probe(f){
   if(S.mode==='fs'){const h=await S.dir.getFileHandle(f.file);const file=await h.getFile();return {sig:file.lastModified+':'+file.size,mtime:file.lastModified,size:file.size,read:()=>file.text()};}
