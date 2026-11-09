@@ -504,12 +504,12 @@ function harvestGame(data,src){
 
 /* ================= 任务书（lane-brief.md）解析 ================= */
 function parseBrief(md){
-  const L=md.split(/\r?\n/),items=[],heads=[],tables=[];
+  const L=String(md||'').split(/\r?\n/),items=[],heads=[],tables=[];
   let fence=false;const inFence=[];
-  L.forEach((l,i)=>{if(/^```/.test(l))fence=!fence;inFence[i]=fence;const m=/^(#{2,4})\s+(.*)$/.exec(l);if(m&&!fence)heads.push({lv:m[1].length,text:m[2],line:i+1});});
-  const secAt=line=>{let c={};for(const h of heads){if(h.line>line)break;if(h.lv===2)c={h2:h};else if(h.lv===3){c.h3=h;delete c.h4;}else c.h4=h;}return c;};
+  L.forEach((l,i)=>{if(/^\s*```/.test(l))fence=!fence;inFence[i]=fence;const m=/^(#{2,4})\s+(.*)$/.exec(l);if(m&&!fence)heads.push({lv:m[1].length,text:m[2],line:i+1});});
+  const secAt=line=>{let c={};for(const h of heads){if(h.line>line)break;if(h.lv===2)c={h2:h};else if(h.lv===3){c.h3=h;delete c.h4;}else if(h.lv===4)c.h4=h;}return c;};
   const cells=l=>l.trim().replace(/^\||\|$/g,'').split('|').map(s=>s.trim());
-  const clean=s=>String(s).replace(/`/g,'').replace(/\*\*/g,'').replace(/^[“"']|[”"']$/g,'').replace(/^★\s*/,'').trim();
+  const clean=s=>String(s??'').replace(/`/g,'').replace(/\*\*/g,'').replace(/^[“"']|[”"']$/g,'').replace(/^★\s*/,'').trim();
   for(let i=0;i<L.length;i++){
     if(!inFence[i]&&/^\|/.test(L[i])&&i+1<L.length&&/^\|\s*:?-{2,}/.test(L[i+1])){
       const t={head:cells(L[i]),rows:[],line:i+1,sec:secAt(i+1)};let j=i+2;
@@ -519,47 +519,76 @@ function parseBrief(md){
   }
   const tbl=pre=>tables.find(t=>t.sec.h3&&t.sec.h3.text.startsWith(pre))||tables.find(t=>t.sec.h2&&t.sec.h2.text.startsWith(pre));
   const col=(t,name)=>t.head.findIndex(h=>h.replace(/\*/g,'').startsWith(name));
-  // 角色名册（0.5）
   const roster=tbl('0.5');let names=[];
-  if(roster){const ci=col(roster,'中文名');names=roster.rows.map(r=>clean(r.c[ci])).filter(Boolean);}
+  if(roster){const ci=col(roster,'中文');if(ci>=0)names=roster.rows.map(r=>clean(r.c[ci])).filter(Boolean);}
   names.sort((a,b)=>b.length-a.length);
   const nameIn=s=>names.find(n=>String(s).includes(n))||'';
   const ent=n=>({id:'b:'+(n||'全局'),name:n||'全局 / 通用'});
-  const push=(o)=>items.push(Object.assign({src:'brief',root:'BRIEF',dialog:false,en:''},o,{key:'brief|'+o.path}));
-  // 2.3 夜游手札
+  const push=o=>{const zh=clean(o.zh);if(!zh)return;items.push(Object.assign({src:'brief',root:'BRIEF',dialog:false,en:''},o,{zh,key:'brief|'+o.path}));};
+  const title=clean(L.find(l=>/^#\s+/.test(l))||'lane-brief.md');
+  const version=((/\bv\d+(?:\.\d+)?/i.exec(title)||[])[0]||'未标版本').toLowerCase();
+  const evidence={};
+  for(const t of tables.filter(t=>t.sec.h3&&/^5\.[23]/.test(t.sec.h3.text)))for(const r of t.rows){
+    const id=clean(r.c[0]);if(/^[ET]\d{2}$/.test(id))evidence[id]={id,citation:clean(r.c[1]),note:clean(r.c[2]),line:r.line};
+  }
+
+  // v4 兼容：旧手札、四格、体征和完整四幕。
   const t23=tbl('2.3');
   if(t23){const cNo=col(t23,'卡'),cFrom=col(t23,'来自'),cTh=col(t23,'主题'),cS=col(t23,'故事化');
-    t23.rows.forEach(r=>push({path:`§2.3 手札卡 ${r.c[cNo]}`,zh:clean(r.c[cS]),note:`主题：${clean(r.c[cTh])}`,line:r.line,entity:ent(nameIn(r.c[cFrom])),forceCats:['card']}));}
-  // 4.1 总表：四格 + 第三幕工具
+    if(cS>=0)t23.rows.forEach(r=>push({path:`§2.3 手札卡 ${r.c[cNo]}`,zh:r.c[cS],note:`主题：${clean(r.c[cTh])}`,line:r.line,entity:ent(nameIn(r.c[cFrom])),forceCats:['card']}));}
   const t41=tbl('4.1 ');
   if(t41){const cM=col(t41,'怪物'),cF=col(t41,'跨学科'),cT=col(t41,'第三幕');const lab=['志怪','生理','心理','饮食起居'];
     t41.rows.forEach(r=>{const n=nameIn(r.c[cM]);
-      if(cF>=0)r.c[cF].split(/\s\/\s/).forEach((s,k)=>push({path:`§4.1 ${n} · 四格·${lab[k]||k+1}`,zh:clean(s),line:r.line,entity:ent(n),forceCats:['card']}));
-      if(cT>=0)push({path:`§4.1 ${n} · 第三幕工具`,zh:clean(r.c[cT]),line:r.line,entity:ent(n),forceCats:['action']});});}
-  // 4.1b 体征
+      if(cF>=0)r.c[cF].split(/\s\/\s/).forEach((s,k)=>push({path:`§4.1 ${n} · 四格·${lab[k]||k+1}`,zh:s,line:r.line,entity:ent(n),forceCats:['card']}));
+      if(cT>=0)push({path:`§4.1 ${n} · 第三幕工具`,zh:r.c[cT],line:r.line,entity:ent(n),forceCats:['action']});});}
   const t4b=tbl('4.1b');
   if(t4b){const cols=[['体质','body'],['望','body'],['闻','body'],['现代生理','card'],['第一幕体征','body']];
     t4b.rows.forEach(r=>{const n=nameIn(r.c[0]);cols.forEach(([h,c])=>{const ci=col(t4b,h);if(ci<0)return;
-      push({path:`§4.1b ${n} · ${h}`,zh:clean(r.c[ci]),line:r.line,entity:ent(n),forceCats:c==='card'?['card','body']:['body']});});});}
-  // 4.4 红旗
+      push({path:`§4.1b ${n} · ${h}`,zh:r.c[ci],line:r.line,entity:ent(n),forceCats:c==='card'?['card','body']:['body']});});});}
   const h44=heads.find(h=>h.text.startsWith('4.4'));
   if(h44){let on=false,k=0;for(let i=h44.line;i<L.length;i++){const l=L[i];if(/^#{2,4}\s/.test(l))break;
-    if(/RED_FLAGS/.test(l)){on=true;continue;} if(on&&/^\*\*/.test(l))break;
-    if(on&&/^\s*-\s+/.test(l)){k++;push({path:`§4.4 红旗 #${k}`,zh:clean(l.replace(/^\s*-\s+/,'')),line:i+1,entity:ent(''),forceCats:['redflag']});}}}
-  // 4.2 / 4.3 / 4.5 剧本：✔ 选项与镜子"带回现实"
+    if(/RED_FLAGS/.test(l)){on=true;continue;}if(on&&/^\*\*/.test(l))break;
+    if(on&&/^\s*-\s+/.test(l)){k++;push({path:`§4.4 红旗 #${k}`,zh:l.replace(/^\s*-\s+/,''),line:i+1,entity:ent(''),forceCats:['redflag']});}}}
   const cnt={};
   L.forEach((l,i)=>{if(inFence[i])return;const sec=secAt(i+1),h=(sec.h4||sec.h3||{}).text||'';
     if(!/^4\.(2|3|5)/.test(h))return;
     const n=nameIn(h)||(h.startsWith('4.2')?'旁妮儿拉灯':h.startsWith('4.5')?'K钥科斯基':'');
-    if(/✔/.test(l)&&!/✔\s*=/.test(l)){cnt[n]=(cnt[n]||0)+1;push({path:`§${h.split(' ')[0]} ${n} · ✔#${cnt[n]}`,zh:clean(l.replace(/^\s*[-\d.]+\s*/,'').replace(/✔/g,'').replace(/→\s*手札卡\s*\d+/,'')),line:i+1,entity:ent(n),forceCats:['action']});}
+    if(/✔/.test(l)&&!/✔\s*=/.test(l)){cnt[n]=(cnt[n]||0)+1;push({path:`§${h.split(' ')[0]} ${n} · ✔#${cnt[n]}`,zh:l.replace(/^\s*[-\d.]+\s*/,'').replace(/✔/g,'').replace(/→\s*手札卡\s*\d+/,''),line:i+1,entity:ent(n),forceCats:['action']});}
     const mm=/镜子[^：:]*[：:]\s*(.+)$/.exec(l);
-    if(mm){push({path:`§${h.split(' ')[0]} ${n} · 镜子`,zh:clean(mm[1]),line:i+1,entity:ent(n),forceCats:['action']});}
+    if(mm)push({path:`§${h.split(' ')[0]} ${n} · 镜子`,zh:mm[1],line:i+1,entity:ent(n),forceCats:['action']});
   });
-  // 其余"睡眠窗口"表述
+
+  // v5+：按语义而不是固定行号读取人物、观察、现实环境、证据与安全边界。
+  const modern=heads.some(h=>h.lv===2&&h.text.startsWith('3. 14 只角色剧本总纲'));
+  if(modern){
+    L.forEach((l,i)=>{
+      if(inFence[i]||/^\s*(?:$|\||#|>)/.test(l))return;
+      const line=i+1,sec=secAt(line),h2=sec.h2?sec.h2.text:'',h3=sec.h3?sec.h3.text:'';
+      const list=/^\s*(?:-\s+|\d+\.\s+)/.test(l);if(!list)return;
+      const text=clean(l.replace(/^\s*(?:-\s+|\d+\.\s+)/,''));
+      const label=((/^\*\*([^*]+)\*\*[：:]/.exec(text)||[])[1]||'').trim();
+      const base=h3||h2,n=nameIn(h3)||nameIn(l);
+      if(h3.startsWith('0.3'))push({path:`§0.3 专业硬规则 · L${line}`,zh:text,line,entity:ent(''),forceCats:['evidence']});
+      else if(h3.startsWith('1.1')||h3.startsWith('1.3'))push({path:`§${h3.split(' ')[0]} ${label||'叙事原则'} · L${line}`,zh:text,line,entity:ent(''),forceCats:h3.startsWith('1.3')?['action']:['context']});
+      else if(/^3\.\d+/.test(h3)){
+        const cat=/四诊|身体观察/.test(label)?'body':/第三幕|第四幕|行动/.test(label)?'action':/手札/.test(label)?'card':/解锁|安睡|收集|人生|心结|形象|交集/.test(label)?'context':'health';
+        push({path:`§${h3.split(' ')[0]} ${n} · ${label||'剧情'}`,zh:text,line,entity:ent(n),forceCats:[cat]});
+      }else if(h2.startsWith('4.')||h2.startsWith('5.')){
+        const cat=h3.startsWith('4.4')?'redflag':h3.startsWith('4.2')||h3.startsWith('4.1')||h3.startsWith('4.3')?'body':h3.startsWith('5.1')?'evidence':h3.startsWith('5.4')?'card':'health';
+        push({path:`§${(h3||h2).split(' ')[0]} ${label||'条目'} · L${line}`,zh:text,line,entity:ent(n),forceCats:[cat]});
+      }
+    });
+    for(const t of tables){
+      const h3=t.sec.h3?t.sec.h3.text:'';
+      if(!/^4\.2|^5\.[23]/.test(h3))continue;
+      const cat=/^5\./.test(h3)?'evidence':'body';
+      t.rows.forEach(r=>{const n=nameIn(r.c.join(' '));push({path:`§${h3.split(' ')[0]} ${clean(r.c[0])}`,zh:r.c.join('；'),line:r.line,entity:ent(n),forceCats:[cat],note:/^5\./.test(h3)?'任务书来源台账；仍须核对原文与专业审校状态':''});});
+    }
+  }
   const used=new Set(items.map(x=>x.line));
   L.forEach((l,i)=>{if(inFence[i]||used.has(i+1))return;if(/睡眠窗口|躺得比睡得久/.test(l)&&!/^(#{1,4}\s|>)/.test(l)){const sec=secAt(i+1),h=(sec.h4||sec.h3||sec.h2||{}).text||'';
-    push({path:`§睡眠窗口 · ${fnv(l)}`,zh:clean(l.replace(/^\s*[-|]\s*/,'')).slice(0,240),note:`所在章节：${h}`,line:i+1,entity:ent(nameIn(h)||nameIn(l)),forceCats:['window']});}});
-  return {items,names,heads};
+    push({path:`§睡眠窗口 · ${fnv(l)}`,zh:l.replace(/^\s*[-|]\s*/,'').slice(0,240),note:`所在章节：${h}`,line:i+1,entity:ent(nameIn(h)||nameIn(l)),forceCats:['window']});}});
+  return {items,names,heads,tables,evidence,title,version,hash:fnv(md)};
 }
 
 /* ================= 分析：主题 · 类别 · 规则 · 审阅状态 ================= */
