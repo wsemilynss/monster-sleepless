@@ -829,11 +829,13 @@ const flagChip=id=>{const r=ruleOf(id);return `<span class="chip lv-${r.level}" 
 function implState(it){if(it.src!=='brief'||!S.corpus)return null;const k=norm(it.zh).slice(0,10);if(k.length<4)return null;return S.corpus.includes(k);}
 function implChip(it){const s=implState(it);if(s===null)return '';return s?'<span class="chip impl-yes">游戏中已有</span>':'<span class="chip impl-no">游戏中尚未实现</span>';}
 function locOf(it){return `${it.src==='game'?CONF.game:CONF.brief}${it.line?':L'+it.line:''} · ${it.path}`;}
+function evidenceChips(ids){return (ids||[]).map(id=>{const r=S.brief&&S.brief.evidence[id];return `<span class="cite-chip" title="${esc(r?r.citation+' '+r.note:'任务书中的来源编号；请核对原文和审校状态')}">${esc(id)}</span>`;}).join(' ');}
 function itemCard(it){
   const rv=reviewOf(it),fresh=S.fresh.has(it.key);
   return `<article class="item${fresh?' is-fresh':''}" data-key="${esc(it.key)}">
   <div class="meta"><span class="chip src-${it.src}">${it.src==='game'?'游戏':'任务书'}</span>${it.cats.map(c=>`<span class="chip cat">${CATS[c].n}</span>`).join('')}<span class="chip ent">${esc(it.entity.name)}</span>${fresh?'<span class="chip fresh">刚更新</span>':''}${implChip(it)}<span class="st st-${rv.st}">${ST[rv.st]}</span><span class="loc">${esc(locOf(it))}</span></div>
   <div class="zh">${esc(it.zh)}</div>${it.en?`<div class="en">${esc(it.en)}</div>`:''}${it.note?`<div class="en">${esc(it.note)}</div>`:''}
+  ${it.evidence&&it.evidence.length?`<div class="sec"><span class="lab">任务书来源</span>${evidenceChips(it.evidence)}<span class="sub"> 标注不等于已核验或已审校</span></div>`:''}
   ${rv.st==='changed'?`<div class="old">审阅时的原文：<s>${esc(rv.text||'')}</s>（当时结论：${ST[rv.prev]||'—'}）</div>`:''}
   ${it.flags.length?`<div class="sec"><span class="lab">规则提示</span>${it.flags.map(flagChip).join(' ')}</div>`:''}
   <div class="sec"><span class="lab">专业关联</span>${it.topics.length?it.topics.map(topicBlock).join(''):'<span class="sub">没有匹配到专业主题（可能只是叙事）。如果需要关联，请在备注里写明。</span>'}</div>
