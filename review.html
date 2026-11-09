@@ -715,17 +715,20 @@ async function checkAll(force){
       try{const res=await runSandbox(S.src.game.text);S.game={data:res.data,errors:res.errors||[],runtime:res.runtime||[],src:S.src.game.text,items:harvestGame(res.data,S.src.game.text)};S.err=null;}
       catch(e){S.err='读取游戏数据失败：'+e.message;}
     }
-    if(bCh||(force&&S.src.brief.text)){S.brief=parseBrief(S.src.brief.text);}
-    if(gCh||bCh||force||!S.items.length)rebuild(gCh||bCh);
+    if(bCh||(force&&S.src.brief.text)){
+      S.brief=parseBrief(S.src.brief.text);
+      rememberBrief(S.src.brief.text,{name:S.src.brief.file,mtime:S.src.brief.mtime},S.brief);
+      if(!S.ui.cmpA){const prev=S.briefVersions.find(v=>v.hash!==S.src.brief.hash);if(prev)S.ui.cmpA=prev.id;}
+    }
+    if(gCh||bCh||force||!S.items.length)rebuild({game:gCh,brief:bCh});
     S.lastCheck=Date.now();
-    const bad=[S.src.game.err&&('游戏：'+S.src.game.err),S.err].filter(Boolean);
+    const bad=[S.src.game.err&&('游戏：'+S.src.game.err),S.src.brief.err&&('任务书：'+S.src.brief.err),S.err].filter(Boolean);
     setSync(bad.length?'err':(intervalMs()?'live':'pause'),bad.length?bad.join('；'):(intervalMs()?'实时同步中':'已暂停'));
   }catch(e){setSync('err',e.message);}
   finally{S.busy=false;renderSrcInfo();schedule();}
 }
-function rebuild(changed){
+function rebuild(changed={}){
   const all=[...(S.game?S.game.items:[]),...(S.brief?S.brief.items:[])].map(analyzeItem);
-  // 同一路径重复时加序号，保证 key 唯一
   const seen={};for(const it of all){if(seen[it.key]){seen[it.key]++;it.key+='#'+seen[it.key];}else seen[it.key]=1;}
   const prev=S.snap||{},now={};all.forEach(it=>now[it.key]=it.h);
   const hadPrev=Object.keys(prev).length>0;
@@ -738,9 +741,10 @@ function rebuild(changed){
   S.items=all;S.byKey=new Map(all.map(it=>[it.key,it]));
   if(diff.added.length||diff.removed.length||diff.changed.length){
     S.fresh=new Set([...diff.added,...diff.changed].map(x=>x.key));
-    const ent={t:diff.t,label:S.ready?'实时检测到':'自上次打开本页以来',added:diff.added.slice(0,40),removed:diff.removed.slice(0,40),changed:diff.changed.slice(0,40),n:[diff.added.length,diff.changed.length,diff.removed.length]};
+    const bs=briefSummary(all.filter(it=>it.src==='brief'));
+    const ent={t:diff.t,label:S.ready?'实时检测到':'自上次打开本页以来',sources:{game:!!changed.game,brief:!!changed.brief},brief:changed.brief?bs:null,added:diff.added.slice(0,40),removed:diff.removed.slice(0,40),changed:diff.changed.slice(0,40),n:[diff.added.length,diff.changed.length,diff.removed.length]};
     S.log.unshift(ent);S.log=S.log.slice(0,40);store('log',S.log);
-    toast(`检测到剧本更新：新增 ${diff.added.length} · 修改 ${diff.changed.length} · 删除 ${diff.removed.length}`);
+    toast(changed.brief?`任务书专业分析已同步：${bs.items} 条 · ${bs.topics} 个主题 · 来源标注 ${bs.citedPct}%`:`检测到游戏剧本更新：新增 ${diff.added.length} · 修改 ${diff.changed.length} · 删除 ${diff.removed.length}`);
   }
   S.snap=now;store('snap',now);
   const txt={};all.forEach(it=>txt[it.key]=it.zh);store('snapText',txt);
@@ -751,19 +755,28 @@ function rebuild(changed){
 }
 function globalChecks(){
   const g=S.game,src=g?g.src:'',d=g?g.data:{},gtext=g?g.items.map(x=>x.zh).join('\n'):'';
-  const out=[];
-  const add=(ok,n,detail,pend)=>out.push({ok,n,detail,pend});
-  if(!g){add(false,'读取游戏剧本数据',S.err||S.src.game.err||'尚未读取到 怪物夜未眠.html');return out;}
-  add(/这是故事，?不是诊断/.test(src),'免责声明"这是故事，不是诊断"','第 0 节要求在开场、日记等处保留。');
-  add(/医生|就医/.test(gtext+src),'就医提示（"不舒服请找医生"/就医信笺）','红旗触发时需给出就医指引。');
-  add(!!d.RED_FLAGS,'RED_FLAGS 红旗清单已在游戏中实现',d.RED_FLAGS?`${(d.RED_FLAGS.length||Object.keys(d.RED_FLAGS).length)} 条`:'任务书 4.4 / R6 待实现',!d.RED_FLAGS);
-  add(/心理援助|援助热线/.test(src),'情绪类红旗提示"当地心理援助热线"','R6 待实现时为未通过。',!/心理援助|援助热线/.test(src));
-  add(!!d.NOTEBOOK,'NOTEBOOK 夜游手札（14 张）已实现',d.NOTEBOOK?`${d.NOTEBOOK.length} 张`:'任务书 2.3 / R1 待实现',!d.NOTEBOOK);
-  add(!!d.MONSTERS,'MONSTERS（含 4.1b 体征字段）已实现',d.MONSTERS?`${Object.keys(d.MONSTERS).length} 个角色`:'任务书 4.1b / R1 待实现',!d.MONSTERS);
-  add(!g.runtime.length,'游戏脚本在沙箱中运行无报错',g.runtime.length?g.runtime.slice(0,5).join('；'):'—');
-  if(S.src.mirror.text!=null)add(S.src.mirror.hash===S.src.game.hash,'index.html 与 怪物夜未眠.html 内容一致','README 约定两份文件必须相同。');
-  const errN=S.items.filter(it=>it.src==='game'&&it.flags.some(f=>RULES.find(r=>r.id===f).level==='error')).length;
-  add(errN===0,'游戏文案无"底线"级规则问题',errN?`${errN} 条，见"规则检查"`:'—');
+  const out=[],add=(ok,n,detail,pend)=>out.push({ok,n,detail,pend});
+  if(!g)add(false,'读取游戏剧本数据',S.err||S.src.game.err||'尚未读取到 怪物夜未眠.html');
+  else{
+    add(/这是故事，?不是诊断/.test(src),'免责声明"这是故事，不是诊断"','第 0 节要求在开场、日记等处保留。');
+    add(/医生|就医/.test(gtext+src),'就医提示（"不舒服请找医生"/就医信笺）','红旗触发时需给出就医指引。');
+    add(!!d.RED_FLAGS,'RED_FLAGS 红旗清单已在游戏中实现',d.RED_FLAGS?`${(d.RED_FLAGS.length||Object.keys(d.RED_FLAGS).length)} 条`:'任务书 4.4 / R9 待实现',!d.RED_FLAGS);
+    add(/心理援助|援助热线|危机/.test(src),'情绪类红旗提供当地危机/心理援助提示','R9 待实现时为未通过。',!/心理援助|援助热线|危机/.test(src));
+    add(!!d.NOTEBOOK,'NOTEBOOK 夜游手札已实现',d.NOTEBOOK?`${d.NOTEBOOK.length} 张`:'任务书 / R2 待实现',!d.NOTEBOOK);
+    add(!!d.MONSTERS,'MONSTERS 角色数据已实现',d.MONSTERS?`${Object.keys(d.MONSTERS).length} 个角色`:'任务书 / R2 待实现',!d.MONSTERS);
+    add(!g.runtime.length,'游戏脚本在沙箱中运行无报错',g.runtime.length?g.runtime.slice(0,5).join('；'):'—');
+    if(S.src.mirror.text!=null)add(S.src.mirror.hash===S.src.game.hash,'index.html 与 怪物夜未眠.html 内容一致','README 约定两份文件必须相同。');
+    const errN=S.items.filter(it=>it.src==='game'&&it.flags.some(f=>ruleOf(f).level==='error')).length;
+    add(errN===0,'游戏文案无"底线"级规则问题',errN?`${errN} 条，见"规则检查"`:'—');
+  }
+  if(S.brief){
+    const bi=S.items.filter(it=>it.src==='brief'),bs=briefSummary(bi);
+    add(S.brief.names.length===14,'任务书角色名册（14 个）已解析',`识别到 ${S.brief.names.length} 个中文显示名；英文与完整文件名见名册。`);
+    add(bi.length>0,'任务书专业分析已同步',`${S.brief.version} · ${bi.length} 条 · ${bs.topics} 个专业主题 · ${bs.redflags} 条红旗/转介。`);
+    add(bs.need===0||bs.cited>0,'任务书含显式 E/T 来源标注',`${bs.cited}/${bs.need} 条专业主题条目带来源编号（${bs.citedPct}%）；这是标注覆盖，不代表原文已核验。`,bs.cited<bs.need);
+    const be=S.items.filter(it=>it.src==='brief'&&it.flags.some(f=>ruleOf(f).level==='error')).length;
+    add(be===0,'任务书文案无"底线"级规则问题',be?`${be} 条，请在规则检查中判断是否为禁止性规则原文。`:'—');
+  }else add(false,'读取任务书专业分析',S.src.brief.err||'尚未读取到 lane-brief.md / lane-brief.enc');
   return out;
 }
 
