@@ -936,7 +936,7 @@ function vMatrix(){
   const cnt=(e,d)=>list.filter(it=>it.entity.id===e&&it.disc.includes(d)).length;
   const max=Math.max(1,...ents.flatMap(([e])=>Object.keys(DISC).map(d=>cnt(e,d))));
   let h=`<h2>学科 × 剧情矩阵</h2><p class="sub">每格数字是该角色（或剧情单元）下命中该学科主题的条目数，颜色越深越多。点格子可进入审阅队列查看对应条目。空格表示这一学科没有覆盖到，可能需要补充，也可能本来就不需要。</p>${srcToggle('mxsrc',src)}
-  <div style="overflow:auto;margin-top:10px"><table class="mx"><thead><tr><th>角色 / 剧情单元</th>${Object.keys(DISC).map(d=>`<th class="rot" style="color:${DISC[d].c}">${DISC[d].n}</th>`).join('')}<th>条目</th><th>核心四类</th><th>审阅进度</th></tr></thead><tbody>`;
+  <div style="overflow:auto;margin-top:10px"><table class="mx"><thead><tr><th>角色 / 剧情单元</th>${Object.keys(DISC).map(d=>`<th class="rot" style="color:${DISC[d].c}">${DISC[d].n}</th>`).join('')}<th>条目</th><th>核心审阅</th><th>审阅进度</th></tr></thead><tbody>`;
   for(const [e,n] of ents){const el=list.filter(it=>it.entity.id===e),core=el.filter(it=>it.cats.some(c=>CORE_CATS.includes(c))),cc=statCount(core);
     h+=`<tr><th>${esc(n)}</th>${Object.keys(DISC).map(d=>{const v=cnt(e,d);return `<td class="c" data-mx="${esc(e)}|${d}|${src}" style="background:${v?hexA(DISC[d].c,.12+.6*v/max):'#fff'}">${v||''}</td>`;}).join('')}<td>${el.length}</td><td>${core.length}</td><td style="min-width:120px">${stBar(cc,core.length||1)}</td></tr>`;}
   return h+'</tbody></table></div>';
