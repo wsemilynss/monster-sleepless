@@ -616,6 +616,83 @@ function analyzeItem(it){
   it.health=it.cats.length>0;
   return it;
 }
+
+/* ================= 任务书版本快照与专业差异 ================= */
+function briefVersionFromText(text,meta={},parsed){
+  const p=parsed||parseBrief(text),items=p.items.map(it=>analyzeItem(Object.assign({},it)));
+  return Object.assign({},p,meta,{items,hash:fnv(text),text});
+}
+function rememberBrief(text,meta={},parsed){
+  if(!text)return null;
+  const v=briefVersionFromText(text,meta,parsed);S.versionCache.set(v.hash,v);
+  const old=S.briefVersions.find(x=>x.hash===v.hash);
+  const entry={id:'bv-'+v.hash,hash:v.hash,label:v.version,title:v.title,name:meta.name||CONF.brief,t:meta.t||meta.mtime||old?.t||Date.now(),seen:Date.now(),imported:!!meta.imported,text};
+  let list=[entry,...S.briefVersions.filter(x=>x.hash!==v.hash)].slice(0,10),ok=false;
+  while(list.length){
+    store('briefVersions',list);const saved=store('briefVersions');
+    if(Array.isArray(saved)&&saved.length===list.length){ok=true;break;}list.pop();
+  }
+  if(!ok){store('briefVersions',[]);list=[];}
+  S.briefVersions=list;S.historyLimited=!ok&&!!text;
+  return entry;
+}
+function currentBriefVersion(){
+  const f=S.src.brief;if(f.text==null)return null;
+  if(!S.versionCache.has(f.hash))S.versionCache.set(f.hash,briefVersionFromText(f.text,{name:f.file,mtime:f.mtime},S.brief||undefined));
+  return S.versionCache.get(f.hash);
+}
+function getCmpVersion(ref){
+  if(ref==='current')return currentBriefVersion();
+  const v=S.briefVersions.find(x=>x.id===ref);if(!v)return null;
+  if(!S.versionCache.has(v.hash))S.versionCache.set(v.hash,briefVersionFromText(v.text,{name:v.name,mtime:v.t}));
+  return S.versionCache.get(v.hash);
+}
+function briefSummary(items){
+  const need=items.filter(it=>it.needsEvidence),cited=need.filter(it=>it.evidence.length);
+  const flags={error:0,warn:0,info:0};items.forEach(it=>it.flags.forEach(f=>flags[ruleOf(f).level]++));
+  return {items:items.length,characters:new Set(items.map(it=>it.entity.id).filter(x=>x!=='b:全局')).size,
+    topics:new Set(items.flatMap(it=>it.topics)).size,need:need.length,cited:cited.length,
+    citedPct:need.length?Math.round(cited.length/need.length*100):0,flags,
+    evidence:items.filter(it=>it.cats.includes('evidence')).length,redflags:items.filter(it=>it.cats.includes('redflag')).length};
+}
+function textSimilarity(a,b){
+  const x=norm(a),y=norm(b);if(!x||!y)return 0;if(x===y)return 1;
+  const grams=s=>{const m=new Map();for(let i=0;i<s.length-1;i++){const g=s.slice(i,i+2);m.set(g,(m.get(g)||0)+1);}return m;};
+  const A=grams(x),B=grams(y);let hit=0,total=0;for(const [g,n] of A){total+=n;hit+=Math.min(n,B.get(g)||0);}for(const n of B.values())total+=n;
+  return total?2*hit/total:0;
+}
+function diffBriefVersions(a,b){
+  if(!a||!b)return null;
+  const A=a.items,B=b.items,used=new Set(),changes=[];let unchanged=0,moved=0;
+  const pair=(x,y)=>{used.add(y);if(x.h===y.h){if(x.path===y.path)unchanged++;else moved++;return;}
+    changes.push({kind:x.path===y.path?'changed':'rewritten',before:x,after:y,path:y.path||x.path});};
+  for(const x of A){
+    let y=B.find(z=>!used.has(z)&&z.path===x.path);
+    if(!y)y=B.find(z=>!used.has(z)&&norm(z.zh)===norm(x.zh));
+    if(y)pair(x,y);
+  }
+  for(const x of A){if(changes.some(c=>c.before===x)||used.has(x)&&A.includes(x))continue;
+    if(B.includes(x))continue;
+  }
+  const pairedA=new Set(changes.map(c=>c.before));
+  for(const x of A){if(pairedA.has(x)||B.some(y=>used.has(y)&&y.h===x.h&&norm(y.zh)===norm(x.zh)))continue;
+    const left=B.filter(y=>!used.has(y));let best=null,score=0;
+    for(const y of left){if(x.entity.id!==y.entity.id&&x.entity.id!=='b:全局'&&y.entity.id!=='b:全局')continue;const s=textSimilarity(x.zh,y.zh);if(s>score){score=s;best=y;}}
+    if(best&&score>=.42){pair(x,best);changes[changes.length-1].kind='rewritten';changes[changes.length-1].inferred=true;changes[changes.length-1].similarity=score;}
+  }
+  const pairedAfter=new Set(changes.map(c=>c.after));
+  for(const x of A){if(pairedA.has(x)||B.some(y=>used.has(y)&&y.h===x.h&&norm(y.zh)===norm(x.zh)))continue;changes.push({kind:'removed',before:x,after:null,path:x.path});}
+  for(const y of B)if(!used.has(y)&&!pairedAfter.has(y))changes.push({kind:'added',before:null,after:y,path:y.path});
+  const count=(items,key)=>{const o={};items.forEach(it=>it[key].forEach(x=>o[x]=(o[x]||0)+1));return o;};
+  const byDisc={};for(const d in DISC)byDisc[d]={a:A.filter(it=>it.disc.includes(d)).length,b:B.filter(it=>it.disc.includes(d)).length};
+  const byTopic={};for(const t of TOPICS)byTopic[t.id]={a:A.filter(it=>it.topics.includes(t.id)).length,b:B.filter(it=>it.topics.includes(t.id)).length};
+  const newRisks=[],resolvedRisks=[];
+  for(const c of changes){const af=c.before?c.before.flags:[],bf=c.after?c.after.flags:[];
+    const added=bf.filter(f=>!af.includes(f)),removed=af.filter(f=>!bf.includes(f));
+    if(added.length)newRisks.push({change:c,flags:added});if(removed.length)resolvedRisks.push({change:c,flags:removed});}
+  const order={changed:0,rewritten:1,added:2,removed:3};changes.sort((x,y)=>order[x.kind]-order[y.kind]||x.path.localeCompare(y.path,'zh-CN'));
+  return {a,b,changes,unchanged,moved,byDisc,byTopic,topicA:count(A,'topics'),topicB:count(B,'topics'),newRisks,resolvedRisks,sa:briefSummary(A),sb:briefSummary(B)};
+}
 function reviewOf(it){
   const r=S.reviews[it.key];
   if(!r)return {st:'todo'};
