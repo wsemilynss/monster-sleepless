@@ -565,9 +565,9 @@ function parseBrief(md){
       if(inFence[i]||/^\s*(?:$|\||#|>)/.test(l))return;
       const line=i+1,sec=secAt(line),h2=sec.h2?sec.h2.text:'',h3=sec.h3?sec.h3.text:'';
       const list=/^\s*(?:-\s+|\d+\.\s+)/.test(l);if(!list)return;
-      const text=clean(l.replace(/^\s*(?:-\s+|\d+\.\s+)/,''));
-      const label=((/^\*\*([^*]+)\*\*[：:]/.exec(text)||[])[1]||'').trim();
-      const base=h3||h2,n=nameIn(h3)||nameIn(l);
+      const raw=l.replace(/^\s*(?:-\s+|\d+\.\s+)/,''),text=clean(raw);
+      const label=((/^\*\*([^*]+)\*\*[：:]/.exec(raw)||[])[1]||'').trim();
+      const n=nameIn(h3)||nameIn(l);
       if(h3.startsWith('0.3'))push({path:`§0.3 专业硬规则 · L${line}`,zh:text,line,entity:ent(''),forceCats:['evidence']});
       else if(h3.startsWith('1.1')||h3.startsWith('1.3'))push({path:`§${h3.split(' ')[0]} ${label||'叙事原则'} · L${line}`,zh:text,line,entity:ent(''),forceCats:h3.startsWith('1.3')?['action']:['context']});
       else if(/^3\.\d+/.test(h3)){
@@ -609,6 +609,8 @@ function analyzeItem(it){
     const hit=rule.test?rule.test(it):(rule.re.test(it.zh)&&!(rule.ex&&rule.ex.test(it.zh)));
     if(hit)it.flags.push(rule.id);
   }
+  it.evidence=[...new Set((it.zh+' '+(it.note||'')).match(/\b[ET]\d{2}\b/g)||[])];
+  it.needsEvidence=it.src==='brief'&&it.topics.length>0&&it.cats.some(c=>['card','redflag','window','body','action','health'].includes(c));
   it.h=fnv(it.zh+'\u0001'+(it.en||''));
   it.health=it.cats.length>0;
   return it;
