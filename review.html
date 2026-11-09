@@ -858,7 +858,7 @@ function render(){
   const v=$('#view');
   if(!S.items.length&&S.mode==='none'){v.innerHTML=helpHTML();return;}
   if(!S.items.length){v.innerHTML=`<div class="empty">${esc(S.err||S.src.game.err||'正在读取剧本…')}</div>`;return;}
-  const fn={overview:vOverview,queue:vQueue,matrix:vMatrix,chain:vChain,rules:vRules,brief:vBrief,refs:vRefs,log:vLog}[S.ui.tab]||vOverview;
+  const fn={overview:vOverview,queue:vQueue,matrix:vMatrix,chain:vChain,rules:vRules,brief:vBrief,compare:vCompare,refs:vRefs,log:vLog}[S.ui.tab]||vOverview;
   v.innerHTML=fn();
   if(S.ui.tab==='chain')wireChain();
 }
