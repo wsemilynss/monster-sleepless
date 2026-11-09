@@ -1169,11 +1169,13 @@ async function start(){
   if(!window.crypto||!crypto.subtle){err.textContent='这个浏览器（或非 https 地址）不支持页面加密功能，请用 https 线上地址或新版 Chrome / Edge 打开。';btn.disabled=true;return;}
   let saved='';try{saved=sessionStorage.getItem(PWK)||localStorage.getItem(PWK)||'';}catch(e){}
   if(saved&&await checkPw(saved).catch(()=>false)){S.pw=saved;return start();}
+  if(saved){KEYS.clear();try{sessionStorage.removeItem(PWK);localStorage.removeItem(PWK);}catch(e){}}
   $('#lockPw').focus();
   form.addEventListener('submit',async e=>{
     e.preventDefault();const pw=$('#lockPw').value;if(!pw.trim())return;
     btn.disabled=true;btn.textContent='验证中…';err.textContent='';
-    const ok=await checkPw(pw).catch(()=>false);
+    let ok=false;
+    try{ok=await checkPw(pw);}catch(ex){console.error('密码校验组件错误',ex);KEYS.clear();btn.disabled=false;btn.textContent='进入';err.textContent='密码校验组件出错，请使用 https 地址和新版 Chrome / Edge 后重试。';return;}
     if(!ok){KEYS.clear();btn.disabled=false;btn.textContent='进入';err.textContent='密码不正确，请再试一次。';$('#lockPw').select();return;}
     const norm=pw.trim().toUpperCase();S.pw=norm;
     try{sessionStorage.setItem(PWK,norm);if($('#lockRemember').checked)localStorage.setItem(PWK,norm);}catch(e){}
