@@ -807,7 +807,7 @@ async function restoreDir(){
 }
 /* ================= 界面：通用 ================= */
 const ST={todo:'未审',ok:'通过',fix:'需修改',discuss:'待讨论',changed:'已改动 · 待复审'};
-const TABS=[['overview','总览'],['queue','审阅队列'],['matrix','学科 × 剧情矩阵'],['chain','证据链'],['rules','规则检查'],['brief','任务书对照'],['refs','出处与原理'],['log','更新记录']];
+const TABS=[['overview','总览'],['queue','审阅队列'],['matrix','学科 × 剧情矩阵'],['chain','证据链'],['rules','规则检查'],['brief','任务书对照'],['compare','版本专业对比'],['refs','出处与原理'],['log','更新记录']];
 function setSync(state,text){const d=$('#syncDot');d.className='dot '+state;$('#syncText').textContent=text+(S.lastCheck?' · '+new Date(S.lastCheck).toLocaleTimeString('zh-CN',{hour12:false}):'');}
 function renderSrcInfo(){
   $('#srcInfo').innerHTML=['game','brief','mirror'].map(k=>{const f=S.src[k];
