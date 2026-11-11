@@ -58,6 +58,17 @@ python3 -m http.server 8765
 
 打开 <http://localhost:8765/>。
 
+## 生命感研究（life-research.html）
+
+[`life-research.html`](life-research.html) 是公开的新媒体视觉艺术与交互设计研究页，线上地址：<https://wsemilynss.github.io/monster-sleepless/life-research.html>。
+
+- **主题**：屏幕媒介的生命感（animacy）与拟人化（anthropomorphism）的区别、共性、相邻概念，以及知觉、生物运动、发展心理、HCI/HRI、交互艺术、声音、游戏 NPC 和关系伦理的交叉证据。
+- **可视化**：生命感 × 拟人化四象限、七透镜图、可调运动/节律/目标/响应/记忆标本、S1/S7/v4.1 雷达对照、历史截图与版本时间线。雷达数值是设计审阅启发式，不是玩家评分或心理量表。
+- **实时关联**：本地每 2 秒、GitHub Pages 每 20 秒检查 `index.html`；在隔离沙箱中读取公开 `NIGHT` 数据并执行 `monsterLook()` 的虚拟样本，内存存储不接触玩家存档，不上传数据。
+- **任务书边界**：公开研究页不读取明文或加密任务书。S7 是已实现的当前版本，v4/v4.1 是下一阶段提案，不能将提案读成已上线功能。
+- **来源与复测**：26 项文献附 DOI 或机构链接、用途与适用边界；附 2×2 对照研究方案和可下载 Markdown 提纲，不声称已完成用户研究或验证睡眠效果。
+- **无障碍**：支持键盘、减少动效、360px 布局与打印/PDF；关闭动效后仍保留静态信息和文字状态。
+
 ## 专业审阅台（review.html）
 
 [`review.html`](review.html) 是给睡眠医学、心理、中医和社会环境背景审阅者用的“专业学科与剧情分析”页面，不面向玩家。
