@@ -13,6 +13,7 @@ $TARGETS = @(
   'index.html',
   '怪物夜未眠.html',
   'review.html',
+  'life-research.html',
   'lane-brief.enc',
   'reference-figures.mp4',
   'README.md',
