@@ -76,7 +76,8 @@ a{color:var(--teal);text-underline-offset:3px}a:hover{color:var(--mint)}button,i
 .rhythm-sources button{display:grid;gap:4px;justify-content:stretch;min-height:68px;padding:9px 10px;text-align:left;border-radius:8px;color:var(--ink);background:#0b100e;border-color:var(--line)}
 .rhythm-sources button:hover,.rhythm-sources button[aria-pressed="true"]{border-color:var(--source-tone,var(--rhythm-tone));color:var(--source-tone,var(--rhythm-tone));background:color-mix(in srgb,var(--source-tone,var(--rhythm-tone)) 10%,#0b100e)}
 .rhythm-sources i{font:9px var(--mono);letter-spacing:.1em;color:var(--muted)}.rhythm-sources strong{font:17px/1.1 var(--serif)}.rhythm-sources small{font-size:10px;color:var(--muted)}
-.rhythm-rate label{align-items:baseline;color:var(--ink)}.rhythm-rate output{color:var(--rhythm-tone);font:20px/1 var(--mono);white-space:nowrap;font-variant-numeric:tabular-nums}
+.rhythm-rate-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:6px}
+.rhythm-rate-head label{margin:0;color:var(--ink)}.rhythm-rate output{color:var(--rhythm-tone);font:20px/1 var(--mono);white-space:nowrap;font-variant-numeric:tabular-nums}
 #rhythmRate{accent-color:var(--rhythm-tone);margin:0;display:block}.rhythm-speed{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:6px 0}
 .rhythm-speed button{min-height:36px;border-radius:6px;padding:4px;text-align:center;background:transparent;color:var(--muted);border-color:var(--line)}
 .rhythm-speed button:hover,.rhythm-speed button[data-active="true"]{background:var(--rhythm-wash);color:var(--rhythm-tone);border-color:color-mix(in srgb,var(--rhythm-tone) 58%,transparent)}
@@ -192,7 +193,7 @@ a{color:var(--teal);text-underline-offset:3px}a:hover{color:var(--mint)}button,i
         <button type="button" data-rhythm="fire" aria-pressed="false"><i aria-hidden="true">06</i><strong>萤火</strong><small>双闪 · 暗歇</small></button>
       </div>
       <div class="control rhythm-rate">
-        <label for="rhythmRate">节拍速率 <output id="rhythmRateOut" for="rhythmRate" aria-live="off">66 BPM</output></label>
+        <div class="rhythm-rate-head"><label for="rhythmRate">节拍速率</label><output id="rhythmRateOut" for="rhythmRate" aria-live="off">66 BPM</output></div>
         <input id="rhythmRate" type="range" min="48" max="100" value="66" aria-describedby="rhythmRateHint">
         <div class="rhythm-speed" role="group" aria-label="速率快选">
           <button type="button" data-speed="0" data-active="false">舒缓</button>

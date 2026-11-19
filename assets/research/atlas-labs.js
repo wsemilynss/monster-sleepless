@@ -67,9 +67,12 @@ function pulseCycle(p,rate){
   for(let i=0;i<count;i++)if(!p.skip?.s.includes(i))ev.push({t:i*D,a:p.amp});
   C=count*D;
  }
- const shape={decay:p.scat?.5:.42,rough:p.rough,hollow:p.hollow};
+ const shape={decay:p.scat ? .5 : .42,rough:p.rough,hollow:p.hollow};
  return{C,wave(tm){let v=0;for(const e of ev){const x=(tm-e.t)/D;if(x>=0&&x<1)v+=e.a*shapeAt(x,shape)}return v},
-  phaseAt(tm){const e=ev.findLast(e=>e.t<=tm),x=(tm-e.t)/D;return x<.11?0:x<.11+shape.decay?1:2}};
+  phaseAt(tm){
+   let i=ev.length-1;while(ev[i].t>tm)i--;
+   const x=(tm-ev[i].t)/D;return x<.11?0:x<.11+shape.decay?1:2;
+  }};
 }
 function breathCycle(b,rate){
  const D=60/rate,p=b.inh,C=D*(b.sigh?3+b.sigh.len:1);
@@ -187,13 +190,13 @@ function drawRhythm(v,t){
   ctx.closePath();
   const edge=j===11||j===0;
   if(j===11){ctx.fillStyle=tint(.035+response*.045);ctx.fill()}
-  ctx.strokeStyle=tint((edge?.35:.13)+response*(edge?.30:.20));ctx.lineWidth=edge?1.15:.75;ctx.stroke();
+  ctx.strokeStyle=tint((edge ? .35 : .13)+response*(edge ? .30 : .20));ctx.lineWidth=edge ? 1.15 : .75;ctx.stroke();
  }
  const particleReach=Math.min(1.7,(w/2-8)/r);
  for(const s of rhythmSeeds){
   const glow=signal(s.d),angle=s.a+glow*.23,dist=r*Math.min(particleReach,s.r+glow*.13);
   const x=cx+Math.cos(angle)*dist+side*r*.12,y=cy0+Math.sin(angle)*dist*m.flat;
-  ctx.fillStyle=tint(.14+s.k*.18+glow*(rhythmMode==='fire'?.49:.27));
+  ctx.fillStyle=tint(.14+s.k*.18+glow*(rhythmMode==='fire' ? .49 : .27));
   ctx.beginPath();ctx.arc(x,y,.55+s.k*.8+glow*.66,0,rhythmTau);ctx.fill();
  }
  ctx.restore();
