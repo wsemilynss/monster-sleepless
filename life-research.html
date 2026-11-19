@@ -970,13 +970,13 @@ async function decryptBrief(text){
   if(!await crypto.subtle.verify('HMAC',mk,b64(o.mac),data))throw new Error('加密任务书校验失败，请重新发布加密文件');return new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-CBC',iv},ek,ct));
 }
 const DIMS=[
- {id:'goal',name:'自驱与目标',level:'L1–L2',re:/自驱|自主目标|自主启停|主动开始|主动走向|目标导向|目标物|锚物件/},
- {id:'rhythm',name:'独立材料节律',level:'L1',re:/内在节律|独立相位|材料节律|独立材料|各自独立相位|不同相位/},
- {id:'attention',name:'注意与情境响应',level:'L2',re:/情境注意|共同注意|注意动作|情境响应|先注意|趋向目标|趋近|回避/},
- {id:'boundary',name:'迟疑、边界与可打断',level:'L2',re:/迟疑|边界|可打断|interrupt|不应答|不想说|可以不接受/},
- {id:'sound',name:'材料声与多模态',level:'L1–L2',re:/多模态一致|材料声|动作音|体征声|声源|听音|收尾曲/},
- {id:'memory',name:'真实记忆与时间痕迹',level:'L4',re:/真实记忆|公共记忆|跨夜|encounters|最近选择|最近物件|关系物件/},
- {id:'ecology',name:'关系网与世界生态',level:'L3–L4',re:/关系网|电台|公共时间线|公共事件|成对角色|共享路线|多主体/},
+ {id:'goal',name:'自驱与目标',level:'拟人化与万物有灵',re:/自驱|自主目标|自主启停|主动开始|主动走向|目标导向|目标物|锚物件/},
+ {id:'rhythm',name:'独立材料节律',level:'生物与生态本源',re:/内在节律|独立相位|材料节律|独立材料|各自独立相位|不同相位/},
+ {id:'attention',name:'注意与情境响应',level:'拟人化与万物有灵 / 关系与共情',re:/情境注意|共同注意|注意动作|情境响应|先注意|趋向目标|趋近|回避/},
+ {id:'boundary',name:'迟疑、边界与可打断',level:'关系与共情',re:/迟疑|边界|可打断|interrupt|不应答|不想说|可以不接受/},
+ {id:'sound',name:'材料声与多模态',level:'生物与生态本源',re:/多模态一致|材料声|动作音|体征声|声源|听音|收尾曲/},
+ {id:'memory',name:'真实记忆与时间痕迹',level:'时间与痕迹',re:/真实记忆|公共记忆|跨夜|encounters|最近选择|最近物件|关系物件/},
+ {id:'ecology',name:'关系网与世界生态',level:'生物与生态本源 / 关系与共情',re:/关系网|电台|公共时间线|公共事件|成对角色|共享路线|多主体/},
  {id:'static',name:'静态等价与无障碍',level:'等价通道',re:/静态生命感|静态等价|静态差分|减少动效|键盘|静音|lite/},
  {id:'ethics',name:'安全、退出与关系伦理',level:'底线',re:/红旗|safe|entrusted|内疚召回|伪造回应|不读取麦克风|清除记忆|现实支持/}
 ];
