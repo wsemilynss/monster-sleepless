@@ -182,7 +182,7 @@ body.locked>.top,body.locked>.notice,body.locked>.tabs,body.locked>main{visibili
     <label class="btn">导入记录<input type="file" id="fileImport" accept=".json,application/json" hidden></label>
   </div>
 </header>
-<div class="notice">本页实时读取 <b>怪物夜未眠.html</b> 与 <b>lane-brief.md</b>（兼容旧版及 v5 结构），同步更新游戏与任务书的专业分析；任务书每次变化都会保存本地版本快照，可在“版本专业对比”中查看任意两版的学科、主题、风险和来源差异，也可导入旧版。自动归类、相似度配对与规则检查只作提示，以专业审阅者判断为准；条目修改后自动转为“已改动 · 待复审”。</div>
+<div class="notice">本页实时读取 <b>怪物夜未眠.html</b> 与 <b>lane-brief.md</b>（兼容旧版及 v6 结构），同步更新游戏与任务书的专业分析；任务书每次变化都会保存本地版本快照，可在“版本专业对比”中查看任意两版的学科、主题、风险和来源差异，也可导入旧版。自动归类、相似度配对与规则检查只作提示，以专业审阅者判断为准；条目修改后自动转为“已改动 · 待复审”。</div>
 <nav class="tabs" id="tabs"></nav>
 <main id="view"><div class="empty">正在读取剧本…</div></main>
 <div class="toast" id="toast"></div>
@@ -191,7 +191,7 @@ body.locked>.top,body.locked>.notice,body.locked>.tabs,body.locked>main{visibili
 /* ================= 知识库：学科 · 审阅类别 · 专业原理 · 出处 · 规则 ================= */
 const CONF={game:'怪物夜未眠.html',mirror:'index.html',brief:'lane-brief.md',briefEnc:'lane-brief.enc',fastMs:2000,slowMs:20000,store:'mmReview.v1'};
 // 查看密码的校验值（由 review-lock.ps1 -SetPassword 生成；只含盐与派生值的哈希，不含密码本身）
-const LOCK={salt:'VzReAtNlu1jHLimwwq98Xg==',iter:310000,check:'f945c818d4b949026685c5f0721495c0e5cb6dc4f63f74bc711cc12990287e42'};
+const LOCK={salt:'FFu9d3zzXzPFsiluBbCP3g==',iter:310000,check:'2627958c6b96ffe5c42ab2c736d9f70dacfdd2f71b49a07d692732bcffb8e440'};
 
 const DISC={
   cbti_b:{n:'CBT-I · 行为',c:'#2f7d6d'},
@@ -219,78 +219,81 @@ const CORE_CATS=['card','redflag','window','body','evidence'];
 const TOPICS=[
  {id:'cbti',n:'CBT-I 总体框架',disc:['cbti_b','cbti_c'],re:/失眠|CBT-?I|认知行为/,refs:['edinger2021','qaseem2016','riemann2023','riemann2017','cn2017','cn2018'],
   logic:'成人慢性失眠的一线治疗是 CBT-I。它由多个成分组成：刺激控制、睡眠限制、认知治疗、放松训练和睡眠卫生教育，指南推荐优先于药物。',
-  story:'v5 四幕包括跟随、旧时刻、同夜重演和允许休息；行动可包含外部协商与专业求助。',
+  story:'v6 四幕包括跟随、旧时刻、同夜重演和允许休息；行动可包含外部协商与专业求助。',
   caution:'游戏只做科普叙事，不替代评估与治疗；持续失眠应就医，睡眠卫生不是单独充分治疗。'},
  {id:'3p',n:'3P 模型（素质 · 诱发 · 维持）',disc:['cbti_c','psy'],re:/素质|诱发|维持因素|三根柱子/,refs:['spielman1987a'],
   logic:'3P 用易感背景、诱发事件和维持因素整理失眠循环，是辅助框架而非完整病因清单。',
-  story:'v5 同时审查身体、认知、情绪、客观环境与关系；不把体征固定为不可改变的素质。',caution:'素质（体质、性格）只描述，不评判；不能用 3P 抹掉结构性困境。'},
+  story:'v6 同时审查身体、认知、情绪、客观环境与关系；不把体征固定为不可改变的素质。',caution:'素质（体质、性格）只描述，不评判；不能用 3P 抹掉结构性困境。'},
  {id:'drive',n:'睡眠驱力与小睡（两过程模型）',disc:['phys','cbti_b'],re:/沙漏|攒着困|攒困|困意|小睡|午睡|打盹|长盹|眯一会|补觉|补回来|睡眠压力|腺苷|累了就|躺平/,refs:['borbely1982','borbely2016','milner2009'],
   logic:'两过程模型用睡眠稳态与昼夜节律的相互作用解释睡眠倾向；白天小睡的影响需结合时段、长度和个体处境。',
-  story:'伦德桑塔纳：沙漏只是模型隐喻；病后疲乏和轮班不能套用统一小睡规则。',caution:'不给具体小睡时长；轮班者、嗜睡者不一概而论。'},
+  story:'伦德桑塔纳与卢布：长盹、夜间游戏／夜舞与照护压力共同影响作息，沙漏只是模型隐喻。',caution:'不给具体小睡时长；轮班者、嗜睡者不一概而论。'},
  {id:'light',n:'光照与昼夜节律',disc:['phys'],re:/屏幕|手机|刷屏|刷评论|灯光|亮光|开灯|关灯|熄灯|大灯|窗帘|晨光|早晨的光|见光|晒太阳|太阳|褪黑素|生物钟|夜猫|作息|起床时间|同一时间起床|夜班|夜场|睡到中午/,refs:['brown2022','khalsa2003','chang2015','riemann2023'],
   logic:'光照时间与强度会影响昼夜节律和睡眠；具体安排需结合夜场、轮班和居住环境。',
-  story:'旁妮儿拉灯：夜间工作、街灯、遮光和白天光照共同进入叙事。',caution:'轮班工作者的光照安排需要个体化（见红旗"轮班"）。'},
+  story:'旁妮儿拉灯的夜场与遮光、卢布喏喏花的夜舞与照护压力共同进入叙事。',caution:'轮班工作者的光照安排需要个体化（见红旗"轮班"）。'},
  {id:'stimulus',n:'刺激控制',disc:['cbti_b'],re:/床只|在床上|床上|下床|离开床|起身去|床也会记|床记性|客厅/,refs:['bootzin1972','edinger2021'],
   logic:'解除床与清醒、焦虑活动之间的条件联结：困了才上床，床只用于睡眠，躺着睡不着就离开床，困了再回来。',
   story:'潮天稳：清床；手札卡 2。',caution:'不给"躺多少分钟离床"的具体数字；行动不便者需调整。'},
  {id:'window',n:'睡眠限制 / 睡眠窗口',disc:['cbti_b'],re:/睡眠窗口|睡眠限制|躺得比睡得久|躺得越久|躺久|躺够|补够|早早上床|早点上床|多躺|卧床/,refs:['spielman1987b','edinger2021','riemann2023'],
   logic:'按实际睡眠量压缩在床时间，提高睡眠效率和睡眠驱力，再逐步放宽。它是 CBT-I 中效果最强的行为成分之一。',
-  story:'山姬娇 - 学徒版：手札卡 4，只讲"躺得比睡得久，床会变成雾"的概念。',
+  story:'铂金咪咪莎：很早上床与清醒卧床只作概念提示，不再绑定学徒期山姬娇。',
   caution:'必须在专业人员指导下实施；不给具体卧床时长。文献常提示需要谨慎的人群包括双相障碍、癫痫、日间嗜睡明显或从事需高度警觉的作业（如驾驶）者，请审阅者按最新指南确认措辞。'},
  {id:'cog',n:'认知模型：担忧与反刍',disc:['cbti_c','psy'],re:/心事|担心|担忧|复盘|反刍|写下|纸上|写在|脑子|念头|想清楚|想完|别想|想事|回放|没说完/,refs:['harvey2002','harvey2003','carney2006'],
   logic:'睡前的认知唤醒（担忧、反刍）会维持失眠。提前安排"担忧时段"或做结构化问题解决，可降低睡前认知唤醒；刻意压抑念头反而可能反弹。',
   story:'明娜戈礼拜：担忧盒；手札卡 5。',caution:'持续、难以控制的担忧可能属于焦虑障碍，应提示求助。'},
  {id:'reframe',n:'认知重构：灾难化与失眠信念',disc:['cbti_c'],re:/完了|搞砸|万一|一定会|念头不是事实|平衡的说法|只剩.{0,4}小时|就完/,refs:['harvey2002','morin2007'],
   logic:'"睡不好明天就完了"这类灾难化信念会提高唤醒和睡眠焦虑。识别它，并替换成更平衡的想法，是 CBT-I 的认知成分。',
-  story:'喇巴菜菜子：摘念头；手札卡 6。',caution:'不否定真实压力，只调整对睡眠后果的过度预期。'},
+  story:'仅作有相应信念时的辅助知识；v6 不再把成年菜菜子的创作与夜行强行解释为灾难化。',caution:'不否定真实压力，只调整对睡眠后果的过度预期。'},
  {id:'effort',n:'睡眠努力与矛盾意图',disc:['cbti_c'],re:/努力睡|越想.{0,4}睡|快点睡着|放手|不赶|较劲|一定要睡着|必须睡着|练到完美|助眠功课/,refs:['espie2006','ascher1979'],
   logic:'"努力去睡"会把注意力和意图引向睡眠，提高唤醒（注意—意图—努力通路）。矛盾意图（不去赶睡意，安静地醒着）可以降低表现焦虑。',
-  story:'山姬娇：松手（手札卡 8）；K钥科斯基：接纳（手札卡 14）。',caution:'矛盾意图不等于"故意熬夜"，措辞要避免误读。'},
+  story:'咪咪莎的睡眠努力与 K 的接纳可作辅助；名角的疼痛不再以"放下"替代评估。',caution:'矛盾意图不等于"故意熬夜"，措辞要避免误读，也不能抵消长期睡眠不足。'},
  {id:'clock',n:'看钟与时间监控',disc:['cbti_c'],re:/看钟|看表|钟面|几点|手表|还剩|还能睡|翻钟|背过去/,refs:['tang2007'],
   logic:'夜间看钟、计算剩余睡眠时间会增加担忧和觉醒，是失眠的维持因素之一；移开钟面可以减少监控。',
-  story:'铂金咪咪莎：翻钟；手札卡 11。',caution:'—'},
+  story:'铂金咪咪莎：钟背过去并完成自己的节目，电台暗号继续，不以 K 的回应收束。',caution:'—'},
  {id:'temp',n:'体温调节与入睡',disc:['phys'],re:/手脚|脚底|泡脚|体温|洗澡|被子|结霜|白霜|霜花|冰凉|暖和|暖暖|凉快|凉水|太热|怕冷|怕热|潮热|发烫|卧室凉/,refs:['krauchi1999','haghayegh2019'],
   logic:'入睡前，手脚的血管扩张散热，核心体温下降，有利于入睡。荟萃分析显示，睡前 1–2 小时温水浴或淋浴可缩短入睡时间；卧室略凉更利于睡眠。',
-  story:'肯卡特勋章：添柴；手札卡 7；铂金咪咪莎：卧室凉一点。',caution:'不给水温等处方式数字；循环障碍、糖尿病足等人群泡脚需谨慎。'},
+  story:'只作可选辅助背景；肯卡特勋章不能以此替代呼吸暂停评估。',caution:'不给水温等处方式数字；循环障碍、糖尿病足等人群泡脚需谨慎。'},
  {id:'caffeine',n:'咖啡因',disc:['nutri','phys'],re:/咖啡|浓茶|奶茶|可乐|咖啡因/,refs:['drake2013'],
   logic:'咖啡因可影响睡眠；Drake 2013 在特定研究剂量和人群中考察了多个睡前摄入时点。',
-  story:'卢布喏喏花与成年菜菜子：零工、学业和咖啡因来源一起进入失眠循环。',caution:'研究剂量或 6 小时时点不能直接变成人人通用的截止规则；不给个体剂量。'},
+  story:'黑泪斯基记录咖啡来源与夜行安排；伦德桑塔纳记录可乐、长盹与夜间游戏。',caution:'研究剂量或 6 小时时点不能直接变成人人通用的截止规则；不给个体剂量，不把面食或糖单独写成诊断原因。'},
  {id:'alcohol',n:'酒精',disc:['nutri','phys','safety'],re:/酒|喝一杯|来一杯|醉/,refs:['ebrahim2013'],
   logic:'酒精与前半夜/后半夜睡眠表现有关，不能当作可靠助眠手段；依赖问题需要专业支持。',
-  story:'卢布喏喏花：酒精、咖啡因、零工和排练空间共同构成故事。',caution:'避免"酒鬼"等污名化措辞；不给依赖者突然停酒的简化建议。'},
+  story:'只有剧情明确出现时才使用；v6 不把酒精保留为卢布喏喏花的默认主因。',caution:'避免"酒鬼"等污名化措辞；不给依赖者突然停酒的简化建议。'},
  {id:'diet',n:'晚餐、夜宵与反流',disc:['nutri','phys'],re:/夜宵|晚饭|晚餐|胃|胀|撑|反酸|酸水|零食|吃饱|饿着|(?<!一)肚子|甜食|吃得晚|吃一口|撸串|外卖|七分饱/,refs:['katz2022','fujiwara2005','riemann2023'],
   logic:'夜间进食、反流和作息压力应分别核对来源与适用边界；不能把所有胃部不适都写成同一种病。',
-  story:'咸豆腐片儿翠翠：小游戏只作放松，不通过揉腹治疗反流。',caution:'不评价体重和身材，不给节食建议；对进食障碍风险人群，慎用"管住嘴"式叙事。'},
+  story:'翠翠的夜间进食与名角的胃部疼痛分别审阅，不能相互推导病因或用揉腹治疗。',caution:'不评价体重和身材，不给节食建议；对进食障碍风险人群，慎用"管住嘴"式叙事。'},
+ {id:'eatingrisk',n:'限制进食、失控进食与补偿行为',disc:['nutri','safety'],re:/饿醒|节食|限制进食|控制饮食|体重|身形|暴食|暴饮暴食|补偿(性)?运动|高强度运动/,refs:['nice2017ng69'],
+  logic:'限制进食、失控进食或补偿行为涉及身体与心理风险，需要非污名化、个体化的专业评估和支持，不能仅凭剧情下诊断。',
+  story:'翠翠的失控进食与补偿运动、学徒期山姬娇的体型控制与夜间饿醒。',caution:'不给热量、体重目标、节食、食物或补偿性运动处方；反复失控、明显痛苦或身体症状须转介。'},
  {id:'routine',n:'睡前仪式与可预测性',disc:['cbti_b','psy'],re:/仪式|三件事|顺序|讲故事|夜灯|洗漱|拖延|再玩/,refs:['mindell2018','mindell2015'],
   logic:'规律、可预测的睡前流程与儿童睡眠结局有关；家庭流程需要可信赖照护者共同维持。',
-  story:'喇嘛菜菜子-幼年版：恶作剧是寻求陪伴，儿童不承担全部调整责任。',caution:'儿童失眠或夜惊持续存在时，建议咨询儿科或儿童睡眠专科。'},
+  story:'喇嘛菜菜子-幼年版：窗下电视、夜间跟随与轮值照护共同影响流程，由当晚照护者接回稳定结尾。',caution:'儿童失眠或夜惊持续存在时，建议咨询儿科或儿童睡眠专科；儿童不承担全部责任。'},
  {id:'tracker',n:'睡眠追踪与完美主义（orthosomnia）',disc:['cbti_c','psy'],re:/手环|分数|数据|追踪|打分|账本/,refs:['baron2017'],
   logic:'过度关注可穿戴设备的睡眠数据，可能加重睡眠焦虑和"努力去睡"（orthosomnia）。消费级设备的准确性有限。',
-  story:'山姬娇 - 学徒版：合上账本；手札卡 4。',caution:'剧情里的"62 分"只是情节，不作为玩家分数。'},
+  story:'仅作知识库备选；v6 学徒期山姬娇不再使用手环主线，不为覆盖文献而保留。',caution:'剧情数字不作为玩家分数；不得为覆盖主题而替换角色新设定。'},
  {id:'relax',n:'放松训练与呼吸',disc:['cbti_b','phys'],re:/按住吸气|慢慢呼气|呼气五次|腹式呼吸|呼吸节奏|放松|松肩|揉肚子|轻轻揉|拍拍|眼罩|发条|松手/,refs:['edinger2021','riemann2023'],
   logic:'放松训练（渐进性肌肉放松、腹式呼吸等）是 CBT-I 的成分之一，用来降低生理唤醒。',
-  story:'第四幕各哄睡小游戏（吹灯、揉肚子、添柴、松手）。',caution:'呼吸节奏只作放松引导，不作治疗声明。'},
+  story:'第四幕的低压力操作只表示允许休息；coil 是停止补偿循环，不是揉腹或治疗。',caution:'呼吸节奏只作放松引导，不作治疗声明。'},
  {id:'osa',n:'红旗：疑似睡眠呼吸暂停',disc:['safety','phys'],re:/鼾|憋醒|呼吸暂停|憋得|白天(犯困|嗜睡|很困)|白天.{0,6}(打瞌睡|睡着)/,refs:['kapur2017','icsd3'],
   logic:'响亮打鼾伴有憋醒或他人目击的呼吸暂停，加上白天嗜睡，提示阻塞性睡眠呼吸暂停的可能，需要睡眠专科评估（多导睡眠监测或居家睡眠呼吸检测），不能靠自我调整解决。',
-  story:'黑泪斯基：就医信笺；手札卡 13；固定触发红旗。',caution:'不暗示"侧睡或垫高枕头可以治疗"；必须给出就医指引。'},
+  story:'肯卡特勋章：卢布经电台转达门外异常与就医信笺，固定进入 entrusted；黑泪斯基不再使用此设定。',caution:'不暗示"侧睡或垫高枕头可以治疗"；必须给出就医指引，不把暗中观察变成监控。',caution:'不暗示"侧睡或垫高枕头可以治疗"；必须给出就医指引。'},
  {id:'mood',n:'红旗：情绪与自伤风险',disc:['safety','psy'],re:/低落|失去兴趣|兴趣减退|没兴趣|提不起劲|伤害自己|自伤|轻生|热线|绝望/,refs:['riemann2023','cn2018'],
   logic:'失眠与抑郁、焦虑高度共病。持续低落、兴趣丧失或有自伤念头时，需要及时转介心理或精神专业服务。',
-  story:'v5 红旗与镜子边界（R9）；自伤/自杀风险单独进入即时安全流程。',caution:'自伤风险应立即联系当地急救/危机支持和可信任的人；不游戏化，不发奖励。'},
+  story:'v6 红旗与镜子边界（M6）；咪咪莎不把"抑郁内耗"当诊断；自伤/自杀风险单独进入即时安全流程。',caution:'自伤风险应立即联系当地急救/危机支持和可信任的人；不游戏化，不发奖励。'},
  {id:'rls',n:'红旗：不宁腿',disc:['safety','phys'],re:/腿不适|动腿|腿.{0,4}(不舒服|难受|抽动)|不宁腿/,refs:['allen2014'],
   logic:'傍晚或夜间静息时，腿部不适并有强烈想活动的冲动、活动后缓解，提示不宁腿综合征，需要医学评估。',
   story:'4.4 红旗清单。',caution:'不给补铁等自我处理建议。'},
  {id:'chronic',n:'红旗：慢性失眠与共病就医',disc:['safety'],re:/三个月|3 个月|就医|看医生|找医生|医生|信笺|药物|轮班|怀孕|慢性疼痛/,refs:['icsd3','riemann2023','qaseem2016','cn2017'],
   logic:'失眠每周至少 3 晚、持续至少 3 个月并影响日间功能，符合慢性失眠障碍的诊断标准（ICSD-3），应寻求专业评估。轮班、妊娠、慢性疼痛等情况需要个体化处理。',
-  story:'4.4 红旗；免责声明"不舒服请找医生"。',caution:'不提及任何药物名称或剂量。'},
+  story:'名角的疼痛、职业健康与焦虑倾向，以及持续失眠和其他共病进入 4.4；免责声明"不舒服请找医生"。',caution:'不提及任何药物名称或剂量，不把疼痛简单归因于饮食或训练，不直接诊断焦虑障碍。'},
  {id:'tcm',n:'中医传统说法（志怪叙事）',disc:['tcm'],re:/心火|肝郁|气滞|脾虚|脾胃|胃不和|阳不入阴|阴虚|火旺|痰湿|痰扰|湿热|气虚|血虚|血瘀|心肾不交|神不守舍|神不入舍|心神|证型|五行|传统说法/,refs:['suwen34','lingshu80','lingshu28','tcm_diag2016','tcm_internal2017','tcm_todo'],
   logic:'中医以四诊合参和“不寐”等传统语境组织观察；本作只将其作为角色经历和志怪叙事，不把传统术语当作现代生物标志物。',
-  story:'v5 第 4 节半山医馆；第 5.3 节传统来源与边界。',caution:'界面上必须标注"传统说法"；不写成疗效结论或诊断，不与现代机制混为一谈。'},
+  story:'v6 只在可选手札的志怪栏使用，不为每怪强凑中医、生理、心理、营养四栏。',caution:'界面上必须标注"传统说法"；不写成疗效结论或诊断，不与现代机制混为一谈。'},
  {id:'bodysign',n:'身体观察与四诊动画',disc:['tcm','phys'],re:/舌|苔|脉|四诊|望舌|闻声|面色|脸色|眼白|血丝|黑眼圈|手脚冰|手足|盗汗|潮热|出汗|细汗|口干|口苦|口臭|口黏|齿痕|心悸|心慌|耳鸣|头晕|头重|夜尿|大便|小便|二便|浮肿|鼾|腹胀|嗳气|反酸/,refs:['suwen34','lingshu80','tcm_diag2016'],
   logic:'舌、脉、闻声只观察怪物并服务人生叙事；传统四诊需合参，现代医学知识另列来源。任何单一体征都不能在本工具中确立诊断。',
-  story:'v5 望舌镜、脉象河、闻声灯、问经历卷轴和就医信笺；旧版 4.1b 条目仍可兼容分析。',caution:'不检查玩家、不读取麦克风/摄像头；不用舌脉映射心理疾病或现代检验指标；红旗不得被动画延误。'},
+  story:'v6 使用原生图形结构与明确标记的 stage-fx；观察记录与原生体征分账，不检查玩家。',caution:'不检查玩家、不读取麦克风/摄像头；不用舌脉映射心理疾病或现代检验指标；红旗不得被动画延误。'},
  {id:'context',n:'现实环境与社会处境',disc:['social'],re:/职场|工作|零工|轮班|夜场|学业|考核|备考|租约|房租|拆迁|搬家|迁居|异乡|漂泊|退休|照护|宿舍|合租|收入|经营|失业|歇业|居住|孤立|孤独/,refs:[],
   logic:'这是叙事生态审查，不把职业、学业、迁徙或居住困境自动解释为临床病因；重点检查剧本是否承认客观限制和可获得的现实支持。',
-  story:'v5 每只怪物的环境层、外部动作、公共时间线与关系网。',caution:'不能把所有问题都归为个体认知或自律；虚构经历不得外推成某群体的必然命运。'}
+  story:'v6 每只怪物的环境层、外部动作、公共时间线与关系网。',caution:'不能把所有问题都归为个体认知或自律；虚构经历不得外推成某群体的必然命运。'}
 ];
 const TOPIC=Object.fromEntries(TOPICS.map(t=>[t.id,t]));
 
@@ -329,6 +332,7 @@ const REFS=[
  {id:'brown2022',a:'Brown TM, Brainard GC, Cajochen C, et al.',t:'Recommendations for daytime, evening, and nighttime indoor light exposure to best support physiology, sleep, and wakefulness in healthy adults.',j:'PLoS Biol. 2022;20(3):e3001571.',doi:'10.1371/journal.pbio.3001571',type:'专家共识 / 建议',pmid:'35298459',v:'Crossref/PubMed 已核对'},
  {id:'borbely2016',a:'Borbély AA, Daan S, Wirz-Justice A, Deboer T.',t:'The two-process model of sleep regulation: a reappraisal.',j:'J Sleep Res. 2016;25(2):131–143.',doi:'10.1111/jsr.12371',type:'理论回顾',v:'Crossref 已核对'},
  {id:'katz2022',a:'Katz PO, Dunbar KB, Schnoll-Sussman FH, et al.',t:'ACG Clinical Guideline: Guidelines for the Diagnosis and Management of Gastroesophageal Reflux Disease.',j:'Am J Gastroenterol. 2022;117(1):27–56.',doi:'10.14309/ajg.0000000000001538',type:'临床指南',v:'Crossref 已核对'},
+ {id:'nice2017ng69',a:'National Institute for Health and Care Excellence.',t:'Eating disorders: recognition and treatment (NG69).',j:'NICE guideline NG69. Published 2017; last updated 2020; official page reviewed 2024. https://www.nice.org.uk/guidance/ng69',type:'临床指南',v:'NICE 官方页面已核对（2024 reviewed）'},
  {id:'mindell2018',a:'Mindell JA, Williamson AA.',t:'Benefits of a bedtime routine in young children: Sleep, development, and beyond.',j:'Sleep Med Rev. 2018;40:93–108.',doi:'10.1016/j.smrv.2017.10.007',type:'综述',v:'Crossref 已核对'},
  {id:'suwen34',a:'《黄帝内经·素问》',t:'逆调论篇第三十四："胃不和则卧不安。"',j:'中医典籍。本作只作志怪叙事，不作为循证证据。',type:'典籍',v:'典籍'},
  {id:'lingshu80',a:'《黄帝内经·灵枢》',t:'大惑论第八十："卫气不得入于阴，常留于阳……故目不瞑矣。"',j:'中医典籍。本作只作志怪叙事，不作为循证证据。',type:'典籍',v:'典籍'},
@@ -533,7 +537,7 @@ function parseBrief(md){
   const tbl=pre=>tables.find(t=>t.sec.h3&&t.sec.h3.text.startsWith(pre))||tables.find(t=>t.sec.h2&&t.sec.h2.text.startsWith(pre));
   const col=(t,name)=>t.head.findIndex(h=>h.replace(/\*/g,'').startsWith(name));
   const roster=tbl('0.5');let names=[];
-  if(roster){const ci=col(roster,'中文');if(ci>=0)names=roster.rows.map(r=>clean(r.c[ci])).filter(Boolean);}
+  if(roster){const ci=col(roster,'中文')>=0?col(roster,'中文'):col(roster,'角色');if(ci>=0)names=roster.rows.map(r=>clean(r.c[ci]).split('/')[0].trim()).filter(Boolean);}
   names.sort((a,b)=>b.length-a.length);
   const nameIn=s=>names.find(n=>String(s).includes(n))||'';
   const ent=n=>({id:'b:'+(n||'全局'),name:n||'全局 / 通用'});
@@ -571,8 +575,8 @@ function parseBrief(md){
     if(mm)push({path:`§${h.split(' ')[0]} ${n} · 镜子`,zh:mm[1],line:i+1,entity:ent(n),forceCats:['action']});
   });
 
-  // v5+：按语义而不是固定行号读取人物、观察、现实环境、证据与安全边界。
-  const modern=heads.some(h=>h.lv===2&&h.text.startsWith('3. 14 只角色剧本总纲'));
+  // v6+：按语义而不是固定行号读取人物、观察、现实环境、证据与安全边界。
+  const modern=Number(version.slice(1))>=6||heads.some(h=>h.lv===2&&h.text.startsWith('3. 14 只角色剧本总纲'));
   if(modern){
     L.forEach((l,i)=>{
       if(inFence[i]||/^\s*(?:$|\||#|>)/.test(l))return;
@@ -587,14 +591,14 @@ function parseBrief(md){
         const cat=/四诊|身体观察/.test(label)?'body':/第三幕|第四幕|行动/.test(label)?'action':/手札/.test(label)?'card':/解锁|安睡|收集|人生|心结|形象|交集/.test(label)?'context':'health';
         push({path:`§${h3.split(' ')[0]} ${n} · ${label||'剧情'}`,zh:text,line,entity:ent(n),forceCats:[cat]});
       }else if(h2.startsWith('4.')||h2.startsWith('5.')){
-        const cat=h3.startsWith('4.4')?'redflag':h3.startsWith('4.2')||h3.startsWith('4.1')||h3.startsWith('4.3')?'body':h3.startsWith('5.1')?'evidence':h3.startsWith('5.4')?'card':'health';
+        const cat=h3.startsWith('4.4')?'redflag':/专业关联|知识与边界|安全边界/.test(label)?'card':/跟随|同夜重演|收束|行动|结局|媒体/.test(label)?'action':/旧时刻|关系|记忆|性格|背景/.test(label)?'context':h3.startsWith('5.1')?'evidence':h3.startsWith('5.4')?'card':'health';
         push({path:`§${(h3||h2).split(' ')[0]} ${label||'条目'} · L${line}`,zh:text,line,entity:ent(n),forceCats:[cat]});
       }
     });
     for(const t of tables){
       const h3=t.sec.h3?t.sec.h3.text:'';
-      if(!/^4\.2|^5\.[23]/.test(h3))continue;
-      const cat=/^5\./.test(h3)?'evidence':'body';
+      if(!/^(?:4\.1|4\.6)|^5\.[23]/.test(h3))continue;
+      const cat=/^5\./.test(h3)?'evidence':h3.startsWith('4.6')?'card':h3.startsWith('4.1b')?'body':'action';
       t.rows.forEach(r=>{const n=nameIn(r.c.join(' '));push({path:`§${h3.split(' ')[0]} ${clean(r.c[0])}`,zh:r.c.join('；'),line:r.line,entity:ent(n),forceCats:[cat],note:/^5\./.test(h3)?'任务书来源台账；仍须核对原文与专业审校状态':''});});
     }
   }
@@ -767,8 +771,8 @@ function globalChecks(){
   else{
     add(/这是故事，?不是诊断/.test(src),'免责声明"这是故事，不是诊断"','第 0 节要求在开场、日记等处保留。');
     add(/医生|就医/.test(gtext+src),'就医提示（"不舒服请找医生"/就医信笺）','红旗触发时需给出就医指引。');
-    add(!!d.RED_FLAGS,'RED_FLAGS 红旗清单已在游戏中实现',d.RED_FLAGS?`${(d.RED_FLAGS.length||Object.keys(d.RED_FLAGS).length)} 条`:'任务书 4.4 / R9 待实现',!d.RED_FLAGS);
-    add(/心理援助|援助热线|危机/.test(src),'情绪类红旗提供当地危机/心理援助提示','R9 待实现时为未通过。',!/心理援助|援助热线|危机/.test(src));
+    add(!!d.RED_FLAGS,'RED_FLAGS 红旗清单已在游戏中实现',d.RED_FLAGS?`${(d.RED_FLAGS.length||Object.keys(d.RED_FLAGS).length)} 条`:'任务书 4.4 / M6 待实现',!d.RED_FLAGS);
+    add(/心理援助|援助热线|危机/.test(src),'情绪类红旗提供当地危机/心理援助提示','M6 待实现时为未通过。',!/心理援助|援助热线|危机/.test(src));
     add(!!d.NOTEBOOK,'NOTEBOOK 夜游手札已实现',d.NOTEBOOK?`${d.NOTEBOOK.length} 张`:'任务书 / R2 待实现',!d.NOTEBOOK);
     add(!!d.MONSTERS,'MONSTERS 角色数据已实现',d.MONSTERS?`${Object.keys(d.MONSTERS).length} 个角色`:'任务书 / R2 待实现',!d.MONSTERS);
     add(!g.runtime.length,'游戏脚本在沙箱中运行无报错',g.runtime.length?g.runtime.slice(0,5).join('；'):'—');
