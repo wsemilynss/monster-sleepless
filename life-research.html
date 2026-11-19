@@ -40,6 +40,15 @@ a{color:var(--teal);text-underline-offset:3px}a:hover{color:var(--mint)}button,i
 @media print{.page-lock{display:none!important}.case-detail{position:relative;min-height:0}.ladder-layout,.brief-dashboard,.sound-lab{display:block}.case-form,.library-tools,.brief-kpis,.sound-controls{display:none!important}.ladder-level{width:100%;margin:0;break-inside:avoid}.case-figure span{animation:none}.brief-rule,.advice,.correction{break-inside:avoid}.upload-note{color:#333}.locked>main,.locked>.footer{visibility:visible}}
 .locked>.skip{display:none}
 </style>
+<style>
+.section-disclosure>summary{position:relative;padding-right:84px;cursor:pointer;list-style:none}
+.section-disclosure>summary::-webkit-details-marker{display:none}
+.section-disclosure>summary:after{content:"＋ 展开";position:absolute;right:0;top:13px;font:11px var(--mono);letter-spacing:.08em;color:var(--teal)}
+.section-disclosure[open]>summary:after{content:"− 收起"}
+.section-disclosure:not([open])>summary.sec-head{margin-bottom:0}
+.section-disclosure[open]>summary.sec-head{margin-bottom:32px}
+.section-fold-body{padding-bottom:1px}
+</style>
 </head>
 <body class="locked code-locked">
 <div class="page-lock" id="pageLock" role="dialog" aria-modal="true" aria-labelledby="pageLockTitle">
