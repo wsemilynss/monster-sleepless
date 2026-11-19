@@ -515,7 +515,7 @@ $$('.topnav a').forEach(link=>link.addEventListener('click',()=>{
 }));
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const CODE_LOCK={salt:'FFu9d3zzXzPFsiluBbCP3g==',iter:310000,check:'2627958c6b96ffe5c42ab2c736d9f70dacfdd2f71b49a07d692732bcffb8e440',store:'mmLifeAccessKey'};
+const CODE_LOCK={salt:'IvMCggj8sep5yCb96WmCiQ==',iter:310000,check:'d7df848bd7a4bb281a252acd02cddbbcf2613bd3dcb94ddb123f661d57c40478',store:'mmLifeAccessKey'};
 const codeState={unlocked:false,keyHex:'',liveStarted:false};
 const codeHex=buf=>[...new Uint8Array(buf)].map(x=>x.toString(16).padStart(2,'0')).join('');
 const codeBytes=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
