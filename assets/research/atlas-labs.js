@@ -56,31 +56,168 @@ const pulseNames=['浮','沉','迟','数','滑','涩','虚','实','长','短','�
 const pulseRates=[72,70,46,108,80,62,68,78,64,76,88,60,84,58,74,76,72,66,70,64,68,72,58,96,106,54,66,134];
 const PULSES=pulseNames.map((n,i)=>({n,rate:pulseRates[i],amp:[1.12,.5,1,.95,1.05,.8,.38,1.25,1.05,.9,1.35,.2,1.05,.95,1.1,1.1,1,1.15,.5,.32,.8,.45,.12,1,1,1,1,.9][i],rough:i===5?.45:0,hollow:[14,16].includes(i),scat:i===20,skip:i>=24&&i<=26?{c:i===26?4:8,s:i===26?[3]:[3,6]}:null}));
 function shapeAt(x,sh={}){const rise=sh.rise||.11,sus=sh.sustain||0,dec=sh.decay||.5;let v=0;if(x<rise){const u=x/rise;v=sh.round?u*u*(3-2*u):Math.pow(u,.65)}else if(x<rise+sus)v=1;else{const u=(x-rise-sus)/dec;if(u>=0&&u<1){v=1-u;if(sh.hollow)v*=1-.8*Math.exp(-Math.pow((u-.3)/.13,2));else v+=.15*Math.exp(-Math.pow((u-.42)/.15,2));v=Math.max(0,v)}}if(sh.rough)v*=Math.max(.3,1+sh.rough*.6*Math.sin(x*29));return v}
-function pulseCycle(p){const D=60/p.rate,ev=[];if(p.scat){const jit=[0,.35,-.2,.5,-.3,.25,-.15],amps=[.7,.3,.9,.2,.55,.35,.18];let at=0;for(let i=0;i<7;i++){ev.push({t:at,a:p.amp*amps[i]});at+=D*(1+jit[i])}const C=at+D*.5;return{C,wave(tm){let v=0;for(const e of ev){const x=(tm-e.t)/D;if(x>=0&&x<1)v+=e.a*shapeAt(x)}return v}}}if(p.skip){for(let i=0;i<p.skip.c;i++)if(!p.skip.s.includes(i))ev.push({t:i*D,a:p.amp})}else for(let i=0;i<4;i++)ev.push({t:i*D,a:p.amp});const C=(p.skip?p.skip.c:4)*D;return{C,wave(tm){let v=0;for(const e of ev){const x=(tm-e.t)/D;if(x>=0&&x<1)v+=e.a*shapeAt(x,{decay:.42,rough:p.rough,hollow:p.hollow})}return v}}}
-function breathCycle(b,rate){const D=60/rate,amps=b.sigh?[1,1,1,b.sigh.amp]:[1,1,1,1],lens=b.sigh?[1,1,1,b.sigh.len]:[1,1,1,1],ev=[];let at=0;for(let i=0;i<4;i++){ev.push({t:at,d:D*lens[i],a:b.amp*amps[i]});at+=D*lens[i]}return{C:at,wave(tm){let v=0;for(const e of ev){const x=(tm-e.t)/e.d;if(x>=0&&x<1){const p=b.inh||.4;let s=x<p?Math.sin(x/p*Math.PI/2):Math.cos((x-p)/(1-p)*Math.PI/2);if(b.rough)s*=1-b.rough/2+b.rough*Math.abs(Math.sin(x*26));v+=e.a*s}}return v}}}
-function simpleCycle(mode,rate){
- if(mode==='heart'){const C=60/rate;return{C,wave(tm){const x=tm/C;return Math.exp(-Math.pow((x-.1)/.045,2))+0.58*Math.exp(-Math.pow((x-.32)/.065,2))}}}
- if(mode==='gait'){const D=60/rate,C=4*D,ev=[1.1,.88,1.1,.88].map((a,i)=>({t:i*D,a}));return{C,wave(tm){let v=0;for(const e of ev){const x=(tm-e.t)/D;if(x>=0&&x<1)v+=e.a*shapeAt(x,{rise:.07,decay:.36})}return v}}}
- if(mode==='tide'){const C=60/rate;return{C,wave(tm){const x=tm/C,p=.3;let v=x<p?Math.sin(x/p*Math.PI/2):Math.cos((x-p)/(1-p)*Math.PI/2);if(x>=p)v+=.1*Math.sin((x-p)/(1-p)*Math.PI*3)*(1-x);return Math.max(0,v*1.2)}}}
- const C=60/rate,fd=Math.min(.55,C*.16),ev=[{t:0,a:1.3},{t:fd*1.5,a:.95}];return{C,wave(tm){let v=0;for(const e of ev){const x=(tm-e.t)/fd;if(x>=0&&x<1)v+=e.a*shapeAt(x,{rise:.2,decay:.6,round:1})}return v}};
+function pulseCycle(p,rate){
+ const D=60/rate,ev=[];let C;
+ if(p.scat){
+  const jit=[0,.35,-.2,.5,-.3,.25,-.15],amps=[.7,.3,.9,.2,.55,.35,.18];let at=0;
+  for(let i=0;i<jit.length;i++){ev.push({t:at,a:p.amp*amps[i]});at+=D*(1+jit[i])}
+  C=at+D*.5;
+ }else{
+  const count=p.skip?p.skip.c:4;
+  for(let i=0;i<count;i++)if(!p.skip?.s.includes(i))ev.push({t:i*D,a:p.amp});
+  C=count*D;
+ }
+ const shape={decay:p.scat?.5:.42,rough:p.rough,hollow:p.hollow};
+ return{C,wave(tm){let v=0;for(const e of ev){const x=(tm-e.t)/D;if(x>=0&&x<1)v+=e.a*shapeAt(x,shape)}return v},
+  phaseAt(tm){const e=ev.findLast(e=>e.t<=tm),x=(tm-e.t)/D;return x<.11?0:x<.11+shape.decay?1:2}};
 }
-let rhythmMode='heart',rhythmRate=66,breathIndex=0,pulseIndex=0,rhythmCycle=simpleCycle('heart',66);
-const rhythmMeta={heart:['HEART · 双峰','LUB-DUB · 双峰与间歇','BPM',48,100],breath:['BREATH · 九态','INHALE / EXHALE · 非对称起伏','次/分',6,32],pulse:['PULSE · 二十八变体','TRADITIONAL LABEL → VISUAL PARAMETERS','次/分',42,134],gait:['GAIT · 交替','LEFT / RIGHT · 双足轻重交替','步/分',60,160],tide:['TIDE · 长波','潮来急 / 潮退缓 · 余涟','涌/分',3,12],fire:['FIREFLY · 双闪','双闪一歇 · 明灭与长间歇','闪/分',8,26]};
-function rebuildRhythm(){rhythmCycle=rhythmMode==='breath'?breathCycle(BREATHS[breathIndex],rhythmRate):rhythmMode==='pulse'?pulseCycle(PULSES[pulseIndex]):simpleCycle(rhythmMode,rhythmRate);const m=rhythmMeta[rhythmMode];$('#rhythmRateOut').textContent=`${rhythmRate} ${m[2]}`;$('#rhythmName').textContent=rhythmMode==='breath'?`BREATH · ${BREATHS[breathIndex].full}`:rhythmMode==='pulse'?`PULSE · ${PULSES[pulseIndex].n}`:m[0];$('#rhythmState').textContent=rhythmMode==='breath'?BREATHS[breathIndex].hint:m[1];$$('#breathVariants button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===breathIndex&&rhythmMode==='breath')));$$('#pulseVariants button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===pulseIndex&&rhythmMode==='pulse')))}
-function setRhythm(mode){rhythmMode=mode;const m=rhythmMeta[mode],input=$('#rhythmRate');input.min=m[3];input.max=m[4];rhythmRate=mode==='heart'?66:mode==='breath'?BREATHS[breathIndex].rate:mode==='pulse'?PULSES[pulseIndex].rate:mode==='gait'?96:mode==='tide'?6:14;input.value=rhythmRate;$$('[data-rhythm]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.rhythm===mode)));rebuildRhythm();if(rhythm)rhythm.dirty=true}
+function breathCycle(b,rate){
+ const D=60/rate,p=b.inh,C=D*(b.sigh?3+b.sigh.len:1);
+ const phase=(tm)=>{const last=!!b.sigh&&tm>=D*3;return{last,x:last?(tm-3*D)/(D*b.sigh.len):(tm%D)/D}};
+ return{C,wave(tm){const {last,x}=phase(tm);let s=x<p?Math.sin(x/p*Math.PI/2):Math.cos((x-p)/(1-p)*Math.PI/2);if(b.rough)s*=1-b.rough/2+b.rough*Math.abs(Math.sin(x*26));return b.amp*(last?b.sigh.amp:1)*s},
+  phaseAt(tm){return phase(tm).x<p?0:1}};
+}
+function simpleCycle(mode,rate){
+ const D=60/rate;
+ if(mode==='heart')return{C:D,wave(tm){const x=tm/D;return Math.exp(-Math.pow((x-.1)/.045,2))+.58*Math.exp(-Math.pow((x-.32)/.065,2))},phaseAt(tm){return tm<D*.22?0:tm<D*.5?1:2}};
+ if(mode==='gait'){
+  const shape={rise:.07,decay:.36};
+  return{C:2*D,wave(tm){return(tm<D?1.1:.88)*shapeAt((tm%D)/D,shape)},phaseAt(tm){return tm%D>=D*(shape.rise+shape.decay)?2:tm<D?0:1}};
+ }
+ if(mode==='tide'){
+  const p=.3;
+  return{C:D,wave(tm){const x=tm/D;let v=x<p?Math.sin(x/p*Math.PI/2):Math.cos((x-p)/(1-p)*Math.PI/2);if(x>=p)v+=.1*Math.sin((x-p)/(1-p)*Math.PI*3)*(1-x);return Math.max(0,v*1.2)},phaseAt(tm){return tm<D*p?0:tm<D*.72?1:2}};
+ }
+ const fd=D*.11,second=fd*1.5,shape={rise:.2,decay:.6,round:1},lit=fd*(shape.rise+shape.decay);
+ return{C:D,wave(tm){return (tm<second?1.3:.95)*shapeAt((tm<second?tm:tm-second)/fd,shape)},phaseAt(tm){return tm<lit?0:tm>=second&&tm<second+lit?1:2}};
+}
+const rhythmMeta={
+ heart:{code:'01 / HEART',name:'心跳 · 双峰',hint:'主峰推开内层，次峰沿外缘回响',unit:'BPM',range:[48,66,100],tags:['主峰','次峰','间歇'],tone:'#88d8ce',rgb:'136,216,206',lobes:3,flat:.82,drift:.10},
+ breath:{code:'02 / BREATH',name:'呼吸',unit:'次/分',range:[6,16,32],tags:['吸入','呼出'],tone:'#b8dfb2',rgb:'184,223,178',lobes:2,flat:1,drift:.10},
+ pulse:{code:'03 / PULSE',name:'脉象',hint:'窄促起伏像切片；部分变体在波形中留下空拍',unit:'次/分',range:[42,72,134],tags:['起脉','回落','间歇'],tone:'#d6b8eb',rgb:'214,184,235',lobes:5,flat:.70,drift:.07},
+ gait:{code:'04 / GAIT',name:'步态 · 交替',hint:'左右落点交替加重，中间保留离地的空隙',unit:'步/分',range:[60,96,160],tags:['左足','右足','空隙'],tone:'#ebc58b',rgb:'235,197,139',lobes:2,flat:.70,drift:.14},
+ tide:{code:'05 / TIDE',name:'潮汐 · 长波',hint:'潮来急，潮退缓，层层余涟向外移动',unit:'涌/分',range:[3,6,12],tags:['涨潮','退潮','余涟'],tone:'#97bdf4',rgb:'151,189,244',lobes:3,flat:.57,drift:.22},
+ fire:{code:'06 / FIREFLY',name:'萤火 · 双闪',hint:'两次亮起算一组，暗处仍留一点余光',unit:'组/分',range:[8,14,26],tags:['初闪','次闪','暗歇'],tone:'#e9da8e',rgb:'233,218,142',lobes:5,flat:.87,drift:.16}
+};
+const rhythmRateInput=$('#rhythmRate'),rhythmStage=$('.rhythm-stage'),rhythmPhases=$('#rhythmPhases');
+const rhythmSources=$$('[data-rhythm]'),rhythmSpeeds=$$('[data-speed]',rhythmStage);
+const rhythmSamples=384,rhythmTau=2*Math.PI;
+const rhythmAngles=Array.from({length:97},(_,i)=>i/96*rhythmTau);
+const rhythmSeeds=Array.from({length:98},(_,i)=>({a:i*2.39996,r:.62+((i*37)%101)/112,d:(i%13)*.013,k:(i%7)/6}));
+let rhythmMode='heart',rhythmRate=66,breathIndex=0,pulseIndex=0,rhythmCycle,rhythmWave,rhythmPeak;
+let rhythmPhase=0,rhythmLast=null,rhythmActive=-1,rhythmStill=null;
+function updateRhythmRate(){
+ const m=rhythmMeta[rhythmMode];
+ rhythmCycle=rhythmMode==='breath'?breathCycle(BREATHS[breathIndex],rhythmRate):rhythmMode==='pulse'?pulseCycle(PULSES[pulseIndex],rhythmRate):simpleCycle(rhythmMode,rhythmRate);
+ rhythmWave=Array.from({length:rhythmSamples+1},(_,i)=>rhythmCycle.wave(i/rhythmSamples*rhythmCycle.C));
+ rhythmPeak=rhythmWave.indexOf(Math.max(...rhythmWave))/rhythmSamples;
+ const speed=m.range.reduce((best,n,i)=>Math.abs(n-rhythmRate)<Math.abs(m.range[best]-rhythmRate)?i:best,0);
+ rhythmSpeeds.forEach((b,i)=>{
+  const label=b.textContent;
+  b.dataset.active=String(i===speed);
+  b.title=`${label} · ${m.range[i]} ${m.unit}`;
+  b.setAttribute('aria-label',b.title);
+ });
+ const value=`${rhythmRate} ${m.unit}`;
+ $('#rhythmRateOut').textContent=value;
+ rhythmRateInput.setAttribute('aria-valuetext',`${value}，${rhythmSpeeds[speed].textContent}`);
+ $('#rhythmCycleOut').textContent=`${rhythmCycle.C.toFixed(2)} s`;
+ rhythm.dirty=true;
+}
+function setRhythm(mode){
+ rhythmMode=mode;rhythmPhase=0;rhythmLast=null;rhythmActive=-1;
+ const m=rhythmMeta[mode],b=BREATHS[breathIndex],p=PULSES[pulseIndex];
+ rhythmRateInput.min=m.range[0];rhythmRateInput.max=m.range[2];
+ rhythmRate=mode==='breath'?b.rate:mode==='pulse'?p.rate:m.range[1];
+ rhythmRateInput.value=rhythmRate;
+ rhythmStage.style.setProperty('--rhythm-tone',m.tone);
+ $('#rhythmCode').textContent=m.code;
+ $('#rhythmName').textContent=m.name+(mode==='breath'?` · ${b.full}`:mode==='pulse'?` · ${p.n}脉`:'');
+ rhythmPhases.replaceChildren(...m.tags.map(tag=>{const li=document.createElement('li');li.textContent=tag;return li}));
+ rhythmStill=null;
+ rhythmSources.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.rhythm===mode)));
+ $$('#breathVariants button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===breathIndex&&mode==='breath')));
+ $$('#pulseVariants button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===pulseIndex&&mode==='pulse')));
+ updateRhythmRate();
+}
 $('#breathVariants').innerHTML=BREATHS.map((b,i)=>`<button type="button" data-breath="${i}" aria-pressed="false" title="${b.full} · ${b.hint}">${b.n}</button>`).join('');
 $('#pulseVariants').innerHTML=PULSES.map((p,i)=>`<button type="button" data-pulse="${i}" aria-pressed="false" title="${p.n}脉 · 来源中的传统文化标签，仅作视觉变体">${p.n}</button>`).join('');
-$$('[data-rhythm]').forEach(b=>b.addEventListener('click',()=>setRhythm(b.dataset.rhythm)));
-$('#rhythmRate').addEventListener('input',e=>{rhythmRate=+e.target.value;rebuildRhythm();if(rhythm)rhythm.dirty=true});
+rhythmSources.forEach(b=>{
+ b.style.setProperty('--source-tone',rhythmMeta[b.dataset.rhythm].tone);
+ b.addEventListener('click',()=>{if(b.dataset.rhythm!==rhythmMode)setRhythm(b.dataset.rhythm)});
+});
+rhythmRateInput.addEventListener('input',()=>{rhythmRate=rhythmRateInput.valueAsNumber;updateRhythmRate()});
+rhythmSpeeds.forEach((b,i)=>b.addEventListener('click',()=>{rhythmRate=rhythmMeta[rhythmMode].range[i];rhythmRateInput.value=rhythmRate;updateRhythmRate()}));
 $$('[data-breath]').forEach(b=>b.addEventListener('click',()=>{breathIndex=+b.dataset.breath;setRhythm('breath')}));
 $$('[data-pulse]').forEach(b=>b.addEventListener('click',()=>{pulseIndex=+b.dataset.pulse;setRhythm('pulse')}));
-const rhythm=view('rhythmCanvas',(v,t)=>{
- const {ctx,w,h}=v;background(ctx,w,h);const cy=rhythmCycle,tm=((t/1000)%cy.C+cy.C)%cy.C,val=clamp(cy.wave(tm),0,1.4),cx=w*.48,hy=h*.41,r=Math.min(w,h)*.13;
- ctx.save();ctx.strokeStyle=`rgba(136,216,206,${.12+val*.15})`;for(let i=0;i<6;i++){const a=i/6*Math.PI*2-Math.PI/2,x=cx+Math.cos(a)*w*.36,y=hy+Math.sin(a)*h*.32;ctx.beginPath();ctx.moveTo(cx,hy);ctx.lineTo(x,y);ctx.stroke();ctx.fillStyle=`rgba(136,216,206,${.08+val*.2})`;ctx.strokeStyle='rgba(136,216,206,.6)';ctx.beginPath();ctx.arc(x,y,12+val*7,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle='rgba(237,242,233,.58)';ctx.font='8px ui-monospace,monospace';ctx.textAlign='center';ctx.fillText(['PHONE','PAD','HOME','CAR','WATCH','SCREEN'][i],x,y+28)}ctx.restore();
- const grad=ctx.createRadialGradient(cx,hy,0,cx,hy,r*2.3);grad.addColorStop(0,`rgba(136,216,206,${.1+val*.13})`);grad.addColorStop(1,'rgba(136,216,206,0)');ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);ctx.fillStyle=`rgba(136,216,206,${.055+val*.09})`;ctx.strokeStyle='rgba(136,216,206,.86)';ctx.lineWidth=1.2;blob(ctx,cx,hy,r*(1+val*.15),t,0);ctx.fill();ctx.stroke();ctx.fillStyle='rgba(237,242,233,.72)';ctx.font='10px ui-monospace,monospace';ctx.textAlign='center';ctx.fillText(rhythmMode.toUpperCase(),cx,hy+3);
- const base=h*.78,N=180;ctx.textAlign='left';ctx.strokeStyle='rgba(136,216,206,.12)';ctx.beginPath();ctx.moveTo(20,base);ctx.lineTo(w-20,base);ctx.stroke();ctx.beginPath();for(let i=0;i<=N;i++){const sec=i/N*cy.C,y=base-clamp(cy.wave(sec),0,1.4)*h*.17,x=20+i/N*(w-40);i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.strokeStyle='#88d8ce';ctx.lineWidth=1.4;ctx.stroke();const px=20+tm/cy.C*(w-40),py=base-val*h*.17;ctx.fillStyle='#edf2e9';ctx.beginPath();ctx.arc(px,py,3,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(160,174,164,.65)';ctx.font='9px ui-monospace,monospace';ctx.fillText(`CYCLE ${cy.C.toFixed(2)}s`,20,base+25);ctx.textAlign='right';ctx.fillText(`${rhythmRate} ${rhythmMeta[rhythmMode][2]}`,w-20,base+25);ctx.textAlign='left';
-});
-rebuildRhythm();
+function drawRhythm(v,t){
+ const {ctx,w,h}=v,m=rhythmMeta[rhythmMode],cy=rhythmCycle,still=reduced();
+ if(!still&&rhythmLast!==null&&t-rhythmLast<200)rhythmPhase=(rhythmPhase+(t-rhythmLast)/(1000*cy.C))%1;
+ rhythmLast=still?null:t;
+ const phase=still?rhythmPeak:rhythmPhase,tm=phase*cy.C,val=cy.wave(tm),step=cy.phaseAt(tm);
+ if(step!==rhythmActive){
+  [...rhythmPhases.children].forEach((li,i)=>li.dataset.active=String(i===step));
+  rhythmActive=step;
+ }
+ if(still!==rhythmStill){
+  $('#rhythmState').textContent=(still?'静态峰值 · ':'')+(m.hint||BREATHS[breathIndex].hint);
+  rhythmStill=still;
+ }
+ const tint=a=>`rgba(${m.rgb},${a})`,signal=d=>cy.wave((phase+1-d)%1*cy.C);
+ const fieldH=h*.75,cx=w/2,cy0=fieldH*.49,r=Math.min(w*.24,fieldH*.33);
+ const side=rhythmMode==='gait'?(phase<.5?-1:1)*val:0;
+ ctx.fillStyle='#070c0a';ctx.fillRect(0,0,w,h);
+ ctx.save();ctx.beginPath();ctx.rect(0,0,w,fieldH);ctx.clip();
+ ctx.fillStyle=tint(.12);
+ for(let y=13;y<fieldH;y+=24)for(let x=12;x<w;x+=24)ctx.fillRect(x,y,1,1);
+ ctx.beginPath();ctx.moveTo(cx,10);ctx.lineTo(cx,fieldH-10);ctx.moveTo(12,cy0);ctx.lineTo(w-12,cy0);ctx.strokeStyle=tint(.11);ctx.lineWidth=1;ctx.stroke();
+ const halo=ctx.createRadialGradient(cx,cy0,0,cx,cy0,r*2.2);
+ halo.addColorStop(0,tint(.11+val*.07));halo.addColorStop(.55,tint(.038+val*.024));halo.addColorStop(1,tint(0));
+ ctx.fillStyle=halo;ctx.fillRect(0,0,w,fieldH);
+ for(let j=11;j>=0;j--){
+  const level=j/11,response=signal(level*m.drift),radius=r*(.25+level*.77+response*(.10+level*.06));
+  const offsetX=side*r*(.30-level*.12),twist=level*.58+response*.27;
+  ctx.beginPath();
+  rhythmAngles.forEach((a,i)=>{
+   const rr=radius*(1+(.09+response*.04)*Math.cos(m.lobes*a+twist)+.055*Math.sin(3*a-twist*2));
+   const x=cx+offsetX+Math.cos(a)*rr*(rhythmMode==='tide'?1.26:1);
+   const y=cy0+Math.sin(a)*rr*(m.flat+(rhythmMode==='breath'?response*.13:0))+(rhythmMode==='tide'?Math.sin(2*a+twist)*r*.16:0);
+   i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+  });
+  ctx.closePath();
+  const edge=j===11||j===0;
+  if(j===11){ctx.fillStyle=tint(.035+response*.045);ctx.fill()}
+  ctx.strokeStyle=tint((edge?.35:.13)+response*(edge?.30:.20));ctx.lineWidth=edge?1.15:.75;ctx.stroke();
+ }
+ const particleReach=Math.min(1.7,(w/2-8)/r);
+ for(const s of rhythmSeeds){
+  const glow=signal(s.d),angle=s.a+glow*.23,dist=r*Math.min(particleReach,s.r+glow*.13);
+  const x=cx+Math.cos(angle)*dist+side*r*.12,y=cy0+Math.sin(angle)*dist*m.flat;
+  ctx.fillStyle=tint(.14+s.k*.18+glow*(rhythmMode==='fire'?.49:.27));
+  ctx.beginPath();ctx.arc(x,y,.55+s.k*.8+glow*.66,0,rhythmTau);ctx.fill();
+ }
+ ctx.restore();
+
+ const x0=9,x1=w-9,span=x1-x0,top=fieldH+5,base=h-19,amp=(base-top)/1.7;
+ if(span<=0||amp<=0)return;
+ ctx.strokeStyle=tint(.16);ctx.lineWidth=1;ctx.beginPath();
+ for(let i=0;i<=8;i++){const x=x0+span*i/8;ctx.moveTo(x,top);ctx.lineTo(x,base)}
+ ctx.moveTo(x0,base);ctx.lineTo(x1,base);ctx.stroke();
+ ctx.beginPath();
+ rhythmWave.forEach((n,i)=>{const x=x0+span*i/rhythmSamples,y=base-n*amp;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});
+ const px=x0+span*phase,py=base-val*amp;
+ const stroke=ctx.createLinearGradient(x0,0,x1,0);
+ stroke.addColorStop(0,tint(.87));stroke.addColorStop(phase,tint(.87));stroke.addColorStop(phase,tint(.40));stroke.addColorStop(1,tint(.40));
+ ctx.strokeStyle=stroke;ctx.lineWidth=1.45;ctx.stroke();
+ ctx.lineTo(x1,base);ctx.lineTo(x0,base);ctx.closePath();
+ const wash=ctx.createLinearGradient(0,top,0,base);wash.addColorStop(0,tint(.18));wash.addColorStop(1,tint(.025));ctx.fillStyle=wash;ctx.fill();
+ ctx.fillStyle=tint(.48);ctx.fillRect(px,top,1,base-top);
+ ctx.beginPath();ctx.arc(px,py,3.1,0,rhythmTau);ctx.fillStyle='#edf2e9';ctx.fill();
+ ctx.font='9px ui-monospace,monospace';ctx.fillStyle='#a0aea4';ctx.textAlign='left';ctx.fillText('0 s',x0,h-5);
+ ctx.textAlign='right';ctx.fillText(`${cy.C.toFixed(2)} s`,x1,h-5);ctx.textAlign='left';
+}
+const rhythm=view('rhythmCanvas',drawRhythm);
+setRhythm('heart');
 
 let dailyMode='grow',dailyPointer={x:.5,y:.5},blooms=[];
 const dailySeeds=Array.from({length:92},(_,i)=>({x:((i*47)%97)/97,y:((i*71)%89)/89,p:i*.77,s:.5+(i%7)/7}));

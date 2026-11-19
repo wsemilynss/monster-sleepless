@@ -69,6 +69,35 @@ a{color:var(--teal);text-underline-offset:3px}a:hover{color:var(--mint)}button,i
 @media(max-width:650px){.atlas-intro{padding-top:58px}.atlas-index{grid-template-columns:repeat(2,minmax(0,1fr))}.atlas-link{min-height:135px;padding:14px}.atlas-link b{font-size:17px;margin-top:20px}.tag-section{padding:54px 0 36px}.tag-head{grid-template-columns:1fr;gap:4px}.tag-no{padding-top:0}.tag-no:before{display:inline-block;margin:0 9px 3px 0}.tag-stage-copy{padding:21px}.tag-stage-copy h3{font-size:24px}.tag-canvas,.tag-canvas-wrap{min-height:330px}.case-gallery{grid-auto-columns:68vw}.case-dialog .case-detail{padding:18px}.case-source-media figcaption{display:block}.case-source-media figcaption button{margin-top:8px}.project-divider{padding:70px 0 40px}.project-intro{grid-template-columns:1fr}.project-links{grid-template-columns:1fr 1fr}.rhythm-variants{grid-template-columns:repeat(7,1fr)}.canvas-hud{display:block}.canvas-hud span{display:block;margin-top:4px}}
 @media(prefers-reduced-motion:reduce){.case-thumb,.atlas-link:after{transition:none;animation:none}}
 @media print{.atlas-index{grid-template-columns:repeat(5,1fr)}.tag-section{break-before:page}.tag-stage{display:block;min-height:0}.tag-stage-copy{padding:16px}.tag-canvas-wrap{display:none}.case-gallery{display:grid;grid-template-columns:repeat(4,1fr);overflow:visible}.case-tile{break-inside:avoid}.legacy-drawer,.case-dialog,.project-links{display:none}.project-divider{padding:35px 0}.project-shot img{max-height:280px}}
+.rhythm-stage{--rhythm-tone:#88d8ce;--rhythm-wash:color-mix(in srgb,var(--rhythm-tone) 10%,#080d0b);grid-template-columns:minmax(292px,.72fr) minmax(0,1.28fr);border-color:color-mix(in srgb,var(--rhythm-tone) 23%,#080d0b)}
+.rhythm-stage .tag-stage-copy{gap:14px;padding:clamp(20px,3vw,40px);background:linear-gradient(150deg,var(--rhythm-wash),transparent 52%)}
+.rhythm-stage .eyebrow{color:var(--rhythm-tone);margin:0}.rhythm-stage .tag-stage-copy h3{color:var(--ink);font-size:clamp(26px,3.2vw,44px);line-height:1.2}
+.rhythm-sources{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:6px 0 2px}
+.rhythm-sources button{display:grid;gap:4px;justify-content:stretch;min-height:68px;padding:9px 10px;text-align:left;border-radius:8px;color:var(--ink);background:#0b100e;border-color:var(--line)}
+.rhythm-sources button:hover,.rhythm-sources button[aria-pressed="true"]{border-color:var(--source-tone,var(--rhythm-tone));color:var(--source-tone,var(--rhythm-tone));background:color-mix(in srgb,var(--source-tone,var(--rhythm-tone)) 10%,#0b100e)}
+.rhythm-sources i{font:9px var(--mono);letter-spacing:.1em;color:var(--muted)}.rhythm-sources strong{font:17px/1.1 var(--serif)}.rhythm-sources small{font-size:10px;color:var(--muted)}
+.rhythm-rate label{align-items:baseline;color:var(--ink)}.rhythm-rate output{color:var(--rhythm-tone);font:20px/1 var(--mono);white-space:nowrap;font-variant-numeric:tabular-nums}
+#rhythmRate{accent-color:var(--rhythm-tone);margin:0;display:block}.rhythm-speed{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:6px 0}
+.rhythm-speed button{min-height:36px;border-radius:6px;padding:4px;text-align:center;background:transparent;color:var(--muted);border-color:var(--line)}
+.rhythm-speed button:hover,.rhythm-speed button[data-active="true"]{background:var(--rhythm-wash);color:var(--rhythm-tone);border-color:color-mix(in srgb,var(--rhythm-tone) 58%,transparent)}
+.rhythm-speed button[data-active="true"]{box-shadow:inset 0 -2px var(--rhythm-tone)}
+.rhythm-stage .rhythm-hint{font-size:11px;color:var(--muted);line-height:1.65}
+.rhythm-plate{min-width:0;margin:0;padding:16px clamp(14px,2.4vw,30px) 15px;border-left:1px solid var(--line);background:#070c0a;display:flex;flex-direction:column;justify-content:center}
+.rhythm-plate-head{display:flex;align-items:end;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.rhythm-plate-head small,.rhythm-cycle small{display:block;font:10px/1.45 var(--mono);letter-spacing:.09em;color:var(--muted)}
+.rhythm-plate-head b{display:block;font:clamp(20px,2.6vw,32px)/1.2 var(--serif);color:var(--rhythm-tone);margin-top:4px}
+.rhythm-cycle{text-align:right;white-space:nowrap;color:var(--ink);font:15px/1.45 var(--mono);font-variant-numeric:tabular-nums}
+#rhythmCanvas{display:block;width:100%;height:clamp(284px,30vw,410px);min-height:0}
+.rhythm-phases{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:5px;margin:0;padding:0;list-style:none}
+.rhythm-phases li{position:relative;text-align:center;padding:6px 2px;background:#0b110e;border:1px solid var(--line);border-radius:5px;font:11px/1.4 var(--sans);color:var(--muted)}
+.rhythm-phases li[data-active="true"]{color:var(--rhythm-tone);border-color:color-mix(in srgb,var(--rhythm-tone) 50%,transparent);background:var(--rhythm-wash);box-shadow:inset 0 2px var(--rhythm-tone);font-weight:600}
+.rhythm-plate figcaption{display:flex;justify-content:space-between;flex-wrap:wrap;gap:2px 12px;margin-top:8px;font-size:10px;color:var(--muted)}
+.rhythm-plate figcaption span:first-child{color:var(--rhythm-tone)}
+.rhythm-variant-groups{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:20px}
+.rhythm-variant-groups .rhythm-variants{grid-template-columns:repeat(auto-fit,minmax(34px,1fr))}
+.rhythm-variant-groups #pulseVariants{grid-template-columns:repeat(14,minmax(0,1fr))}
+@media(max-width:750px){.rhythm-stage{grid-template-columns:1fr}.rhythm-plate{border-left:0;border-top:1px solid var(--line)}.rhythm-variant-groups{grid-template-columns:1fr}.rhythm-variant-groups #pulseVariants{grid-template-columns:repeat(7,minmax(0,1fr))}}
+@media print{.rhythm-plate{display:none}}
 </style>
 </head>
 <body class="locked code-locked">
@@ -149,9 +178,49 @@ a{color:var(--teal);text-underline-offset:3px}a:hover{color:var(--mint)}button,i
 <section class="tag-section" id="tag-bio" data-nav="tag-bio" style="--tag-color:#88d8ce">
 <div class="shell">
   <header class="tag-head"><div class="tag-no">02 / RHYTHM</div><div><h2>生物与<span>生态本源</span></h2><p class="tag-sub">同一系统，只换时间结构。身体节拍、材料反馈与多主体相位共同构成“活着”的线索。</p><div class="tag-original">PPT 原标签 · 生物与身体本源 / 第 5–8 页 · 本页扩展生态与六种节拍源</div></div></header>
-  <div class="tag-stage"><div class="tag-stage-copy"><div class="eyebrow">ONE SYSTEM, SIX RHYTHMS</div><h3>不换脸。<br>只换它如何经过时间。</h3><p>心跳、呼吸、脉象、步态、潮汐、萤火驱动同一团光与同一组节点。拖动速率，观察节拍性格。</p><div class="toolbar" role="group" aria-label="六种节拍源"><button data-rhythm="heart" aria-pressed="true">心跳</button><button data-rhythm="breath" aria-pressed="false">呼吸</button><button data-rhythm="pulse" aria-pressed="false">脉象</button><button data-rhythm="gait" aria-pressed="false">步态</button><button data-rhythm="tide" aria-pressed="false">潮汐</button><button data-rhythm="fire" aria-pressed="false">萤火</button></div><div class="control"><label for="rhythmRate">节拍速率 <output id="rhythmRateOut">66 BPM</output></label><input id="rhythmRate" type="range" min="48" max="100" value="66"></div><details class="tag-note"><summary>呼吸九态 / 二十八脉象 · 展开变体</summary><div class="tag-note-body"><div class="field-label">呼吸九态 · 选择后自动切换呼吸源</div><div class="rhythm-variants" id="breathVariants"></div><div class="field-label" style="margin-top:12px">二十八脉象 · 传统文化标签转译为视觉参数，不作诊断</div><div class="rhythm-variants" id="pulseVariants"></div></div></details></div><div class="tag-canvas-wrap"><canvas class="tag-canvas" id="rhythmCanvas" aria-label="心跳、呼吸、脉象、步态、潮汐和萤火的实时波形与节点可视化"></canvas><div class="bio-rhythms"><span>WAVE(t) → FORM + FIELD</span><b id="rhythmName">HEART · 双峰</b></div><div class="canvas-hud"><span id="rhythmState">LUB-DUB · 双峰与间歇</span><span>算法演出 · 不读取任何身体数据</span></div></div></div>
+  <div class="tag-stage rhythm-stage">
+    <div class="tag-stage-copy">
+      <div class="eyebrow">RHYTHM ATLAS / 01—06</div>
+      <h3>节律有形</h3>
+      <p>同一个场，六种节拍。切换节拍源，观察轮廓是舒展、回荡，还是在间歇中暗下去。</p>
+      <div class="rhythm-sources" role="group" aria-label="六种节拍源">
+        <button type="button" data-rhythm="heart" aria-pressed="true"><i aria-hidden="true">01</i><strong>心跳</strong><small>双峰 · 间歇</small></button>
+        <button type="button" data-rhythm="breath" aria-pressed="false"><i aria-hidden="true">02</i><strong>呼吸</strong><small>吸入 · 呼出</small></button>
+        <button type="button" data-rhythm="pulse" aria-pressed="false"><i aria-hidden="true">03</i><strong>脉象</strong><small>起伏 · 留白</small></button>
+        <button type="button" data-rhythm="gait" aria-pressed="false"><i aria-hidden="true">04</i><strong>步态</strong><small>左右 · 交替</small></button>
+        <button type="button" data-rhythm="tide" aria-pressed="false"><i aria-hidden="true">05</i><strong>潮汐</strong><small>涨落 · 余涟</small></button>
+        <button type="button" data-rhythm="fire" aria-pressed="false"><i aria-hidden="true">06</i><strong>萤火</strong><small>双闪 · 暗歇</small></button>
+      </div>
+      <div class="control rhythm-rate">
+        <label for="rhythmRate">节拍速率 <output id="rhythmRateOut" for="rhythmRate" aria-live="off">66 BPM</output></label>
+        <input id="rhythmRate" type="range" min="48" max="100" value="66" aria-describedby="rhythmRateHint">
+        <div class="rhythm-speed" role="group" aria-label="速率快选">
+          <button type="button" data-speed="0" data-active="false">舒缓</button>
+          <button type="button" data-speed="1" data-active="true">中速</button>
+          <button type="button" data-speed="2" data-active="false">紧凑</button>
+        </div>
+        <p class="rhythm-hint" id="rhythmRateHint">拖动滑杆或选一个档位。档位相对当前节拍源；速率改变一轮的时长，不改变波形。</p>
+      </div>
+    </div>
+    <figure class="rhythm-plate">
+      <div class="rhythm-plate-head">
+        <div role="status"><small id="rhythmCode">01 / HEART</small><b id="rhythmName">心跳 · 双峰</b></div>
+        <div class="rhythm-cycle"><small>一轮波形 / CYCLE</small><span id="rhythmCycleOut">0.91 s</span></div>
+      </div>
+      <canvas id="rhythmCanvas" role="img" aria-label="发光轮廓、延迟粒子与带游标的节拍波形" aria-describedby="rhythmState"></canvas>
+      <ol class="rhythm-phases" id="rhythmPhases" aria-label="波形阶段"></ol>
+      <figcaption><span id="rhythmState">双峰之后，留一段空拍</span><span>算法演出 · 不读取身体数据</span></figcaption>
+    </figure>
+  </div>
+  <details class="tag-note">
+    <summary>呼吸九态 / 二十八脉象 · 展开变体</summary>
+    <div class="tag-note-body rhythm-variant-groups">
+      <div><div class="field-label">呼吸九态 · 选择后自动切换呼吸源</div><div class="rhythm-variants" id="breathVariants"></div></div>
+      <div><div class="field-label">二十八脉象 · 传统文化标签转译为视觉参数，不作诊断</div><div class="rhythm-variants" id="pulseVariants"></div></div>
+    </div>
+  </details>
   <div id="bioSoundSlot"></div>
-  <details class="tag-note"><summary>标签关键词 · 频率 / 振幅 / 相位 / 阻尼 / 邻域</summary><div class="tag-note-body"><p>六种节拍源与波形思路引自《操作系统生命感设计研究》<a class="cite" href="#ref-41">[41]</a>。本页重写为 Canvas 实时图形，呼吸九态与二十八脉象仅作为来源中的传统标签和视觉变体，不作为医疗或情绪判断。</p><p>PPT 设计判据：输入位置、反馈方向与延迟形成可理解的对应；整体规则稳定，局部保留幅度与时差。材料声与动作的关系见 <a class="cite" href="#ref-39">[39]</a><a class="cite" href="#ref-40">[40]</a>。</p></div></details>
+  <details class="tag-note"><summary>标签关键词 · 频率 / 振幅 / 相位 / 阻尼 / 邻域</summary><div class="tag-note-body"><p>发光轮廓随振幅舒展，外围粒子稍后响应；波形游标与阶段标签指向同一时刻。一轮可以包含数拍、变体中的空拍，或一组双闪。减少动效时，图谱定格在该波形的峰值。</p><p>六种节拍源与波形思路引自《操作系统生命感设计研究》<a class="cite" href="#ref-41">[41]</a>。本页重写为 Canvas 实时图形，呼吸九态与二十八脉象仅作为来源中的传统标签和视觉变体，不作为医疗或情绪判断。</p><p>PPT 设计判据：输入位置、反馈方向与延迟形成可理解的对应；整体规则稳定，局部保留幅度与时差。材料声与动作的关系见 <a class="cite" href="#ref-39">[39]</a><a class="cite" href="#ref-40">[40]</a>。</p></div></details>
   <div class="case-heading"><h3>案例图谱 · 身体、材料与群体</h3><p>真实身体输入与艺术性节拍演出分开标注</p></div><div class="case-gallery" data-case-gallery="bio" aria-label="生物与生态本源案例"></div>
   <details class="legacy-drawer"><summary>原研究档案 · 理论、线团标本、声音因果与交叉证据</summary><div data-legacy-slot="bio"></div></details>
 </div>
