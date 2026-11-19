@@ -705,7 +705,7 @@ let scrollQueued=false;
 function updateScroll(){const max=document.documentElement.scrollHeight-innerHeight,p=max>0?scrollY/max:0;$('#readingProgress').style.width=(p*100)+'%';$('#backTop').classList.toggle('show',scrollY>900);scrollQueued=false}
 addEventListener('scroll',()=>{if(!scrollQueued){scrollQueued=true;requestAnimationFrame(updateScroll)}},{passive:true});updateScroll();
 const navLinks=$$('.topnav a');
-if('IntersectionObserver'in window){const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){navLinks.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.dataset.nav))}})},{rootMargin:'-20% 0px -65% 0px'});$$('.section[data-nav]').forEach(s=>obs.observe(s))}
+if('IntersectionObserver'in window){const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){navLinks.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.dataset.nav))}})},{rootMargin:'-20% 0px -65% 0px'});$$('#main > [data-nav]').forEach(s=>obs.observe(s))}
 $('#copyLink').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(location.href.split('#')[0]);toast('研究页链接已复制。')}catch(e){toast('无法自动复制，请从地址栏复制链接。')}});
 
 const QUADS=[
