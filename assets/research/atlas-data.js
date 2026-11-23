@@ -110,8 +110,42 @@ const STUDIO_CASES=[
  extra('ink-portrait-process','time','acceleration','墨相｜肖像生成的显影过程','限象工作室 · 2023','显影 / 肖像 / 生成','人物轮廓、墨色与色层在同一肖像上连续显影和重组，观看者能辨认生成阶段而非只收到最终结果。','适合生成式创作与照片处理预览：跨屏等待时显示真实阶段，可回看每一步，不虚构不存在的进度。',BASE+'墨相/person art universe v1.mp4',3,'genetic'),
  extra('fifteen-process','time','acceleration','15度｜从素材到舞台视觉的过程','限象工作室 · 制作档案','采样 / 数字模型 / 时间层','植物采样、数字模型与舞台视觉在制作档案中并置，显示文化资源如何经过结构和行为转译成为新媒介。','可用于跨屏创作流程：手机采集素材，桌面端调整结构，大屏验证空间效果，各端保留同一份版本与来源。',BASE+'15度/15°纪录片字幕版 small 2.mp4',185,'genetic')
 ];
+const V5_CASES=[
+ extra('monster-intro','daily','spatial','怪物里｜水晶怪物与里弄序曲','限象工作室 · 怪物里','水晶 / 里弄 / 光影','水晶般的怪物悬在真实里弄中，切割轮廓、折射光与地面影子共同建立角色与空间的关系。首页聚焦角色主体，保留环境作为理解尺度的参照。','可用于角色开场与跨屏空间叙事：手机呈现近景和角色状态，大屏展开里弄环境，保持同一光源与空间锚点。',BASE+'怪物里/00.INTRO-怪物里开始序曲.mp4',3,'material'),
+ extra('monster-ending','time','acceleration','怪物里｜离开与奔赴新世界','限象工作室 · 怪物里','剪影 / 转场 / 时间','人物剪影在明暗交界处前行，离开的动作由光线和负空间共同完成。与序曲的水晶近景不同，这里关注叙事阶段的转换。','可用于跨屏章节切换和任务结束：保留同一角色方向与行进状态，不把转场做成无关的整屏特效。',BASE+'怪物里/02 结局02-艾莉（AILLY ）- 离开奔赴新世界.mp4',4,'memory'),
+ extra('shuowang-2025','bio','cycle','朔望｜月相、天幕与算法场','限象工作室 · 苏州当代美术馆 2025','月相 / 天幕 / 周期','月体与环形天幕构成清晰的中心，材质细节与圆周关系让朔望周期成为可观看的空间结构。首页去除社交界面，聚焦月体和轨道。','可用于环境屏、天文内容与跨屏节律主题：小屏显示月相信息，大屏保持共享的周期和空间中心。',BASE+'糸-朔望/朔望-2025年苏州当代美术馆.mp4',3,'kuramoto'),
+ extra('canglang-analysis','bio','mapping','自·沧浪亭｜心理水图的算法映射','自·沧浪亭当代艺术展 · 2018','水纹 / 数据 / 多重映射','心跳等来源信息被转译为水纹形态，重点不是把数据等同情绪，而是观察输入、算法和水图之间的可见对应。首页截取水图生成区域。','可用于有明确来源的个人视觉日志与跨屏数据艺术：保留原始数值、时间和解释边界，不输出自动心理判断。',EXT+'自沧浪亭数据可视化2018年/自沧浪亭-心理水图_动态分析.mp4',5,'curl'),
+ extra('tingyun-flow','daily','physical','停云｜云雾流动的边界','限象工作室 · Nature Ink','云雾 / 扩散 / 留白','云雾在画面下部聚集、扩散与留白，变化主要来自浓度和边界，而非整个画面平移。首页放大云层交界，突出物理观测。','可用于加载、等待和环境状态：以局部浓度表示过程，低算力模式保留几组连续静帧。',BASE+'01. Nature Ink Series-parts test/04. 停云中.mp4',8,'curl'),
+ extra('mozhi-material','daily','material','墨脂｜墨色的柔性材料','限象工作室 · Nature Ink','墨脂 / 柔性 / 吸收','墨团在纸面上显出柔软、黏稠和逐渐吸收的材料感，核心在于边缘与浓度变化，而非额外添加角色表情。','可用于系统材质、触控和笔迹反馈：让不同材料拥有不同阻尼、扩散与恢复方式。',BASE+'01. Nature Ink Series-parts test/02. 墨脂.mp4',4,'material'),
+ extra('moyun-installation','daily','spatial','墨韵｜圆窗、人物与空间显影','限象工作室 · Nature Ink','圆窗 / 框景 / 显影','圆窗把墨色空间与观看者剪影框在同一构图中，前景人物和背景云层形成两层深度。','可用于手机取景与大屏框景：小屏决定观看方向，大屏保留完整空间层次和稳定窗框。',BASE+'01. Nature Ink Series-parts test/06. 墨韵 装置.mp4',4,'pbd'),
+ extra('taoling-smoke','bio','micro','桃灵·烟｜颗粒烟雾的聚合','限象工作室 · Nature Ink','烟雾 / 颗粒 / 微形态','紫色烟雾从中心聚合出柔软体积，局部颗粒持续改变密度，形成没有固定边界的微形态。','可用于待机微动、加载和跨屏聚合：小屏显示局部种子，大屏延续同一生成阶段。',BASE+'01. Nature Ink Series-parts test/05. 桃灵-烟 测试02.mov',3,'growth'),
+ extra('genzhi-palace','daily','spatial','根枝·殿｜数字枝干与观看尺度','限象工作室 · Nature Ink','枝干 / 殿 / 尺度','观众、建筑窗格和中央数字枝干共同构成尺度关系。与枝干参数测试不同，这里关注作品进入真实空间后的观看方式。','可用于展览与跨屏导览：手机提供枝干细节和注释，大屏维持人物、建筑与作品的尺度关系。',BASE+'01. Nature Ink Series-parts test/01. 根枝 - 殿 装置测试.mp4',5,'lsystem'),
+ extra('roaming-life','time','trajectory','行｜日常人物的点云痕迹','限象工作室 · 2023','人物 / 点云 / 日常轨迹','日常人物被拆成稀疏点云，运动留下聚散和方向，熟悉的动作在时间中变成可回看的轨迹。','可用于立体相册与跨屏记忆：手机选择人物和时段，大屏展开运动轨迹，同时保护原始素材边界。',BASE+'行/行-视频切片picked/02.life scenes.mp4',4,'memory'),
+ extra('roaming-city','daily','spatial','行｜城市街角的点云重组','限象工作室 · 2023','街角 / 点云 / 空间','城市街角以不同颜色与密度的点云重新组织，建筑、道路和行人的层次随视点展开。与人物轨迹切片关注不同尺度。','可用于地点记忆与空间导航：小屏控制视点，大屏呈现完整街角，保留稳定的返回位置。',BASE+'行/行-视频切片picked/04.city corners.mp4',4,'curl'),
+ extra('qibaishi-lighting','anthro','feedback','借山｜点灯与鱼的相互回应','限象工作室 · 齐白石数字转译','点灯 / 朝向 / 因果','烛台的点亮与游鱼出现形成同一场景中的事件关系，火光和鱼的朝向提供比台词更直接的因果线索。','可用于跨屏叙事与物件交互：一端执行点灯，另一端以角色朝向和局部动作回应，保持事件来源明确。',BASE+'齐白石/chapter-02-点灯画鱼.mp4',24,'attention'),
+ extra('qibaishi-chapter','time','acceleration','借山｜似与不似的形变章节','限象工作室 · 齐白石数字转译','形变 / 风格 / 章节','鱼形在章节中连续显影和转换，原作轮廓、数字分析与风格变化被放在同一时间线上比较。','可用于生成式创作与版本预览：跨屏保留阶段、来源和前后对照，不把快速切换误写成真实生长。',BASE+'齐白石/20241125 chapter 02 — 似与不似（预览版）.mp4',10,'genetic'),
+ extra('avatar-capture','anthro','feedback','分身｜动作捕捉的骨骼与网格','限象工作室 · 2019','骨骼 / 网格 / 动作捕捉','骨骼节点和网格直接呈现动作捕捉过程，关节之间的连续关系比外观更能说明数字身体如何被驱动。','可用于跨屏动作输入：手机或传感器端发送少量关键点，大屏重建完整姿态，降低带宽并保留因果。',BASE+'分身系列/Screen Recording 2019-06-24 at 8.41.35 AM.mov',3,'fabrik'),
+ extra('avatar-stage-live','relation','audiovisual','分身｜双人舞台上的身体对话','限象工作室 · 2019','双人 / 舞台 / 轮流','两位表演者在同一舞台上通过靠近、停顿和动作回应形成关系。与动作捕捉的技术切片不同，这里观察双方的轮次与身体距离。','可用于双人协作和远程剧场：保留双方动作的先后与空间位置，不将同步等同于完全一致。',BASE+'分身系列/转瞬+分身2.mp4',8,'turns'),
+ extra('online-theater','relation','play','线上剧场｜虚拟剧院的空间协作','日内瓦剧院 × Gilles Jobin · 2020','虚拟剧院 / 漫游 / 远程在场','虚拟剧院把售票处、门厅、剧场与滨水空间组织为可漫游路径，线上观众通过空间标签和位置理解彼此的关系。','可用于远程剧场与跨屏导览：手机提供空间索引，大屏呈现共享场景，保留每个参与者的位置和进入路径。','生命感研究/线上剧场.pptx',4,'turns','《线上剧场》PPT 内嵌空间漫游视频'),
+ extra('monster-walk-cuicui','anthro','feedback','怪物里｜翠翠的循环步态','限象工作室 · 怪物里','步态 / 重心 / 循环','原创角色行走序列帧直接呈现身体扭转、重心移动与步态循环，适合观察少量姿态如何形成连续性格。','可用于系统角色与跨屏状态：手机显示局部体征，大屏延续同一步态相位，减少静态立绘之间的生硬切换。','Reference/00.creatures-怪物角色/00.12个怪物角色行走序列帧（LOOP）/12咸豆腐片儿翠翠',0,'oscillator','《怪物里》原创角色行走序列帧')
+];
+V5_CASES.find(c=>c.id==='studio-online-theater').video='';
+V5_CASES.find(c=>c.id==='studio-online-theater').sourceDetail='《线上剧场》PPT 内嵌视频 ppt/media/media1.mp4；首页为第 4 秒起核心切片，详情为 24 秒压缩研究剪辑。';
+V5_CASES.find(c=>c.id==='studio-monster-walk-cuicui').sourceDetail='《怪物里》翠翠原创行走序列帧，按时间顺序抽帧合成循环动图与视频；未使用 AI 补画角色。';
+const GUIDED_IDS=['ppt-lanting','ppt-caisson','ppt-glyph','ppt-canglang','ppt-threads-moon','ppt-connect-transfer','ppt-tablecloth'];
+const ALL_CASES=[...PPT_CASES,...STUDIO_CASES,...V5_CASES];
+ALL_CASES.forEach(c=>{
+ c.preview=`assets/research/previews/${c.id.replace(/^studio-/,'')}.mp4`;
+ c.previewDetail=c.supplement?'24 秒压缩研究剪辑；原片不足 24 秒时按原时长保留。':'原始嵌入媒体转码预览，完整原片与作品链接继续保留。';
+ if(GUIDED_IDS.includes(c.id)){c.media=`assets/research/guided/${c.id}.gif`;c.mediaType='image/gif';c.guided=true;c.previewDetail='原作为静态图像；当前为平移与缩放动态导览，不冒充原作运动。'}
+});
+STUDIO_CASES.find(c=>c.id==='studio-thread-chess').url=BASE+'糸-朔望/《糸 》自然与算法的思考.mp4';
+STUDIO_CASES.find(c=>c.id==='studio-thread-chess').video=BASE+'糸-朔望/《糸 》自然与算法的思考.mp4';
+STUDIO_CASES.find(c=>c.id==='studio-thread-chess').sourceDetail='《糸：自然与算法的思考》第 50 秒起：首页 4 秒聚焦线迹流动，详情为 24 秒压缩研究剪辑。';
+STUDIO_CASES.find(c=>c.id==='studio-bio-luxury').sourceDetail='外部补充视频第 4 秒起：聚焦细胞分裂与有机几何，详情为 24 秒压缩研究剪辑。';
+V5_CASES.find(c=>c.id==='studio-canglang-analysis').sourceDetail='自沧浪亭动态分析第 2 秒起：首页聚焦水图生成区域，详情为 24 秒压缩研究剪辑；心理数据仅作映射观察，不作诊断。';
 window.LIFE_CATEGORIES=CATEGORIES;
 window.LIFE_CATEGORY_MAP=CATEGORY_MAP;
 window.LIFE_SUBTHEME_MAP=SUBTHEME_MAP;
-window.LIFE_CASES=[...PPT_CASES,...STUDIO_CASES];
+window.LIFE_CASES=ALL_CASES;
 })();
