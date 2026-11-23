@@ -141,7 +141,7 @@ Object.assign(V5_CASES.find(c=>c.id==='studio-mozhi-material'),{title:'墨脂｜
 Object.assign(STUDIO_CASES.find(c=>c.id==='studio-thread-chess'),{keyword:'线迹 / 流场 / 共同生成',keywords:['线迹','流场','共同生成'],description:'细密线迹在共同画面中流动、缠绕并逐渐形成整体纹理，局部运动与集体图案同时可见。这里分析共同生成的视觉结果，不把纪录片画面误写成实时多人交互证明。'});
 const V3_PATH='生命感研究/11-25 MoodBoard Final v3.pptx';
 const v3=(id,tag,subtheme,title,credit,keyword,description,potential,n,start,algorithm)=>{
- const c=extra(id,tag,subtheme,title,credit,keyword,description,potential,V3_PATH,start,algorithm,'MoodBoard Final v3 内嵌视频');
+ const c=extra('v3-'+id,tag,subtheme,title,credit,keyword,description,potential,V3_PATH,start,algorithm,'MoodBoard Final v3 内嵌视频');
  c.sourcePpt=V3_PATH;c.sourceDetail=`《11-25 MoodBoard Final v3》内嵌 media${n}.mp4；首页为第 ${start} 秒起核心切片，详情为压缩研究剪辑。`;return c;
 };
 const V3_CASES=[
