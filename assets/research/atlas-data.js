@@ -1,14 +1,14 @@
 (()=>{
 'use strict';
 const CATEGORIES=[
- {id:'anthro',no:'01',name:'拟人化与万物有灵',short:'拟人',en:'AGENCY & CHARACTER',color:'#e8c68c',statement:'动作有对象，反馈有性格。',description:'从一次朝向、一顿、一次恢复开始，观察抽象对象如何获得意图与个性；脸和语言都不是前提。',subthemes:[
-  {id:'minimal',name:'极简的响应',en:'MINIMAL RESPONSE',description:'用尽量少的运动表达注意、靠近与停顿，让“大智若愚”的笨拙成为可读的性格。',algorithms:['attention','steering']},
-  {id:'feedback',name:'生动的反馈',en:'EXPRESSIVE FEEDBACK',description:'精炼输入驱动丰富但连贯的身体反馈，重心、朝向和恢复共同建立操偶般的因果关系。',algorithms:['spring','fabrik']},
-  {id:'character',name:'有趣的灵魂',en:'PLAYFUL CHARACTER',description:'好奇、胜负欲、傲娇与探索欲不依赖复杂外形，而由持续的行为偏好和小小的无用之事显现。',algorithms:['wander','attention']}
+ {id:'anthro',no:'01',name:'拟人化与万物有灵',short:'拟人',en:'AGENCY & CHARACTER',color:'#e8c68c',statement:'灵动、形态、节律与有趣灵魂。',description:'从一次朝向、一顿、一次恢复开始，观察抽象对象如何获得意图与个性；脸和语言都不是前提。',subthemes:[
+  {id:'minimal',name:'灵动感',en:'MINIMAL RESPONSE',description:'用尽量少的运动表达注意、靠近与停顿，让“大智若愚”的笨拙成为可读的性格。',algorithms:['attention','steering']},
+  {id:'micro',name:'微观形态',en:'MORPHOGENESIS',description:'以显微与微距观察为参照，通过局部反应、分枝、分合与形变形成生态美学。',algorithms:['reaction','growth']},
+  {id:'cycle',name:'生命节律',en:'LIFE CYCLES',description:'把花开、月相、游动与收缩组织成阶段和循环；周期可以被拉伸、错相与重新编排。',algorithms:['homeostasis','oscillator']},
+  {id:'character',name:'有趣灵魂',en:'PLAYFUL CHARACTER',description:'好奇、胜负欲、傲娇与探索欲不依赖复杂外形，而由持续的行为偏好和小小的无用之事显现。',algorithms:['wander','attention']}
  ]},
- {id:'bio',no:'02',name:'生物与身体本源',short:'生物身体',en:'BODY & MORPHOGENESIS',color:'#7bd9d0',statement:'形态在生长，信息有节律。',description:'从微观形态、生命周期与多重信息映射中提炼时间结构，不把随机运动或粒子数量直接等同于生命。',subthemes:[
-  {id:'micro',name:'微观形态创生',en:'MORPHOGENESIS',description:'以显微与微距观察为参照，通过局部反应、分枝、分合与形变形成生态美学。',algorithms:['reaction','growth']},
-  {id:'cycle',name:'生命周期重组',en:'LIFE CYCLES',description:'把花开、月相、游动与收缩组织成阶段和循环；周期可以被拉伸、错相与重新编排。',algorithms:['homeostasis','oscillator']},
+ {id:'bio',no:'02',name:'生物与身体本源',short:'生物身体',en:'BODY & MORPHOGENESIS',color:'#7bd9d0',statement:'身体是接口，反馈与信息映射形成生命线索。',description:'从身体动作、实时反馈与多重信息映射中提炼生命感，不把随机运动或粒子数量直接等同于生命。',subthemes:[
+  {id:'feedback',name:'生动反馈',en:'EXPRESSIVE FEEDBACK',description:'精炼输入驱动丰富但连贯的身体反馈，重心、朝向和恢复共同建立操偶般的因果关系。',algorithms:['spring','fabrik']},
   {id:'mapping',name:'信息多重映射',en:'MULTIPLE MAPPING',description:'让不同个体或不同时刻的信息进入矩阵、蜂巢和群体，保持个体差异与整体格式塔。',algorithms:['kuramoto','boids']}
  ]},
  {id:'daily',no:'03',name:'日常审美与瞬间',short:'日常瞬间',en:'MATTER & MOMENT',color:'#b6e3bd',statement:'让熟悉之物，露出陌生的一刻。',description:'关注流动、阻尼、材质与空间重组，在界面和日常物件中发现轻微、短暂却可感的变化。',subthemes:[
@@ -17,9 +17,9 @@ const CATEGORIES=[
   {id:'spatial',name:'空间结构重组',en:'SPATIAL REFRAMING',description:'通过解构、层叠、漫游与立体相册改变观看位置，在稳定空间骨架中组织显隐和层次。',algorithms:['pbd','lsystem']}
  ]},
  {id:'relation',no:'04',name:'关系与共情',short:'关系共情',en:'RELATION & EMPATHY',color:'#cab7ed',statement:'回应不是回答，是承接。',description:'关系发生在对弈、等待、共同注意和声画对位中；可靠陪伴需要连续，也需要允许沉默与退出。',subthemes:[
+  {id:'companionship',name:'忠诚陪伴',en:'STEADY COMPANIONSHIP',description:'安全感来自稳定、可预期和不过度索取注意的存在，而不是持续讨好或永久在线的承诺。',algorithms:['homeostasis','attention']},
   {id:'play',name:'对弈协作',en:'PLAY & CO-CREATION',description:'从一问一答转向有来有往的共同创作，不同主体保留差异，也能接续彼此的动作。',algorithms:['turns','boids']},
-  {id:'audiovisual',name:'声画联动',en:'AUDIOVISUAL RESPONSE',description:'听见时改变姿态，发声时形成动作，声音的起止、停顿和视觉状态共享同一时间基准。',algorithms:['oscillator','turns']},
-  {id:'companionship',name:'忠诚陪伴',en:'STEADY COMPANIONSHIP',description:'安全感来自稳定、可预期和不过度索取注意的存在，而不是持续讨好或永久在线的承诺。',algorithms:['homeostasis','attention']}
+  {id:'audiovisual',name:'声画联动',en:'AUDIOVISUAL RESPONSE',description:'听见时改变姿态，发声时形成动作，声音的起止、停顿和视觉状态共享同一时间基准。',algorithms:['oscillator','turns']}
  ]},
  {id:'time',no:'05',name:'时间与痕迹',short:'时间痕迹',en:'TIME & TRACE',color:'#9fc4e9',statement:'发生过的事，仍在此刻。',description:'轨迹可以展开，效率可以放慢，变化可以加速；保留什么、如何衰减与何时清除共同构成时间体验。',subthemes:[
   {id:'trajectory',name:'被展开的轨迹',en:'UNFOLDED TRAJECTORIES',description:'把行为过程同时呈现在画面中，让路径、次序与重复累积成为可以直接观看的历史。',algorithms:['memory','pheromone']},
@@ -132,9 +132,51 @@ const V5_CASES=[
 V5_CASES.find(c=>c.id==='studio-online-theater').video='';
 V5_CASES.find(c=>c.id==='studio-online-theater').sourceDetail='《线上剧场》PPT 内嵌视频 ppt/media/media1.mp4；首页为第 4 秒起核心切片，详情为 24 秒压缩研究剪辑。';
 V5_CASES.find(c=>c.id==='studio-monster-walk-cuicui').sourceDetail='《怪物里》翠翠原创行走序列帧，按时间顺序抽帧合成循环动图与视频；未使用 AI 补画角色。';
+Object.assign(STUDIO_CASES.find(c=>c.id==='studio-branch-texture'),{title:'根枝｜生长中的光与树形',keyword:'生长 / 分枝 / 光感',keywords:['生长','分枝','光感'],description:'枝干在黑暗中逐层点亮，主枝与细枝保持不同的生长节奏。选择树形逐渐形成的过程，而不是静态参数测试，让分枝、光感和内部能量直接对应微观创生。',potential:'可用于生长型图标、连接路径和跨屏拓扑：从来源节点向目标节点生长，保留主干与细枝的层级和相位。',url:BASE+'01. Nature Ink Series-parts test/01. 根枝.mp4',video:BASE+'01. Nature Ink Series-parts test/01. 根枝.mp4',algorithm:'lsystem',sourceDetail:'《根枝》第 18 秒起，选择树形与光感共同生长的段落；详情为 24 秒压缩研究剪辑。'});
+Object.assign(STUDIO_CASES.find(c=>c.id==='studio-peach-garden'),{title:'桃幻｜树叶的聚合与消散',keyword:'树叶 / 粒子 / 聚合',keywords:['树叶','粒子','聚合'],description:'粉白花叶从离散粒子聚合成形，又在边缘逐渐消散。选择叶片组织方式不断改变的段落，突出粒子、材料和整体轮廓之间的关系。',potential:'可用于跨屏内容移交与状态转换：旧页面沿边缘释放粒子，新页面在同一视觉中心重新聚合，保留内容连续性。',url:BASE+'01. Nature Ink Series-parts test/03. 桃幻 树叶test.mp4',video:BASE+'01. Nature Ink Series-parts test/03. 桃幻 树叶test.mp4',algorithm:'growth',sourceDetail:'《桃幻》树叶测试第 12 秒起，选择粒子聚合与消散的段落；详情为 24 秒压缩研究剪辑。'});
+Object.assign(STUDIO_CASES.find(c=>c.id==='studio-taoling-smoke'),{title:'桃灵·烟｜圆窗中的烟雾生成',keyword:'烟雾 / 颗粒 / 微形态',keywords:['烟雾','颗粒','微形态'],description:'紫色烟雾在圆窗内聚集、翻卷并改变体积，窗格和观众剪影提供清晰尺度。选择烟雾最饱满的段落，避免只有模糊色团的画面。',potential:'可用于待机微动、加载与跨屏聚合：小屏呈现局部种子，大屏延续同一生成阶段和空间框景。',url:BASE+'01. Nature Ink Series-parts test/05. 桃灵-烟 空间装置.mp4',video:BASE+'01. Nature Ink Series-parts test/05. 桃灵-烟 空间装置.mp4',sourceDetail:'《桃灵·烟》空间装置第 12 秒起，选择圆窗内烟雾生成最完整的段落；详情为 24 秒压缩研究剪辑。'});
+Object.assign(STUDIO_CASES.find(c=>c.id==='studio-peach-spirit'),{title:'桃灵·砂｜空间中的砂粒显影',keyword:'砂粒 / 显影 / 空间',keywords:['砂粒','显影','空间'],description:'砂粒从朦胧覆盖逐渐显出花树与空间层次，变化由颗粒密度完成，而不是硬切两张图片。选择花树开始显影的段落，与桃灵·烟的圆窗烟雾形成明确区分。',potential:'可用于相册回顾、文件归档和跨屏内容移交：旧状态化为砂粒后在新位置重新聚合，保持内容和空间连续性。',url:BASE+'01. Nature Ink Series-parts test/05. 桃灵-砂 内景空间.mp4',video:BASE+'01. Nature Ink Series-parts test/05. 桃灵-砂 内景空间.mp4',sourceDetail:'《桃灵·砂》内景空间第 21 秒起，选择砂粒逐渐显出花树的段落；详情为 24 秒压缩研究剪辑。'});
+Object.assign(STUDIO_CASES.find(c=>c.id==='studio-tingyun-flow'),{title:'停云｜云形的连续变奏',keyword:'云形 / 形变 / 留白',keywords:['云形','形变','留白'],description:'云团在留白中连续改变轮廓，像云、像动物又始终不被固定命名。选择形态变奏最清晰的段落，避免大面积空白和缺少变化的画面。',potential:'可用于加载、等待和环境状态：以局部形变表达过程，低算力模式保留几组连续静帧。',url:BASE+'01. Nature Ink Series-parts test/04. 停云下.mp4',video:BASE+'01. Nature Ink Series-parts test/04. 停云下.mp4',algorithm:'noise',sourceDetail:'《停云下》第 12 秒起，选择云形连续变奏的段落；详情为 24 秒压缩研究剪辑。'});
+Object.assign(STUDIO_CASES.find(c=>c.id==='studio-mozhi-material'),{title:'墨脂｜户外圆窗中的形态呼吸',keyword:'墨脂 / 圆窗 / 形变',keywords:['墨脂','圆窗','形变'],description:'白色圆窗中的墨形不断收放，户外夜色和观看者剪影共同构成前后层次。选择形态变化最明确的段落，呈现材料的柔性、吸收与呼吸感。',potential:'可用于系统材质、触控和笔迹反馈：让不同材料拥有不同阻尼、扩散与恢复方式，跨屏保持同一形态相位。',url:BASE+'01. Nature Ink Series-parts test/02. 墨脂 户外装置.mp4',video:BASE+'01. Nature Ink Series-parts test/02. 墨脂 户外装置.mp4',sourceDetail:'《墨脂》户外装置第 12 秒起，选择圆窗内形态连续收放的段落；详情为 24 秒压缩研究剪辑。'});
+Object.assign(STUDIO_CASES.find(c=>c.id==='studio-thread-chess'),{keyword:'线迹 / 流场 / 共同生成',keywords:['线迹','流场','共同生成'],description:'细密线迹在共同画面中流动、缠绕并逐渐形成整体纹理，局部运动与集体图案同时可见。这里分析共同生成的视觉结果，不把纪录片画面误写成实时多人交互证明。'});
+const V3_PATH='生命感研究/11-25 MoodBoard Final v3.pptx';
+const v3=(id,tag,subtheme,title,credit,keyword,description,potential,n,start,algorithm)=>{
+ const c=extra(id,tag,subtheme,title,credit,keyword,description,potential,V3_PATH,start,algorithm,'MoodBoard Final v3 内嵌视频');
+ c.sourcePpt=V3_PATH;c.sourceDetail=`《11-25 MoodBoard Final v3》内嵌 media${n}.mp4；首页为第 ${start} 秒起核心切片，详情为压缩研究剪辑。`;return c;
+};
+const V3_CASES=[
+ v3('toufu','anthro','minimal','Toufu / Sociable PC','Sociable PC','极简 / 回应 / 物件主体','白色物件以少量姿态回应人的靠近，复杂外形被主动舍弃，注意力集中在它与人的距离和反应时机。','可用于锁屏和系统助手：以一次朝向、停顿或退后表达回应，不让复杂动作抢走当前任务。',1,0,'attention'),
+ v3('qoobo','anthro','minimal','Qoobo','Yukai Engineering','毛绒 / 重心 / 触碰','毛绒身体与尾部动作把触碰转成重心变化，柔软外观只是入口，真正形成灵动的是受力后的细微反馈。','可用于手表轻触与手机通知：用短促、可取消的局部动作回应，而非每次都播放完整角色动画。',4,0,'spring'),
+ v3('double-taker','anthro','minimal','Double-Taker (Snout)','Daniel Rozin','回望 / 视线 / 自主姿态','机械主体通过回望、停顿和姿态切换表达注意，动作有对象，也保留不完全服从指令的性格。','可用于通知与助手注意：先指向事件，再决定是否靠近，保留迟疑和不应答的状态。',3,0,'attention'),
+ v3('test387','anthro','minimal','Test 387 Tentacle-HDRP','Wenzy（温子阳）· 2019','触手 / 柔性 / 关节','触手在蓝色空间中连续弯曲，关节之间的延迟与约束让抽象形体呈现灵巧的身体感。','可用于跨屏指向与姿态反馈：手机提供目标方向，大屏延续同一组关节和柔性运动。',8,0,'fabrik'),
+ v3('microloop','anthro','micro','Microloop_169','MoodBoard v3 案例记录','微流 / 图案 / 自组织','绿色场域中的黑色流线不断组织成细密图案，中心与外围的变化相互关联，呈现微观的自组织美学。','可用于生成式壁纸与设备群组图案：共享局部规则和种子，小屏观察局部，大屏展开整体纹理。',18,0,'reaction'),
+ v3('diligent-shadow','anthro','character','The Diligent Shadow','远藤紘也 · 2020','影子 / 劳作 / 幽默','影子反复执行看似简单甚至无用的劳动，坚持、笨拙和节奏共同形成幽默而鲜明的性格。','可用于非任务型角色与系统彩蛋：让无明确目标的小动作成为个性，而不是把每次行为都包装成效率。',24,2,'attention'),
+ v3('holon','bio','mapping','Holon','Jon McCormack · 2023','矩阵 / 灯列 / 数据场','城市暮色中的灯列以群体形式呈现信息，单个光点与整体矩阵同时可见，强调多重数据的组合与空间秩序。','可用于设备群组、状态矩阵和跨屏数据场：各端保留单元身份，同时共享整体构图与时间基准。',30,3,'kuramoto'),
+ v3('corn-starch','daily','physical','Corn Starch and Water Dancing in a Speaker','MoodBoard v3 案例记录','振动 / 非牛顿 / 声场','马铃薯粉与水在扬声器振动下改变形态，声音频率直接驱动物料的聚合、断裂和流动。','可用于音乐与触觉反馈：用真实材料的运动解释频率，而不是只把频谱画成装饰波形。',31,0,'material'),
+ v3('apple-music','daily','physical','Apple Music — Made by Sound','Apple Music','声波 / 液体 / 形状','液体和柔性形体随声音改变轮廓，声音被转成可以观察的物理作用，而非界面上的抽象播放按钮。','可用于跨屏音乐体验：小屏控制声源，大屏呈现材料形变，暂停与静音共享同一状态。',32,5,'material'),
+ v3('protrude-flow','daily','physical','Protrude Flow','MoodBoard v3 案例记录','突起 / 铁磁流体 / 场','铁磁流体在场作用下形成密集的尖峰与纹理，微小场强变化被放大成清晰的形体起伏。','可用于场强、距离与连接状态的可视化：让参数改变对应可读的形变，而不是随机抖动。',33,3,'field'),
+ v3('shy-society','relation','companionship','Shy Society','DRIFT','灯具 / 呼吸 / 陪伴','灯具以接近、退避和缓慢呼吸组成群体的陪伴关系，光的存在不依赖持续命令。','可用于环境屏与陪伴型设备：保持低强度、可预测的节律，允许安静和自主活动。',42,3,'homeostasis'),
+ v3('moqut','relation','companionship','moQut','ICD-Lab · 2025','松弛 / 自主 / 共处','小物件拥有自主活动节律，不始终等待指令，也不过度打扰，只在特定情境下与环境轻微联动。','可用于陪伴型桌面与跨屏环境主体：保留无任务目标和随机松弛感，让用户可以选择观看或不互动。',43,0,'homeostasis'),
+ v3('loopimal','relation','audiovisual','Loopimal','YATATOY · 2015','音乐 / 拼贴 / 姿态','声音片段被组合成有姿态的角色节奏，用户能直接听见组合结果，也能从动作理解音乐的进入和退出。','可用于儿童音乐创作和跨屏演奏：以身体与图形的组合表达音轨，而不是只显示时间线。',46,0,'turns'),
+ v3('hidden-worlds','relation','audiovisual','Hidden Worlds of Noise and Voice','Tmema · 2002','声源 / 身体 / 空间','声音、身体和影像在同一空间中相互塑造，听觉经验不再只是画面的附属，而成为行动发生的场所。','可用于空间音频与远程表演：保留声源方向、身体位置和真实进入路径，静音时提供等价空间线索。',47,0,'material'),
+ v3('ar-sound','relation','audiovisual','AR 声音实验','Zach Lieberman · 2017','距离 / 空间声场 / 身体移动','时间被转成空间距离，用户通过身体与手机的移动接近、离开或逆向穿过声音。','可用于 AR 与跨屏声场：以真实位置组织播放关系，让声音接近、远离和回放在空间中可理解。',48,3,'field'),
+ extra('recursions','relation','play','遞迴（RECURSIONS）','钟愫君 · 2026','机械臂 / 共创 / 轮流','参与者与机械臂围绕同一画面进行创作，双方动作和已有线迹共同决定后续过程，呈现“和而不同”的协作关系。','可用于多设备共同创作：保留不同主体的笔迹与顺序，让系统接续而不是覆盖参与者的动作。','生命感研究/11-25 MoodBoard Final v3.pptx',0,'turns','MoodBoard Final v3 案例与静态图像')
+];
+Object.assign(V3_CASES[V3_CASES.length-1],{media:'assets/research/guided/v3-recursions.gif',mediaType:'image/gif',guided:true,sourcePpt:V3_PATH,sourceDetail:'《11-25 MoodBoard Final v3》RECURSIONS 静态图像的动态导览，不冒充原始运动。'});
+const DEDUPLICATE_IDS=['ppt-source-body','studio-avatar-capture','studio-avatar-stage-live','ppt-borrow-mountain','studio-fish-language','studio-borrow-fish','studio-qibaishi-lighting','ppt-walk','studio-walk-old-town','studio-roaming-life','ppt-peach','ppt-threads-moon','ppt-melodic-echo','ppt-threads-play','ppt-ink-portraits','ppt-threads','ppt-canglang','studio-branch-light','studio-genzhi-palace','studio-fifteen-process','studio-monster-ending','studio-monster-walk-cuicui'];
 const GUIDED_IDS=['ppt-lanting','ppt-caisson','ppt-glyph','ppt-canglang','ppt-threads-moon','ppt-connect-transfer','ppt-tablecloth'];
-const ALL_CASES=[...PPT_CASES,...STUDIO_CASES,...V5_CASES];
+const ALL_CASES=[...PPT_CASES,...STUDIO_CASES,...V5_CASES,...V3_CASES].filter(c=>!DEDUPLICATE_IDS.includes(c.id));
+const V3_CLASS={
+ 'ppt-slow-dance':['anthro','cycle'],'studio-peach-garden':['anthro','cycle'],'studio-thread-infinity':['anthro','cycle'],'ppt-primordial':['anthro','cycle'],
+ 'ppt-healing-pool':['anthro','micro'],'ppt-elements':['anthro','micro'],'ppt-into-sun':['bio','feedback'],'studio-monster-intro':['anthro','character'],
+ 'studio-shuowang-2025':['time','acceleration'],'ppt-kungfu':['time','trajectory'],'ppt-obliteration':['time','slowness'],
+ 'ppt-all-mirrors':['daily','material'],'ppt-layers':['daily','material'],'ppt-inform':['daily','material'],'ppt-materiable':['daily','material'],'ppt-haptographer':['bio','feedback']
+};
 ALL_CASES.forEach(c=>{
+ if(c.tag==='bio'&&c.subtheme==='micro')c.tag='anthro';
+ if(c.tag==='bio'&&c.subtheme==='cycle')c.tag='anthro';
+ if(c.tag==='anthro'&&c.subtheme==='feedback')c.tag='bio';
+ if(V3_CLASS[c.id]){c.tag=V3_CLASS[c.id][0];c.subtheme=V3_CLASS[c.id][1]}
  c.preview=`assets/research/previews/${c.id.replace(/^studio-/,'')}.mp4`;
  c.previewDetail=c.supplement?'24 秒压缩研究剪辑；原片不足 24 秒时按原时长保留。':'原始嵌入媒体转码预览，完整原片与作品链接继续保留。';
  if(GUIDED_IDS.includes(c.id)){c.media=`assets/research/guided/${c.id}.gif`;c.mediaType='image/gif';c.guided=true;c.previewDetail='原作为静态图像；当前为平移与缩放动态导览，不冒充原作运动。'}
