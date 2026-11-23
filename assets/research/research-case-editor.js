@@ -25,5 +25,6 @@ document.addEventListener('dragover',e=>{if(!dragOrder)return;e.preventDefault()
 document.addEventListener('dragleave',e=>{const tile=e.target.closest('[data-case-wrapper]');if(tile)tile.classList.remove('drag-over')});
 document.addEventListener('drop',e=>{if(!dragOrder)return;e.preventDefault();const tile=e.target.closest('[data-case-wrapper]');if(tile)dropReorder(dragOrder,tile.dataset.caseWrapper);dragOrder=null;$$('.dragging,.drag-over').forEach(el=>el.classList.remove('dragging','drag-over'))});
 document.addEventListener('dragend',()=>{dragOrder=null;$$('.dragging,.drag-over').forEach(el=>el.classList.remove('dragging','drag-over'))});
+document.addEventListener('life:mediarefresh',()=>sourceCache.clear());
 window.CaseEditor={trimHTML,mount,refresh};
 })();
