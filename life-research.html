@@ -107,7 +107,8 @@
 <script>
 (()=>{
 'use strict';
-const $=s=>document.querySelector(s),CODE_LOCK={salt:'IvMCggj8sep5yCb96WmCiQ==',iter:310000,check:'d7df848bd7a4bb281a252acd02cddbbcf2613bd3dcb94ddb123f661d57c40478',store:'mmLifeAccessKey'};
+const $=s=>document.querySelector(s);
+const CODE_LOCK={salt:'IvMCggj8sep5yCb96WmCiQ==',iter:310000,check:'d7df848bd7a4bb281a252acd02cddbbcf2613bd3dcb94ddb123f661d57c40478',store:'mmLifeAccessKey'};
 const state={unlocked:false,keyHex:''},hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''),bytes=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 window.LifeAuth={get unlocked(){return state.unlocked},get keyHex(){return state.keyHex}};
 async function valid(key){if(!/^[0-9a-f]{128}$/i.test(key||''))return false;try{const raw=Uint8Array.from(key.match(/../g),x=>parseInt(x,16));return hex(await crypto.subtle.digest('SHA-256',raw))===CODE_LOCK.check}catch(e){return false}}
