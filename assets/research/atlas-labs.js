@@ -58,7 +58,7 @@ const codes=Object.fromEntries(defs.map(d=>[d.id,d.draw.toString()]));
 const motionQuery=matchMedia('(prefers-reduced-motion: reduce)');
 const reduced=()=>motionQuery.matches||document.body.classList.contains('reduce-motion');
 function resize(){const r=canvas.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,params[selectedId]?.quality||1.5);api.w=Math.max(1,r.width);api.h=Math.max(1,r.height);canvas.width=Math.round(api.w*d);canvas.height=Math.round(api.h*d);ctx.setTransform(d,0,0,d,0,0);dirty=true}
-function defaultParams(id){return Object.fromEntries(defs.find(d=>d.id===id).params.map(p=>[p.key,p.value]))}
+function defaultParams(id){return{...Object.fromEntries(defs.find(d=>d.id===id).params.map(p=>[p.key,p.value])),...GLOBAL_DEFAULTS}}
 function withParams(code,values){const header=`\napi.params = ${JSON.stringify(values,null,2)};\n`,stripped=String(code).replace(/^(function\s*\(api,\s*U\)\s*\{)(?:\s*api\.params\s*=\s*\{[\s\S]*?\};)?/,'$1');return stripped.replace(/^(function\s*\(api,\s*U\)\s*\{)/,`$1${header}`)}
 function syncLiveCode(){codes[selectedId]=withParams(codes[selectedId],params[selectedId]);$('#algoCode').value=codes[selectedId]}
 function compile(){try{const fn=new Function('TAU','clamp',`"use strict";return (${codes[selectedId]});`)(TAU,clamp);if(typeof fn!=='function')throw new Error('代码需要返回 function(api, U)');compiled=fn;$('#codeStatus').classList.remove('error');if(editing)$('#codeStatus').textContent='代码已编译；参数变化会实时写入代码。';return true}catch(e){compiled=null;$('#codeStatus').textContent=e.message;$('#codeStatus').classList.add('error');return false}}
