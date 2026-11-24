@@ -8,15 +8,15 @@ const S=(key,label,value,options)=>({key,label,value,options});
 const A=d=>{d.no=defs.length+1;d.origin=d.origin||'基础算法';defs.push(d)};
 const U={
  clamp,
- bg(ctx,w,h,color='#05090e'){const p=params[selectedId]||{};ctx.fillStyle=color;ctx.fillRect(0,0,w,h);if((p.grid??1)==0)return;const gap=p.gridSize||48;ctx.strokeStyle='rgba(151,195,194,.045)';ctx.lineWidth=1;for(let x=gap/2;x<w;x+=gap){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let y=gap/2;y<h;y+=gap){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}},
- dot(ctx,x,y,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill()},
- line(ctx,points,color,width=1){if(!points.length)return;ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke()},
+ bg(ctx,w,h,color='#05090e'){const p=params[selectedId]||{},after=clamp(p.afterimage||0,0,.95);ctx.fillStyle=after&&color[0]==='#'?U.rgba(color,1-after):color;ctx.fillRect(0,0,w,h);if((p.ambient??.6)>0){const g=ctx.createRadialGradient(w*.5,h*.45,0,w*.5,h*.45,Math.max(w,h)*.62);g.addColorStop(0,U.rgba(accentColor,.16*p.ambient));g.addColorStop(1,U.rgba(accentColor,0));ctx.fillStyle=g;ctx.fillRect(0,0,w,h)}if((p.grid??1)==0)return;const gap=p.gridSize||48;ctx.strokeStyle='rgba(151,195,194,.045)';ctx.lineWidth=1;for(let x=gap/2;x<w;x+=gap){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let y=gap/2;y<h;y+=gap){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}},
+ dot(ctx,x,y,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r*(params[selectedId]?.pointScale||1),0,TAU);ctx.fill()},
+ line(ctx,points,color,width=1){if(!points.length)return;ctx.strokeStyle=color;ctx.lineWidth=width*(params[selectedId]?.lineScale||1);ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke()},
  blob(ctx,x,y,r,t,phase=0,lobes=3){const N=40,pts=[];for(let j=0;j<N;j++){const a=j/N*TAU,rr=r*(1+.07*Math.sin(lobes*a+t*.9+phase)+.035*Math.cos(2*a-t*.6));pts.push({x:x+Math.cos(a)*rr,y:y+Math.sin(a)*rr})}ctx.beginPath();pts.forEach((p,j)=>j?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath()},
  noise(x){return Math.sin(x*1.73+Math.sin(x*.41)*2.1)*.56+Math.sin(x*3.17+1.4)*.28+Math.sin(x*7.13-.8)*.16},
- rng(seed=1){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}},
+ rng(seed=1){let a=(seed+Math.round(params[selectedId]?.seed||0)*7919)>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}},
  rgba(hex,a){const n=parseInt(hex.slice(1),16);return`rgba(${n>>16},${n>>8&255},${n&255},${a})`}
 };
-let audio=null,soundOn=false;
+let audio=null,soundOn=false,accentColor='#7bd9d0';
 U.tone=(freq=220,duration=.16,gainValue=.035,type='sine',pan=0,attack=.015)=>{if(!soundOn)return;try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!audio)audio=new AC();if(audio.state==='suspended')audio.resume();const t=audio.currentTime,o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.setValueAtTime(freq,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(gainValue,t+Math.max(.005,attack));g.gain.exponentialRampToValueAtTime(.0001,t+duration);o.connect(g);if(audio.createStereoPanner){const p=audio.createStereoPanner();p.pan.value=clamp(pan,-1,1);g.connect(p);p.connect(audio.destination)}else g.connect(audio.destination);o.start(t);o.stop(t+duration+.02)}catch(e){}};
 A({id:'oscillator',cat:'bio',title:'周期振荡器',en:'Oscillator / Sine Wave',description:'用周期函数更新尺度、亮度与波形，让同一对象持续收缩与扩张。',mapping:'呼吸、脉搏与周期性收缩；关键在于振幅、频率与相位，而不是所有对象同频。',interaction:'移动中心，拖动频率和振幅，比较正弦基波与叠加谐波。',potential:'锁屏呼吸光、充电脉冲、音频播放状态；跨屏共享相位而非各自重启。',params:[P('rate','频率',.2,3,.05,.8,' Hz'),P('amplitude','振幅',.05,.6,.01,.22),P('phase','相位',0,6.28,.01,0,' rad'),P('harmonic','谐波',0,1,.01,.18),P('speed','时间倍率',.1,2,.05,1,'×')],reset(api){api.state.trail=[]},draw:function(api,U){const{ctx,w,h,state:s,params:p,input:i,time:t}=api;U.bg(ctx,w,h);const x=i.active?i.x:w*.5,y=i.active?i.y:h*.43,phase=t*p.rate*TAU+p.phase,v=Math.sin(phase)+p.harmonic*Math.sin(phase*2.7),r=Math.min(w,h)*(.18+p.amplitude*v);for(let j=5;j>=0;j--){ctx.strokeStyle=U.rgba('#7bd9d0',.1+j*.07);ctx.lineWidth=1;U.blob(ctx,x,y,r*(.55+j*.13),t,p.phase+j*.4,2);ctx.stroke()}ctx.strokeStyle='rgba(232,198,140,.45)';ctx.beginPath();for(let px=20;px<w-20;px++){const q=(px-20)/(w-40),yy=h*.84+Math.sin(q*TAU*2+phase)*25*(1+p.harmonic*Math.sin(q*TAU*5));px===20?ctx.moveTo(px,yy):ctx.lineTo(px,yy)}ctx.stroke();api.status=v>0?'INHALE · 扩张':'EXHALE · 收束';api.stats={频率:p.rate.toFixed(2)+' Hz',振幅:(p.amplitude*100).toFixed(0)+'%',周期:(1/p.rate).toFixed(2)+' s'}}});
 A({id:'noise',cat:'bio',title:'连续噪声',en:'Perlin / Simplex Noise / fBM',description:'采样连续噪声并叠加不同尺度，让轮廓产生不重复但仍连贯的微变化。',mapping:'微颤、漂浮与不完全重复的有机性；连续噪声比逐帧随机更能保留运动记忆。',interaction:'移动指针改变形态中心，调节尺度、细节与八度叠加。',potential:'壁纸微动、图标材质、待机角色局部纹理；跨端用相同种子延续形态。',params:[P('scale','空间尺度',.2,2,.05,.85),P('detail','形变幅度',0,.5,.01,.18),P('octaves','叠加层数',1,5,1,3),P('speed','时间倍率',.05,1.5,.05,.45,'×')],reset(api){},draw:function(api,U){const{ctx,w,h,params:p,input:i,time:t}=api;U.bg(ctx,w,h);const x=i.active?i.x:w*.5,y=i.active?i.y:h*.48,r=Math.min(w,h)*.22;for(let layer=5;layer>=0;layer--){ctx.beginPath();for(let j=0;j<=100;j++){const a=j/100*TAU;let n=0,amp=1,freq=1,norm=0;for(let o=0;o<p.octaves;o++){n+=U.noise(Math.cos(a)*p.scale*freq+Math.sin(a)*p.scale*freq+t*.3+layer*2.7)*amp;norm+=amp;amp*=.5;freq*=2.03}n/=norm;const rr=r*(.5+layer*.15)*(1+n*p.detail*4),px=x+Math.cos(a)*rr,py=y+Math.sin(a)*rr;j?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.closePath();ctx.strokeStyle=U.rgba('#7bd9d0',.1+layer*.09);ctx.stroke()}api.status='FIELD · 连续场采样';api.stats={八度:p.octaves,尺度:p.scale.toFixed(2),种子:'FIXED 01'}}});
@@ -120,6 +120,179 @@ A({id:'rhythm-atlas',cat:'bio',title:'生命节拍图谱',en:'Heart / Breath / P
 function makeCell(x,y,r,generation,rand){return{x,y,r,base:r,generation,angle:rand()*TAU,phase:rand()*TAU,hue:rand(),energy:0}}
 A({id:'cell-division',cat:'bio',title:'细胞周期与分裂',en:'Cell Cycle / Mitosis / Nutrient Field',origin:'生物生长',description:'细胞在营养场中经历生长、成熟与分裂，子代保留部分形态，同时产生微小差异。',mapping:'以细胞周期为交互隐喻：局部营养改变生长速率，分裂阈值决定节奏，子代数量和形态连续可见。',interaction:'按住画面投放营养，调整细胞数量、营养、周期速度、分裂阈值、黏附、变异、音高和声像。',potential:'细胞与生物生长可视化、任务进度、设备群组繁衍、生成式图案和音画交互装置。',params:[P('count','初始细胞',4,24,1,10),P('nutrient','营养供给',.1,2,.05,.75),P('cycleSpeed','周期速度',.2,2,.05,.75,'×'),P('divisionSize','分裂阈值',30,100,1,52,' px'),P('mutation','子代变异',0,.5,.01,.12),P('adhesion','细胞黏附',0,2,.05,.6),P('noise','膜扰动',0,.5,.01,.12),P('pitch','分裂音高',80,660,5,260,' Hz'),P('pan','立体声像',-1,1,.05,0),S('sound','分裂声音','tone',[['off','静音'],['tone','纯音'],['material','材料音']])],reset(api,U){const rand=U.rng(31),nutrients=Array.from({length:90},()=>({x:rand()*api.w,y:rand()*api.h,vx:(rand()-.5)*9,vy:(rand()-.5)*9}));api.state={cells:[],initialCount:0,nutrients,stage:'G1',generation:1,rand}},draw:function(api,U){const{ctx,w,h,state:s,params:p,input:i,dt}=api;U.bg(ctx,w,h);if(s.initialCount!==p.count){s.cells=Array.from({length:p.count},(_,j)=>makeCell(w*.25+s.rand()*w*.5,h*.22+s.rand()*h*.45,11+s.rand()*6,1,s.rand));s.initialCount=p.count}for(const n of s.nutrients){n.x=(n.x+n.vx*dt+w)%w;n.y=(n.y+n.vy*dt+h)%h;U.dot(ctx,n.x,n.y,1.2,'rgba(123,217,208,.24)')}if(i.down){const n=s.nutrients[Math.floor(api.time*7)%s.nutrients.length];n.x=i.x;n.y=i.y;U.dot(ctx,i.x,i.y,8,'rgba(123,217,208,.35)')}let maxGeneration=1,stage='G1';for(const c of s.cells){let food=0;for(const n of s.nutrients){const d=Math.hypot(c.x-n.x,c.y-n.y);if(d<95)food+=1-d/95}const previous=c.r;c.r+=dt*p.cycleSpeed*p.nutrient*(1+food*.55);c.phase+=dt*(.8+c.hue*.4);c.x+=Math.cos(c.angle)*dt*(2+p.noise*12)+Math.sin(c.phase*2)*p.noise*dt*8;c.y+=Math.sin(c.angle)*dt*(2+p.noise*8)+Math.cos(c.phase*1.7)*p.noise*dt*6;if(c.x<15)c.x=w-15;if(c.x>w-15)c.x=15;if(c.y<30)c.y=h-20;if(c.y>h-20)c.y=30;stage=c.r>p.divisionSize*.85?'M':c.r>p.divisionSize*.6?'G2':c.r>p.divisionSize*.35?'S':'G1';if(c.r>p.divisionSize){if(s.cells.length<36){const angle=c.angle+(s.rand()-.5)*p.mutation*2,child=makeCell(clamp(c.x+Math.cos(angle)*c.r*.8,18,w-18),clamp(c.y+Math.sin(angle)*c.r*.8,35,h-20),c.base*(.85+p.mutation*s.rand()*.2),c.generation+1,s.rand);child.hue=clamp(c.hue+(s.rand()-.5)*p.mutation,0,1);s.cells.push(child)}c.r=c.base;c.generation++;maxGeneration=Math.max(maxGeneration,c.generation);if(soundOn&&p.sound!=='off')U.tone(p.pitch*(1+c.generation*.06),.2,.022,p.sound==='material'?'triangle':'sine',p.pan)}c.energy=food;ctx.save();ctx.shadowColor=c.hue>.5?'#6ad4c8':'#9a8ad4';ctx.shadowBlur=10+food*7;ctx.fillStyle=c.hue>.5?'rgba(106,212,200,.09)':'rgba(154,138,212,.09)';ctx.strokeStyle=c.hue>.5?'rgba(106,212,200,.66)':'rgba(154,138,212,.66)';U.blob(ctx,c.x,c.y,c.r,api.time+c.phase,c.angle,3+Math.floor(c.hue*3));ctx.fill();ctx.stroke();ctx.shadowBlur=0;U.dot(ctx,c.x,c.y,Math.max(2,c.r*.17),c.hue>.5?'rgba(106,212,200,.5)':'rgba(154,138,212,.5)');ctx.strokeStyle='rgba(237,241,237,.12)';ctx.beginPath();ctx.arc(c.x,c.y,c.r*.55,0,TAU);ctx.stroke();ctx.restore()}for(let a=0;a<s.cells.length;a++)for(let b=a+1;b<s.cells.length;b++){const ca=s.cells[a],cb=s.cells[b],d=Math.hypot(ca.x-cb.x,ca.y-cb.y);if(d<120)U.line(ctx,[ca,cb],`rgba(123,217,208,${(1-d/120)*p.adhesion*.12})`,.6)}s.generation=Math.max(s.generation,maxGeneration);s.stage=stage;api.status=stage.toUpperCase()+' · 细胞周期与分裂';api.stats={阶段:stage,细胞:s.cells.length,世代:s.generation,营养:p.nutrient.toFixed(2)}}});
 A({id:'bio-sonify',cat:'bio',title:'生命场声化',en:'Living Field / Sonification / Audio-Visual',origin:'音画互动',description:'局部出生、死亡与扩散形成连续生命场，密度、节奏与声部共同演化。',mapping:'将局部生命事件映射为图形和声音：密度决定声部，音阶保留和谐关系，视觉和听觉共享同一时间基准。',interaction:'按住画面播种生命，调整出生率、扩散、衰减、密度、音阶、音高、节奏、包络和声像。',potential:'生成式声景、细胞生长音乐、跨屏多模态反馈、低干扰环境音与可解释的声画装置。',params:[P('density','初始密度',.03,.65,.01,.16),P('birth','出生率',.05,2,.05,.65),P('diffusion','扩散系数',.05,1,.05,.38),P('decay','环境衰减',.005,.3,.005,.055),P('tempo','声部速度',.5,12,.5,4,' 音/秒'),P('pitch','基础音高',80,440,5,196,' Hz'),S('scale','音阶','pentatonic',[['pentatonic','五声音阶'],['major','自然大调'],['minor','自然小调']]),S('waveform','声音波形','sine',[['sine','正弦'],['triangle','三角'],['square','方波'],['sawtooth','锯齿']]),P('attack','起音时长',.005,.2,.005,.03,' s'),P('release','释放时长',.05,1.2,.05,.38,' s'),P('pan','立体声像',-1,1,.05,0),S('sound','声画模式','tone',[['off','静音'],['tone','纯音'],['material','材料音']])],reset(api,U){const rand=U.rng(83);api.state={grid:null,generation:0,acc:0,noteAcc:0,canvas:null,rand}},draw:function(api,U){const{ctx,w,h,state:s,params:p,input:i,dt}=api;const W=48,H=27,N=W*H;if(!s.grid){s.grid=Float32Array.from({length:N},()=>s.rand()<p.density?1:0);s.next=new Float32Array(N);s.canvas=document.createElement('canvas');s.canvas.width=W;s.canvas.height=H;s.image=s.canvas.getContext('2d').createImageData(W,H)}s.acc+=dt;s.noteAcc+=dt;if(s.acc>.18){s.acc=0;s.generation++;for(let y=0;y<H;y++)for(let x=0;x<W;x++){const q=y*W+x,neighbors=[s.grid[y*W+(x-1+W)%W],s.grid[y*W+(x+1)%W],s.grid[((y-1+H)%H)*W+x],s.grid[((y+1)%H)*W+x]],avg=neighbors.reduce((a,b)=>a+b,0)/4;s.next[q]=clamp(s.grid[q]+(avg-s.grid[q])*p.diffusion+(s.rand()<p.birth*.045 ? .16 : -p.decay),0,1)}[s.grid,s.next]=[s.next,s.grid]}if(i.down){const cx=Math.floor(i.x/w*W),cy=Math.floor(i.y/h*H);for(let y=-2;y<=2;y++)for(let x=-2;x<=2;x++)s.grid[((cy+y+H)%H)*W+(cx+x+W)%W]=1}let density=0;for(let q=0;q<N;q++){const v=s.grid[q];density+=v;const j=q*4;s.image.data[j]=Math.floor(5+v*65);s.image.data[j+1]=Math.floor(9+v*190);s.image.data[j+2]=Math.floor(14+v*165);s.image.data[j+3]=255}s.canvas.getContext('2d').putImageData(s.image,0,0);ctx.drawImage(s.canvas,0,0,w,h);density/=N;if(s.noteAcc>=1/p.tempo){s.noteAcc=0;if(density>.035&&soundOn&&p.sound!=='off'){const scales={pentatonic:[1,9/8,5/4,3/2,5/3,2,9/4,5/2],major:[1,9/8,5/4,4/3,3/2,5/3,15/8,2],minor:[1,9/8,6/5,4/3,3/2,8/5,9/5,2]},ratio=scales[p.scale][Math.min(7,Math.floor(density*10))];U.tone(p.pitch*ratio,p.release,.012+density*.035,p.sound==='material'?'triangle':p.waveform,p.pan,p.attack)}}api.status=density>.45?'CHORUS · 生命场密集':density>.12?'GROW · 局部出生与扩散':'LISTEN · 低密度留白';api.stats={密度:(density*100).toFixed(1)+'%',世代:s.generation,音阶:p.scale,节奏:p.tempo+' 音/秒'}}});
+A({id:'firefly-sync',cat:'bio',title:'萤火虫脉冲同步',en:'Pulse-Coupled Oscillators / Firefly Synchrony',origin:'生物同步',description:'每只萤火虫独立充能并闪光，闪光会轻推感知半径内的邻居；局部耦合让杂乱闪烁逐渐汇成共同节拍。',mapping:'同步不是被指挥出来的：个体只回应邻近的光，群体节拍从相互推动中长出；序参量让“整齐程度”可以被看见和听见。',interaction:'按住画面释放一次引导光脉冲，附近个体会被推到更近的相位；调整耦合、频率离散和感知半径，观察同步度。',potential:'多设备共享节拍、群体通知、设备发现的闪烁确认，以及无需中央时钟的环境光与声音同步。',
+ params:[P('count','萤火数量',12,90,1,48),P('rate','自然闪频',.1,1.2,.02,.35,' Hz'),P('spread','频率离散',0,.6,.01,.18),P('coupling','耦合强度',0,.3,.005,.07),P('radius','感知半径',40,320,5,150,' px'),P('drift','漂移速度',0,60,1,16),P('decay','余辉衰减',1,10,.1,4.2),P('glowSize','光晕尺度',.5,3,.05,1.2,'×'),P('links','脉冲连线',0,1,.05,.5),S('gauge','同步仪表',1,[[1,'显示'],[0,'隐藏']]),P('pitch','基础音高',110,880,5,330,' Hz'),P('pan','声像宽度',0,1,.05,.6),S('sound','声音','tone',[['off','静音'],['tone','纯音'],['material','材料音']])],
+ reset(api,U){const rand=U.rng(17);api.state={rings:[],fired:0,lastPulse:-9,flies:Array.from({length:90},()=>({x:rand()*api.w,y:rand()*api.h,a:rand()*TAU,phase:rand(),fz:rand(),flash:0,k:rand()}))}},
+ draw:function(api,U){
+  const{ctx,w,h,state:s,params:p,input:i,dt}=api;
+  U.bg(ctx,w,h);
+  const N=p.count,F=s.flies,queue=[],done=new Set(),fired=[];
+  for(let k=0;k<N;k++){
+   const f=F[k];
+   f.phase+=dt*p.rate*(1+(f.fz-.5)*2*p.spread);
+   f.a+=U.noise(api.time*.5+k*3.1)*dt*2;
+   f.x=(f.x+Math.cos(f.a)*p.drift*dt+w)%w;
+   f.y=(f.y+Math.sin(f.a)*p.drift*dt*.6+h)%h;
+   if(f.phase>=1)queue.push(k)
+  }
+  if(i.justPressed||(i.down&&api.time-s.lastPulse>.7)){
+   s.lastPulse=api.time;s.rings.push({x:i.x,y:i.y,t:0});
+   for(const f of F.slice(0,N)){const d=Math.hypot(f.x-i.x,f.y-i.y);if(d<p.radius*1.4){f.phase+=(.12+p.coupling*2)*(1-d/(p.radius*1.4));if(f.phase>=1)queue.push(F.indexOf(f))}}
+  }
+  while(queue.length){
+   const k=queue.pop();if(done.has(k))continue;done.add(k);
+   const f=F[k];f.phase=0;f.flash=1;fired.push(k);
+   for(let j=0;j<N;j++){
+    if(done.has(j))continue;
+    const g=F[j],d=Math.hypot(f.x-g.x,f.y-g.y);
+    if(d<p.radius){g.phase+=p.coupling*(1-d/p.radius)*(.35+g.phase);if(g.phase>=1)queue.push(j)}
+   }
+  }
+  s.fired+=fired.length;
+  let sx=0,sy=0;
+  for(let k=0;k<N;k++){sx+=Math.cos(F[k].phase*TAU);sy+=Math.sin(F[k].phase*TAU)}
+  const order=Math.hypot(sx,sy)/N;
+  if(p.links>0)for(let a=0;a<N;a++){
+   const fa=F[a];if(fa.flash<.3)continue;
+   for(let b=0;b<N;b++){
+    if(a===b)continue;const fb=F[b],d=Math.hypot(fa.x-fb.x,fa.y-fb.y);
+    if(d<p.radius)U.line(ctx,[fa,fb],U.rgba('#e8c68c',p.links*fa.flash*(1-d/p.radius)*.32),.7)
+   }
+  }
+  for(let k=0;k<N;k++){
+   const f=F[k];f.flash*=Math.exp(-dt*p.decay);
+   const charge=Math.pow(f.phase,3)*.22,power=Math.min(1,f.flash+charge),rad=(5+f.flash*34+charge*10)*p.glowSize;
+   const g=ctx.createRadialGradient(f.x,f.y,0,f.x,f.y,rad);
+   g.addColorStop(0,U.rgba('#f3d8a2',.12+power*.7));g.addColorStop(.35,U.rgba('#e8c68c',.05+power*.25));g.addColorStop(1,U.rgba('#e8c68c',0));
+   ctx.fillStyle=g;ctx.beginPath();ctx.arc(f.x,f.y,rad,0,TAU);ctx.fill();
+   U.dot(ctx,f.x,f.y,1.2+power*2.2,U.rgba('#fff3d6',.35+power*.6))
+  }
+  s.rings=s.rings.filter(r=>r.t<1.4);
+  for(const r of s.rings){r.t+=dt;ctx.strokeStyle=U.rgba('#e8c68c',.4*(1-r.t/1.4));ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(r.x,r.y,r.t*p.radius*1.1,0,TAU);ctx.stroke()}
+  if(p.gauge==1){
+   const gx=w-54,gy=h-62,gr=32;
+   ctx.strokeStyle='rgba(232,198,140,.28)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(gx,gy,gr,0,TAU);ctx.stroke();
+   for(let k=0;k<N;k++)U.dot(ctx,gx+Math.cos(F[k].phase*TAU)*gr,gy+Math.sin(F[k].phase*TAU)*gr,1.5,U.rgba('#e8c68c',.35+F[k].flash*.5));
+   ctx.strokeStyle='#7bd9d0';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(gx,gy);ctx.lineTo(gx+sx/N*gr,gy+sy/N*gr);ctx.stroke()
+  }
+  if(soundOn&&p.sound!=='off'){
+   const steps=[1,9/8,5/4,3/2,5/3,2];
+   fired.slice(0,4).forEach(k=>{const f=F[k],degree=Math.min(5,Math.floor((1-f.y/h)*6));U.tone(p.pitch*steps[degree],.5,.01+.03*fired.length/N,p.sound==='material'?'triangle':'sine',(f.x/w*2-1)*p.pan,.01)})
+  }
+  api.status=order>.85?'SYNC · 同步成形':order>.45?'DRAW IN · 相位逐步靠拢':'SCATTER · 各自闪烁';
+  api.stats={同步度:(order*100).toFixed(0)+'%',累计闪光:s.fired,耦合:p.coupling.toFixed(3),数量:N}
+ }
+});
+A({id:'colony-dla',cat:'bio',title:'菌落与珊瑚生长',en:'Diffusion-Limited Aggregation / Colony Growth',origin:'生物生长',description:'随机游走的营养粒子碰到菌落就附着，细小凸起更容易捕获粒子，于是长出分形枝杈。',mapping:'生长来自局部接触与营养竞争：尖端接收更多养分，内部逐渐安静；每一次附着都会留下时间、年龄与声音。',interaction:'按住画面播下新的菌落种子；调整游走速度、黏附概率、趋化偏置与最大节点数，聆听新生枝杈。',potential:'任务生长树、记忆沉积、设备群繁衍、生长型加载与音画互动装置。',
+ params:[P('walkers','游走粒子',40,600,10,260),P('step','游走步长',1,8,.1,3.4,' px'),P('stick','附着概率',.1,1,.05,.75),P('bias','趋化偏置',0,.6,.01,.12),P('seeds','初始种子',1,5,1,1),P('maxNodes','最大节点',300,3500,50,1800),P('branch','枝条线宽',.4,3,.05,1.1,'×'),P('ageFade','年龄褪色',0,1,.05,.55),P('tipGlow','生长尖端光',0,2,.05,1),P('walkerAlpha','游走粒子亮度',0,1,.05,.28),P('soundRate','声音频率',1,16,.5,6,' 音/秒'),P('pitch','基础音高',110,660,5,220,' Hz'),P('pan','立体声像',-1,1,.05,0),S('scale','音阶','pentatonic',[['pentatonic','五声音阶'],['major','自然大调'],['minor','自然小调']]),S('sound','声音','tone',[['off','静音'],['tone','纯音'],['material','材料音']])],
+ reset(api,U){api.state={nodes:[],grid:new Map(),walkers:[],seedsBuilt:0,rand:U.rng(53),lastTone:0,full:false}},
+ draw:function(api,U){
+  const{ctx,w,h,state:s,params:p,input:i,dt,time}=api,CELL=7,rand=s.rand;
+  U.bg(ctx,w,h);
+  const key=(x,y)=>Math.floor(x/CELL)+','+Math.floor(y/CELL);
+  const addNode=(x,y,parent)=>{const n={x,y,parent,born:time,seed:parent?parent.seed:s.nodes.length};s.nodes.push(n);s.extent=Math.max(s.extent||0,Math.hypot(x-w*.5,y-h*.56));const k=key(x,y);if(!s.grid.has(k))s.grid.set(k,[]);s.grid.get(k).push(n);return n};
+  if(s.seedsBuilt!==p.seeds){
+   s.nodes=[];s.grid=new Map();s.full=false;s.extent=0;
+   for(let k=0;k<p.seeds;k++)addNode(p.seeds===1?w*.5:w*(.22+.56*k/Math.max(1,p.seeds-1)),h*(p.seeds===1?.56:.5+(k%2?.14:-.1)),null);
+   s.seedsBuilt=p.seeds
+  }
+  if(i.justPressed&&s.nodes.length<p.maxNodes)addNode(i.x,i.y,null);
+  const spawn=()=>{const a=rand()*TAU,r=Math.min(Math.min(w,h)*.48,(s.extent||0)+45);return{x:clamp(w*.5+Math.cos(a)*r,5,w-5),y:clamp(h*.56+Math.sin(a)*r,35,h-8)}};
+  while(s.walkers.length<p.walkers)s.walkers.push(spawn());
+  s.walkers.length=p.walkers;
+  let attached=0;
+  if(!s.full)for(const q of s.walkers){
+   for(let sub=0;sub<3;sub++){
+    const target=s.nodes[Math.floor(rand()*s.nodes.length)],a=rand()*TAU;
+    let dx=Math.cos(a)*p.step,dy=Math.sin(a)*p.step;
+    if(target&&p.bias>0){const d=Math.hypot(target.x-q.x,target.y-q.y)||1;dx+=(target.x-q.x)/d*p.step*p.bias;dy+=(target.y-q.y)/d*p.step*p.bias}
+    q.x+=dx;q.y+=dy;
+    if(q.x<2||q.x>w-2||q.y<28||q.y>h-2||Math.hypot(q.x-w*.5,q.y-h*.56)>(s.extent||0)+130){Object.assign(q,spawn());continue}
+    const cx=Math.floor(q.x/CELL),cy=Math.floor(q.y/CELL);let hit=null;
+    for(let gx=-1;gx<=1&&!hit;gx++)for(let gy=-1;gy<=1&&!hit;gy++){
+     const cell=s.grid.get((cx+gx)+','+(cy+gy));
+     if(cell)for(const n of cell)if(Math.hypot(n.x-q.x,n.y-q.y)<CELL*.9){hit=n;break}
+    }
+    if(hit&&rand()<p.stick&&s.nodes.length<p.maxNodes){
+     const d=Math.hypot(q.x-hit.x,q.y-hit.y)||1,nx=hit.x+(q.x-hit.x)/d*CELL*.75,ny=hit.y+(q.y-hit.y)/d*CELL*.75,n=addNode(nx,ny,hit);attached++;
+     Object.assign(q,spawn());
+     if(soundOn&&p.sound!=='off'&&time-s.lastTone>1/p.soundRate){
+      s.lastTone=time;
+      const sc={pentatonic:[1,9/8,5/4,3/2,5/3,2],major:[1,9/8,5/4,4/3,3/2,5/3,15/8,2],minor:[1,9/8,6/5,4/3,3/2,8/5,9/5,2]}[p.scale];
+      U.tone(p.pitch*sc[Math.min(sc.length-1,Math.floor((1-ny/h)*sc.length))],.35,.014,p.sound==='material'?'triangle':'sine',clamp(p.pan+(nx/w*2-1)*.5,-1,1),.01)
+     }
+     break
+    }
+   }
+  }
+  if(s.nodes.length>=p.maxNodes)s.full=true;
+  const buckets=6,now=time;
+  for(let b=0;b<buckets;b++){
+   ctx.beginPath();
+   for(const n of s.nodes){
+    if(!n.parent)continue;
+    const age=Math.min(1,(now-n.born)/60),bk=Math.min(buckets-1,Math.floor(age*buckets));
+    if(bk!==b)continue;
+    ctx.moveTo(n.parent.x,n.parent.y);ctx.lineTo(n.x,n.y)
+   }
+   const t=b/(buckets-1);
+   ctx.strokeStyle=`rgba(${Math.round(123+t*109)},${Math.round(217-t*19)},${Math.round(208-t*68)},${(1-t*p.ageFade*.75)*.85})`;
+   ctx.lineWidth=(1.8-t*.9)*p.branch*(p.lineScale||1);ctx.lineCap='round';ctx.stroke()
+  }
+  for(const n of s.nodes){
+   const age=now-n.born;
+   if(age<1.2&&p.tipGlow>0){const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,14*p.tipGlow);g.addColorStop(0,U.rgba('#f3d8a2',.55*(1-age/1.2)));g.addColorStop(1,U.rgba('#f3d8a2',0));ctx.fillStyle=g;ctx.beginPath();ctx.arc(n.x,n.y,14*p.tipGlow,0,TAU);ctx.fill()}
+  }
+  for(const n of s.nodes)if(!n.parent)U.dot(ctx,n.x,n.y,3.5,'#e8c68c');
+  for(const q of s.walkers)U.dot(ctx,q.x,q.y,.9,U.rgba('#7bd9d0',p.walkerAlpha));
+  let radius=0;for(const n of s.nodes)radius=Math.max(radius,Math.hypot(n.x-w*.5,n.y-h*.56));
+  api.status=s.full?'MATURE · 菌落成熟，可重置继续':attached?'GROW · 粒子正在附着':'DRIFT · 等待接触';
+  api.stats={节点:s.nodes.length+'/'+p.maxNodes,游走:p.walkers,新增:attached,半径:radius.toFixed(0)+' px'}
+ }
+});
+A({id:'cell-sorting',cat:'bio',title:'细胞黏附与排序',en:'Differential Adhesion / Cell Sorting',origin:'生物生长',description:'不同类型的细胞对同类与异类有不同黏附强度，随机运动之后，混合群体会自行分层、成团。',mapping:'秩序来自黏附差异而非中央指令：同类靠近、异类分离，边界张力让群体形成稳定的内核与外壳。',interaction:'按住并拖动搅拌细胞群，松开后观察重新排序；调整同类黏附、异类黏附、运动活跃度与细胞类型数量。',potential:'设备群组分层、通知聚类、协作状态分区、细胞生长可视化与以排序度驱动的声音反馈。',
+ params:[P('count','细胞数量',30,150,1,90),S('types','细胞类型',2,[[2,'两类'],[3,'三类']]),P('selfAdhesion','同类黏附',0,2.5,.05,1.35),P('crossAdhesion','异类黏附',0,2.5,.05,.28),P('motility','运动活跃度',0,40,1,13),P('size','细胞半径',5,16,.5,9,' px'),P('friction','环境阻尼',1,8,.1,3.2),P('stir','搅拌强度',0,2.5,.05,1),P('membrane','膜扰动',0,.3,.01,.1),P('contacts','接触连线',0,1,.05,.45),P('tempo','声音节奏',.5,6,.5,2,' 次/秒'),P('pitch','基础音高',110,660,5,196,' Hz'),P('pan','立体声像',-1,1,.05,0),S('sound','声音','tone',[['off','静音'],['tone','纯音'],['material','材料音']])],
+ reset(api,U){const rand=U.rng(71);api.state={rand,cells:Array.from({length:150},(_,k)=>({x:api.w*.2+rand()*api.w*.6,y:api.h*.2+rand()*api.h*.6,vx:0,vy:0,t:k%3,ph:rand()*TAU})),tone:0,order:0}},
+ draw:function(api,U){
+  const{ctx,w,h,state:s,params:p,input:i,dt}=api,C=s.cells.slice(0,p.count),colors=['#7bd9d0','#ec9f99','#e8c68c'],R=p.size;
+  U.bg(ctx,w,h);
+  const step=Math.min(dt,.033);
+  for(let a=0;a<C.length;a++){
+   const A=C[a];A.n=0;A.same=0;
+   let fx=(s.rand()-.5)*p.motility*10,fy=(s.rand()-.5)*p.motility*10;
+   for(let b=0;b<C.length;b++){
+    if(a===b)continue;
+    const B=C[b],dx=B.x-A.x,dy=B.y-A.y,d=Math.hypot(dx,dy)||1,nx=dx/d,ny=dy/d,same=(A.t%p.types)===(B.t%p.types);
+    if(d<R*2){const rep=(R*2-d)*38;fx-=nx*rep;fy-=ny*rep}
+    else if(d<R*4){const pull=(same?p.selfAdhesion:p.crossAdhesion)*70*(1-(d-R*2)/(R*2));fx+=nx*pull;fy+=ny*pull}
+    if(d<R*2.6){A.n++;if(same)A.same++}
+   }
+   if(i.down){const dx=A.x-i.x,dy=A.y-i.y,d=Math.hypot(dx,dy)||1;if(d<150){const k=(1-d/150)*p.stir*260;fx+=-dy/d*k+dx/d*k*.2;fy+=dx/d*k+dy/d*k*.2}}
+   if(A.x<R*2)fx+=(R*2-A.x)*12;if(A.x>w-R*2)fx-=(A.x-w+R*2)*12;if(A.y<R*2+26)fy+=(R*2+26-A.y)*12;if(A.y>h-R*2)fy-=(A.y-h+R*2)*12;
+   A.vx=(A.vx+fx*step)*(1-Math.min(.95,p.friction*step));A.vy=(A.vy+fy*step)*(1-Math.min(.95,p.friction*step))
+  }
+  let order=0,counted=0;
+  for(const A of C){A.x+=A.vx*step;A.y+=A.vy*step;if(A.n){order+=A.same/A.n;counted++}}
+  order=counted?order/counted:0;s.order=order;
+  if(p.contacts>0)for(let a=0;a<C.length;a++)for(let b=a+1;b<C.length;b++){
+   const A=C[a],B=C[b],d=Math.hypot(A.x-B.x,A.y-B.y);
+   if(d<R*2.5&&(A.t%p.types)===(B.t%p.types))U.line(ctx,[A,B],U.rgba(colors[A.t%p.types],p.contacts*.45*(1-d/(R*2.5))),.8)
+  }
+  for(const A of C){
+   const color=colors[A.t%p.types],sorted=A.n?A.same/A.n:0;
+   ctx.save();ctx.shadowColor=color;ctx.shadowBlur=6+sorted*10;ctx.fillStyle=U.rgba(color,.08+sorted*.08);ctx.strokeStyle=U.rgba(color,.72);ctx.lineWidth=1.2;
+   U.blob(ctx,A.x,A.y,R*(1+p.membrane*.4),api.time+A.ph,A.ph,3+A.t%3);ctx.fill();ctx.stroke();ctx.restore();
+   U.dot(ctx,A.x,A.y,R*.28,U.rgba(color,.5+sorted*.3))
+  }
+  s.tone+=dt;
+  if(soundOn&&p.sound!=='off'&&s.tone>1/p.tempo){
+   s.tone=0;const A=C[Math.floor(s.rand()*C.length)],ratios=[1,5/4,3/2];
+   U.tone(p.pitch*ratios[A.t%p.types]*(1+order*.5),.3,.012+order*.03,p.sound==='material'?'triangle':'sine',clamp(p.pan+(A.x/w*2-1)*.5,-1,1),.01)
+  }
+  api.status=order>.82?'SORTED · 同类成团，边界清晰':order>.58?'SORTING · 黏附差异正在分层':'MIXED · 群体仍在混合';
+  api.stats={排序度:(order*100).toFixed(0)+'%',细胞:C.length,同类黏附:p.selfAdhesion.toFixed(2),异类黏附:p.crossAdhesion.toFixed(2)}
+ }
+});
 window.LIFE_ALGORITHMS=defs;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clone=o=>JSON.parse(JSON.stringify(o));
@@ -129,7 +302,11 @@ const emit=()=>document.dispatchEvent(new CustomEvent('life:labchange',{detail:s
 const canvas=$('#algoCanvas'),ctx=canvas.getContext('2d');
 const api={canvas,ctx,w:1,h:1,time:0,dt:0,params:{},state:{},stats:{},status:'',input:{x:0,y:0,active:false,down:false,justPressed:false,justReleased:false}};
 let selectedId=defs[0].id,def=defs[0],compiled=null,playing=true,stepOnce=false,dirty=true,visible=true,editing=false,last=0,lastHud=0,filter='all',snapshots=[];
-const GLOBAL_DEFAULTS={quality:1.5,timeScale:1,grid:1,gridSize:48,exposure:1,contrast:1,saturation:1,hue:0};
+const GLOBAL_DEFAULTS={quality:1.5,timeScale:1,seed:0,grid:1,gridSize:48,ambient:.6,afterimage:0,glow:.25,bloom:7,vignette:.4,grain:.05,exposure:1,contrast:1,saturation:1,hue:0,palette:'native',tint:.35,lineScale:1,pointScale:1};
+const PALETTES={jade:'#7bd9d0',amber:'#e8c68c',rose:'#ec9f99',violet:'#9a8ad4',moss:'#b6e3bd',ink:'#cfd8d4'};
+const GROUPS={cell:['cell-division','reaction','automata','growth','lsystem','physarum','colony-dla','cell-sorting','bio-sonify'],rhythm:['rhythm-atlas','oscillator','kuramoto','firefly-sync']};
+const hasAudio=d=>d.draw.toString().includes('U.tone(');
+const inFilter=d=>filter==='all'||d.cat===filter||(filter==='cell'&&GROUPS.cell.includes(d.id))||(filter==='rhythm'&&GROUPS.rhythm.includes(d.id))||(filter==='audio'&&hasAudio(d));
 const params=Object.fromEntries(defs.map(d=>[d.id,{...Object.fromEntries(d.params.map(p=>[p.key,p.value])),...GLOBAL_DEFAULTS}]));
 const codes=Object.fromEntries(defs.map(d=>[d.id,d.draw.toString()]));
 const motionQuery=matchMedia('(prefers-reduced-motion: reduce)');
@@ -141,10 +318,11 @@ function syncLiveCode(){codes[selectedId]=withParams(codes[selectedId],params[se
 function compile(){try{const fn=new Function('TAU','clamp','PULSES','BREATHS','RHYTHM_META','rhythmShape','pulseCycle','breathCycle','simpleRhythm','makeCell','soundOn',`"use strict";return (${codes[selectedId]});`)(TAU,clamp,PULSES,BREATHS,RHYTHM_META,rhythmShape,pulseCycle,breathCycle,simpleRhythm,makeCell,soundOn);if(typeof fn!=='function')throw new Error('代码需要返回 function(api, U)');compiled=fn;$('#codeStatus').classList.remove('error');if(editing)$('#codeStatus').textContent='代码已编译；参数变化会实时写入代码。';return true}catch(e){compiled=null;$('#codeStatus').textContent=e.message;$('#codeStatus').classList.add('error');return false}}
 function reset(){if(!def)return;api.state={};api.time=0;api.dt=0;api.stats={};api.status=def.title;api.params=params[selectedId];if(def.reset)def.reset(api,U);dirty=true;$('#algoState').textContent=api.status;updateHud(true)}
 function select(id){if(!defs.some(d=>d.id===id))return;selectedId=id;def=defs.find(d=>d.id===id);api.params=params[id];renderList();renderDefinition();renderParams();syncLiveCode();compile();reset();renderSnapshots();document.dispatchEvent(new CustomEvent('life:algorithmselect',{detail:id}))}
-function renderList(){const q=$('#algoSearch').value.trim().toLowerCase();$('#algorithmList').innerHTML=defs.filter(d=>(filter==='all'||d.cat===filter)&&(!q||`${d.title}${d.en}${d.description}`.toLowerCase().includes(q))).map(d=>{const cat=window.LIFE_CATEGORY_MAP[d.cat];return`<button class="algorithm-item" style="--tag-color:${cat.color}" data-algorithm="${d.id}" aria-pressed="${d.id===selectedId}"><span class="num">${String(d.no).padStart(2,'0')}</span><span><b>${esc(d.title)}</b><small>${esc(d.en)}</small></span></button>`}).join('')||'<div class="empty">没有匹配的算法</div>'}
-function renderDefinition(){const cat=window.LIFE_CATEGORY_MAP[def.cat];$('#labShell').style.setProperty('--algo-color',cat.color);$('#algoEn').textContent=def.en;$('#algoTitle').textContent=def.title;$('#algoDescription').textContent=def.description;$('#algoOrigin').textContent=def.origin;$('#algoCategory').textContent=cat.name;$('#algoMapping').textContent=def.mapping;$('#algoInteraction').textContent=def.interaction;$('#algoPotential').textContent=def.potential;$('#algoHint').textContent=def.interaction.split('；')[0]+'。';$('#algoActions').innerHTML=(def.actions||[]).map(a=>`<button data-algo-action="${a.id}">${esc(a.label)}</button>`).join('');canvas.setAttribute('aria-label',`${def.title}实时算法画布。${def.interaction}`);$('#algoCode').setAttribute('aria-label',`${def.title} JavaScript 代码`)}
-const GLOBAL_PARAMS=[S('quality','渲染精度',1.5,[[1,'节能 1×'],[1.5,'精细 1.5×'],[2,'高清 2×']]),P('timeScale','全局时间倍率',.1,2,.05,1,'×'),S('grid','背景网格',1,[[0,'隐藏'],[1,'显示']]),P('gridSize','网格间距',24,96,4,48,' px'),P('exposure','画面曝光',.5,1.5,.05,1),P('contrast','画面对比度',.5,1.5,.05,1),P('saturation','色彩饱和度',0,2,.05,1),P('hue','色相偏移',-60,60,1,0,'°')];
-function renderParams(){const paramHTML=p=>{const value=params[selectedId][p.key];if(p.options)return`<div class="parameter"><label for="param-${p.key}">${esc(p.label)}</label><select id="param-${p.key}" data-param="${p.key}">${p.options.map(([v,n])=>`<option value="${esc(v)}" ${v===value?'selected':''}>${esc(n)}</option>`).join('')}</select></div>`;return`<div class="parameter"><label for="param-${p.key}">${esc(p.label)}<output id="out-${p.key}">${typeof value==='number'?+value.toFixed(3):value}${esc(p.unit)}</output></label><input id="param-${p.key}" data-param="${p.key}" type="range" min="${p.min}" max="${p.max}" step="${p.step}" value="${value}"></div>`};$('#algoParams').innerHTML=def.params.map(paramHTML).join('')+'<div class="parameter-group">全局视觉与性能</div>'+GLOBAL_PARAMS.map(paramHTML).join('')}
+function renderList(){const q=$('#algoSearch').value.trim().toLowerCase();$('#algorithmList').innerHTML=defs.filter(d=>inFilter(d)&&(!q||`${d.title}${d.en}${d.description}`.toLowerCase().includes(q))).map(d=>{const cat=window.LIFE_CATEGORY_MAP[d.cat];return`<button class="algorithm-item" style="--tag-color:${cat.color}" data-algorithm="${d.id}" aria-pressed="${d.id===selectedId}"><span class="num">${String(d.no).padStart(2,'0')}</span><span><b>${esc(d.title)}</b><small>${esc(d.en)}${hasAudio(d)?' · ♪':''}</small></span></button>`}).join('')||'<div class="empty">没有匹配的算法</div>'}
+function renderDefinition(){const cat=window.LIFE_CATEGORY_MAP[def.cat];$('#labShell').style.setProperty('--algo-color',cat.color);accentColor=cat.color;$('#algoEn').textContent=def.en;$('#algoTitle').textContent=def.title;$('#algoDescription').textContent=def.description;$('#algoOrigin').textContent=def.origin;$('#algoCategory').textContent=cat.name;$('#algoMapping').textContent=def.mapping;$('#algoInteraction').textContent=def.interaction;$('#algoPotential').textContent=def.potential;$('#algoHint').textContent=def.interaction.split('；')[0]+'。';$('#algoActions').innerHTML=(def.actions||[]).map(a=>`<button data-algo-action="${a.id}">${esc(a.label)}</button>`).join('');canvas.setAttribute('aria-label',`${def.title}实时算法画布。${def.interaction}`);$('#algoCode').setAttribute('aria-label',`${def.title} JavaScript 代码`)}
+const GLOBAL_GROUPS=[['时间与性能',[S('quality','渲染精度',1.5,[[1,'节能 1×'],[1.5,'精细 1.5×'],[2,'高清 2×']]),P('timeScale','全局时间倍率',.1,2,.05,1,'×'),P('seed','随机种子偏移',0,40,1,0)]],['空间与氛围',[S('grid','背景网格',1,[[0,'隐藏'],[1,'显示']]),P('gridSize','网格间距',24,96,4,48,' px'),P('ambient','类别氛围光',0,1.5,.05,.6),P('afterimage','残影拖尾',0,.9,.01,0),P('vignette','暗角',0,1,.05,.4),P('grain','胶片颗粒',0,.3,.01,.05)]],['光效与色彩',[P('glow','辉光强度',0,1,.05,.25),P('bloom','辉光半径',1,24,1,7,' px'),P('exposure','画面曝光',.5,1.5,.05,1),P('contrast','画面对比度',.5,1.5,.05,1),P('saturation','色彩饱和度',0,2,.05,1),P('hue','色相偏移',-60,60,1,0,'°'),S('palette','单色调色板','native',[['native','原色'],['jade','青玉'],['amber','琥珀'],['rose','胭脂'],['violet','暮紫'],['moss','苔绿'],['ink','淡墨']]),P('tint','调色板强度',0,1,.05,.35)]],['笔触',[P('lineScale','线条粗细',.4,3,.05,1,'×'),P('pointScale','点的尺度',.4,3,.05,1,'×')]]];
+const GLOBAL_PARAMS=GLOBAL_GROUPS.flatMap(g=>g[1]);
+function renderParams(){const paramHTML=p=>{const value=params[selectedId][p.key];if(p.options)return`<div class="parameter"><label for="param-${p.key}">${esc(p.label)}</label><select id="param-${p.key}" data-param="${p.key}">${p.options.map(([v,n])=>`<option value="${esc(v)}" ${v===value?'selected':''}>${esc(n)}</option>`).join('')}</select></div>`;return`<div class="parameter"><label for="param-${p.key}">${esc(p.label)}<output id="out-${p.key}">${typeof value==='number'?+value.toFixed(3):value}${esc(p.unit)}</output></label><input id="param-${p.key}" data-param="${p.key}" type="range" min="${p.min}" max="${p.max}" step="${p.step}" value="${value}"></div>`};$('#algoParams').innerHTML=def.params.map(paramHTML).join('')+GLOBAL_GROUPS.map(g=>`<div class="parameter-group">${g[0]}</div>${g[1].map(paramHTML).join('')}`).join('')}
 function updateHud(force=false){const now=performance.now();if(!force&&now-lastHud<140)return;lastHud=now;$('#algoState').textContent=api.status||def.title;$('#algoStats').innerHTML=Object.entries(api.stats||{}).slice(0,4).map(([k,v])=>`<div class="canvas-stat"><b>${esc(v)}</b><span>${esc(k)}</span></div>`).join('')}
 function serialize(){return{version:1,selected:selectedId,params:clone(params),codes:clone(codes),snapshots:clone(snapshots)}}
 function restore(data={}){if(data.params)for(const d of defs){const saved=data.params[d.id];if(!saved)continue;for(const p of [...d.params,...GLOBAL_PARAMS]){const v=saved[p.key];if(p.options){if(p.options.some(o=>o[0]===v))params[d.id][p.key]=v}else if(Number.isFinite(+v))params[d.id][p.key]=clamp(+v,p.min,p.max)}}if(data.codes)for(const d of defs)if(typeof data.codes[d.id]==='string'&&data.codes[d.id].length<150000)codes[d.id]=data.codes[d.id];if(Array.isArray(data.snapshots))snapshots=data.snapshots.filter(s=>s&&defs.some(d=>d.id===s.algo)&&s.params).slice(0,30).map(s=>({id:String(s.id||Date.now()+Math.random()),algo:s.algo,name:String(s.name||'未命名实验').slice(0,40),at:+s.at||Date.now(),params:clone(s.params),code:String(s.code||codes[s.algo])}));select(defs.some(d=>d.id===data.selected)?data.selected:selectedId)}
@@ -160,13 +338,13 @@ canvas.addEventListener('pointerup',release);canvas.addEventListener('pointercan
 canvas.addEventListener('keydown',e=>{if(![' ','Enter'].includes(e.key))return;e.preventDefault();Object.assign(api.input,{x:api.w*.62,y:api.h*.45,active:true,down:true,justPressed:true});dirty=true;setTimeout(()=>{api.input.down=false;api.input.justReleased=true;dirty=true},100)});
 $('#algorithmList').addEventListener('click',e=>{const b=e.target.closest('[data-algorithm]');if(b)select(b.dataset.algorithm)});
 $('#algoSearch').addEventListener('input',renderList);$('#algoFilters').addEventListener('click',e=>{const b=e.target.closest('[data-algo-filter]');if(!b)return;filter=b.dataset.algoFilter;$$('[data-algo-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));renderList()});
-$('#algoParams').addEventListener('input',e=>{const input=e.target.closest('[data-param]');if(!input)return;const key=input.dataset.param,p=[...def.params,...GLOBAL_PARAMS].find(x=>x.key===key);params[selectedId][key]=p.options?(typeof p.value==='number'?+input.value:input.value):input.valueAsNumber;if(key==='mode')params[selectedId].rate={heart:66,breath:BREATHS[params[selectedId].breathVariant].rate,pulse:PULSES[params[selectedId].pulseVariant].rate,gait:112,tide:6,fire:14}[input.value];if(key==='breathVariant')params[selectedId].rate=BREATHS[+input.value].rate;if(key==='pulseVariant')params[selectedId].rate=PULSES[+input.value].rate;const out=$('#out-'+key);if(out)out.textContent=(+params[selectedId][key].toFixed(3))+p.unit;syncLiveCode();if(key==='quality')resize();compile();dirty=true;emit()});
+$('#algoParams').addEventListener('input',e=>{const input=e.target.closest('[data-param]');if(!input)return;const key=input.dataset.param,p=[...def.params,...GLOBAL_PARAMS].find(x=>x.key===key);params[selectedId][key]=p.options?(typeof p.value==='number'?+input.value:input.value):input.valueAsNumber;if(key==='mode')params[selectedId].rate={heart:66,breath:BREATHS[params[selectedId].breathVariant].rate,pulse:PULSES[params[selectedId].pulseVariant].rate,gait:112,tide:6,fire:14}[input.value];if(key==='breathVariant')params[selectedId].rate=BREATHS[+input.value].rate;if(key==='pulseVariant')params[selectedId].rate=PULSES[+input.value].rate;const out=$('#out-'+key);if(out)out.textContent=(+params[selectedId][key].toFixed(3))+p.unit;syncLiveCode();if(key==='quality')resize();compile();if(key==='seed')reset();dirty=true;emit()});
 $('#algoParams').addEventListener('change',e=>{if(e.target.closest('select[data-param]')){syncLiveCode();compile();dirty=true;emit()}});
 $('#algoActions').addEventListener('click',e=>{const b=e.target.closest('[data-algo-action]');if(b&&def.action){def.action(api,U,b.dataset.algoAction);dirty=true}});
 $('#algoPlay').addEventListener('click',()=>{playing=!playing;$('#algoPlay').textContent=playing?'暂停':'播放';$('#algoPlay').setAttribute('aria-pressed',String(playing));dirty=true});
 $('#algoStep').addEventListener('click',()=>{stepOnce=true;dirty=true});$('#algoReset').addEventListener('click',()=>{reset();toast('当前算法状态已重置。')});
 $('#resetParams').addEventListener('click',()=>{params[selectedId]=defaultParams(selectedId);api.params=params[selectedId];renderParams();syncLiveCode();compile();reset();emit();toast('已恢复默认参数。')});
-$('#algoSound').addEventListener('click',()=>{soundOn=!soundOn;$('#algoSound').textContent=soundOn?'声音 ON':'声音 OFF';$('#algoSound').setAttribute('aria-pressed',String(soundOn));if(soundOn)U.tone(330,.12,.025)});
+$('#algoSound').addEventListener('click',()=>{soundOn=!soundOn;$('#algoSound').textContent=soundOn?'声音 ON':'声音 OFF';$('#algoSound').setAttribute('aria-pressed',String(soundOn));compile();if(soundOn)U.tone(330,.12,.025)});
 $('#algoPng').addEventListener('click',()=>canvas.toBlob(blob=>{if(blob)download(`生命感-${def.title}-${new Date().toISOString().slice(0,10)}.png`,blob)},'image/png'));
 $('#runCode').addEventListener('click',()=>{if(!editing)return;codes[selectedId]=withParams($('#algoCode').value,params[selectedId]);$('#algoCode').value=codes[selectedId];if(compile()){reset();emit();toast('代码已编译并运行。')}});
 $('#resetCode').addEventListener('click',()=>{if(!editing)return;codes[selectedId]=def.draw.toString();syncLiveCode();compile();reset();emit();toast('已恢复此算法的默认代码。')});
@@ -180,7 +358,23 @@ new ResizeObserver(()=>{resize();if(def)reset()}).observe(canvas);
 if('IntersectionObserver'in window)new IntersectionObserver(es=>es.forEach(e=>{visible=e.isIntersecting;dirty=true}),{rootMargin:'120px'}).observe(canvas);
 if(motionQuery.addEventListener)motionQuery.addEventListener('change',()=>{dirty=true});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&audio?.state==='running')audio.suspend().catch(()=>{});dirty=true});
-function tick(now){requestAnimationFrame(tick);if(document.hidden||!visible||!compiled)return;const isReduced=reduced();$('#algoPlay').disabled=isReduced;if(isReduced)$('#algoPlay').textContent='静态';else $('#algoPlay').textContent=playing?'暂停':'播放';const shouldDraw=dirty||stepOnce||(playing&&!isReduced);if(!shouldDraw)return;const raw=last?Math.min(.04,(now-last)/1000):1/60;last=now;const gp=params[selectedId],dt=(stepOnce?1/60:playing&&!isReduced?raw:0)*(gp.timeScale||1);api.dt=dt;api.time+=dt;api.params=gp;api.stats={};ctx.filter=`brightness(${gp.exposure??1}) contrast(${gp.contrast??1}) saturate(${gp.saturation??1}) hue-rotate(${gp.hue??0}deg)`;try{compiled(api,U)}catch(e){playing=false;$('#codeStatus').textContent='运行已暂停：'+e.message;$('#codeStatus').classList.add('error')}ctx.filter='none';api.input.justPressed=false;api.input.justReleased=false;stepOnce=false;dirty=false;updateHud()}
+let grainPattern=null;
+function finish(gp){
+ const persistent=!codes[selectedId].includes('U.bg('),glow=(gp.glow??0)*(persistent?.3:1),vignette=(gp.vignette??0)*(persistent?.3:1),grain=persistent?0:gp.grain??0,tint=PALETTES[gp.palette];
+ if(!glow&&!vignette&&!grain&&!(tint&&gp.tint>0))return;
+ const W=canvas.width,H=canvas.height,d=W/api.w;
+ ctx.save();ctx.setTransform(1,0,0,1,0,0);
+ if(glow>0){ctx.globalCompositeOperation='lighter';ctx.globalAlpha=clamp(glow,0,1);ctx.filter=`blur(${Math.max(1,(gp.bloom??7)*d)}px)`;ctx.drawImage(canvas,0,0);ctx.filter='none'}
+ if(tint&&gp.tint>0){ctx.globalCompositeOperation='color';ctx.globalAlpha=clamp(gp.tint,0,1);ctx.fillStyle=tint;ctx.fillRect(0,0,W,H)}
+ ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
+ if(vignette>0){const g=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.3,W/2,H/2,Math.max(W,H)*.72);g.addColorStop(0,'rgba(2,5,8,0)');g.addColorStop(1,`rgba(2,5,8,${clamp(vignette,0,1)*.78})`);ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
+ if(grain>0){
+  if(!grainPattern){const n=document.createElement('canvas');n.width=n.height=128;const nc=n.getContext('2d'),im=nc.createImageData(128,128);for(let q=0;q<im.data.length;q+=4){const v=Math.random()*255;im.data[q]=im.data[q+1]=im.data[q+2]=v;im.data[q+3]=255}nc.putImageData(im,0,0);grainPattern=ctx.createPattern(n,'repeat')}
+  ctx.globalCompositeOperation='overlay';ctx.globalAlpha=clamp(grain,0,.4);ctx.translate(Math.floor(Math.random()*128),Math.floor(Math.random()*128));ctx.fillStyle=grainPattern;ctx.fillRect(-128,-128,W+256,H+256)
+ }
+ ctx.restore()
+}
+function tick(now){requestAnimationFrame(tick);if(document.hidden||!visible||!compiled)return;const isReduced=reduced();$('#algoPlay').disabled=isReduced;if(isReduced)$('#algoPlay').textContent='静态';else $('#algoPlay').textContent=playing?'暂停':'播放';const shouldDraw=dirty||stepOnce||(playing&&!isReduced);if(!shouldDraw)return;const raw=last?Math.min(.04,(now-last)/1000):1/60;last=now;const gp=params[selectedId],dt=(stepOnce?1/60:playing&&!isReduced?raw:0)*(gp.timeScale||1);api.dt=dt;api.time+=dt;api.params=gp;api.stats={};ctx.filter=`brightness(${gp.exposure??1}) contrast(${gp.contrast??1}) saturate(${gp.saturation??1}) hue-rotate(${gp.hue??0}deg)`;try{compiled(api,U)}catch(e){playing=false;$('#codeStatus').textContent='运行已暂停：'+e.message;$('#codeStatus').classList.add('error')}ctx.filter='none';finish(gp);api.input.justPressed=false;api.input.justReleased=false;stepOnce=false;dirty=false;updateHud()}
 resize();select(selectedId);setEditing(false);requestAnimationFrame(tick);
 window.LifeLab={select,serialize,restore,restoreExperiment,setEditing,wake(){dirty=true},get selected(){return selectedId},get editing(){return editing}};
 })();
