@@ -56,7 +56,7 @@ const params=Object.fromEntries(defs.map(d=>[d.id,Object.fromEntries(d.params.ma
 const codes=Object.fromEntries(defs.map(d=>[d.id,d.draw.toString()]));
 const motionQuery=matchMedia('(prefers-reduced-motion: reduce)');
 const reduced=()=>motionQuery.matches||document.body.classList.contains('reduce-motion');
-function resize(){const r=canvas.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,1.5);api.w=Math.max(1,r.width);api.h=Math.max(1,r.height);canvas.width=Math.round(api.w*d);canvas.height=Math.round(api.h*d);ctx.setTransform(d,0,0,d,0,0);dirty=true}
+function resize(){const r=canvas.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,params[selectedId]?.quality||1.5);api.w=Math.max(1,r.width);api.h=Math.max(1,r.height);canvas.width=Math.round(api.w*d);canvas.height=Math.round(api.h*d);ctx.setTransform(d,0,0,d,0,0);dirty=true}
 function defaultParams(id){return Object.fromEntries(defs.find(d=>d.id===id).params.map(p=>[p.key,p.value]))}
 function withParams(code,values){const header=`\napi.params = ${JSON.stringify(values,null,2)};\n`,stripped=String(code).replace(/^(function\s*\(api,\s*U\)\s*\{)(?:\s*api\.params\s*=\s*\{[\s\S]*?\};)?/,'$1');return stripped.replace(/^(function\s*\(api,\s*U\)\s*\{)/,`$1${header}`)}
 function syncLiveCode(){codes[selectedId]=withParams(codes[selectedId],params[selectedId]);$('#algoCode').value=codes[selectedId]}
