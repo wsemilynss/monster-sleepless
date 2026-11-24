@@ -15,8 +15,10 @@ $TARGETS = @(
   'review.html',
   'life-research.html',
   'lane-brief.enc',
+  '生命感跨界研究.pdf',
   'reference-figures.mp4',
   'README.md',
+  'GIF剪辑工具',
   'assets',
   'docs'
 )

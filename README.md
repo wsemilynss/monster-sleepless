@@ -58,6 +58,10 @@ python3 -m http.server 8765
 
 打开 <http://localhost:8765/>。
 
+## 创作工具：GIF 剪辑（gif-clipper.html）
+
+[`GIF剪辑工具/gif-clipper.html`](GIF剪辑工具/gif-clipper.html) 是单文件的视频转 GIF 剪辑工具（本地浏览器处理，不上传），电脑与手机均可使用。线上地址：<https://wsemilynss.github.io/monster-sleepless/GIF%E5%89%AA%E8%BE%91%E5%B7%A5%E5%85%B7/gif-clipper.html>
+
 ## 生命感研究（life-research.html）
 
 [`life-research.html`](life-research.html) 是需密码访问的生命感视觉与交互研究页，线上地址：<https://wsemilynss.github.io/monster-sleepless/life-research.html>。查看密码与审阅台一致（不区分大小写，请向项目负责人索取）。
