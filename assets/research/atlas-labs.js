@@ -52,7 +52,8 @@ const emit=()=>document.dispatchEvent(new CustomEvent('life:labchange',{detail:s
 const canvas=$('#algoCanvas'),ctx=canvas.getContext('2d');
 const api={canvas,ctx,w:1,h:1,time:0,dt:0,params:{},state:{},stats:{},status:'',input:{x:0,y:0,active:false,down:false,justPressed:false,justReleased:false}};
 let selectedId=defs[0].id,def=defs[0],compiled=null,playing=true,stepOnce=false,dirty=true,visible=true,editing=false,last=0,lastHud=0,filter='all',snapshots=[];
-const params=Object.fromEntries(defs.map(d=>[d.id,Object.fromEntries(d.params.map(p=>[p.key,p.value]))]));
+const GLOBAL_DEFAULTS={quality:1.5,timeScale:1,grid:1,gridSize:48,exposure:1,contrast:1,saturation:1,hue:0};
+const params=Object.fromEntries(defs.map(d=>[d.id,{...Object.fromEntries(d.params.map(p=>[p.key,p.value])),...GLOBAL_DEFAULTS}]));
 const codes=Object.fromEntries(defs.map(d=>[d.id,d.draw.toString()]));
 const motionQuery=matchMedia('(prefers-reduced-motion: reduce)');
 const reduced=()=>motionQuery.matches||document.body.classList.contains('reduce-motion');
