@@ -8,7 +8,7 @@ const S=(key,label,value,options)=>({key,label,value,options});
 const A=d=>{d.no=defs.length+1;d.origin=d.origin||'基础算法';defs.push(d)};
 const U={
  clamp,
- bg(ctx,w,h,color='#05090e'){ctx.fillStyle=color;ctx.fillRect(0,0,w,h);ctx.strokeStyle='rgba(151,195,194,.045)';ctx.lineWidth=1;for(let x=24;x<w;x+=48){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let y=24;y<h;y+=48){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}},
+ bg(ctx,w,h,color='#05090e'){const p=params[selectedId]||{};ctx.fillStyle=color;ctx.fillRect(0,0,w,h);if((p.grid??1)==0)return;const gap=p.gridSize||48;ctx.strokeStyle='rgba(151,195,194,.045)';ctx.lineWidth=1;for(let x=gap/2;x<w;x+=gap){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let y=gap/2;y<h;y+=gap){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}},
  dot(ctx,x,y,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill()},
  line(ctx,points,color,width=1){if(!points.length)return;ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke()},
  blob(ctx,x,y,r,t,phase=0,lobes=3){const N=40,pts=[];for(let j=0;j<N;j++){const a=j/N*TAU,rr=r*(1+.07*Math.sin(lobes*a+t*.9+phase)+.035*Math.cos(2*a-t*.6));pts.push({x:x+Math.cos(a)*rr,y:y+Math.sin(a)*rr})}ctx.beginPath();pts.forEach((p,j)=>j?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath()},
